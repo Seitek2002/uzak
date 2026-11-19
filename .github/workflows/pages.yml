@@ -27,8 +27,8 @@ jobs:
 
       - run: npm ci
 
-      - name: Check the model
-        run: npm run test:model
+      - name: Check the models
+        run: npm run test:model && npm run test:pet
 
       - name: Site address
         run: |

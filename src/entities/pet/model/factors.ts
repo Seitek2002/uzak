@@ -34,16 +34,16 @@ export const PET_FACTORS: PetFactor[] = [
       dog: [
         { id: "mixed", label: "Метис или беспородная", hr: 1 },
         { id: "pure", label: "Породистая, с обычной мордой", hr: 1 },
-        { id: "flat", label: "С короткой мордой: мопс, французский или английский бульдог, ши-тцу", hr: 1.5 },
+        { id: "flat", label: "С короткой мордой: мопс, французский или английский бульдог, ши-тцу", hr: 2 },
       ],
       cat: [
         { id: "mixed", label: "Беспородная или метис", hr: 1 },
-        { id: "pure", label: "Породистая, с обычной мордой", hr: 1.15 },
-        { id: "flat", label: "С плоской мордой: персидская, экзотическая", hr: 1.3 },
+        { id: "pure", label: "Породистая, с обычной мордой", hr: 1.3 },
+        { id: "flat", label: "С плоской мордой: персидская, экзотическая", hr: 1.25 },
       ],
     },
     typical: "mixed",
-    summary: "Короткая морда мешает дышать и сокращает жизнь, у собак сильнее, чем у кошек.",
+    summary: "Короткая морда мешает дышать и сокращает жизнь собак. Беспородные кошки живут дольше породистых.",
   },
   {
     slug: "neutered",
@@ -54,11 +54,11 @@ export const PET_FACTORS: PetFactor[] = [
     options: {
       dog: [
         { id: "yes", label: "Да", hr: 1 },
-        { id: "no", label: "Нет", hr: 1.15 },
+        { id: "no", label: "Нет", hr: 1.4, hrBySex: { female: 1.5, male: 1.3 }, improveTo: "yes" },
       ],
       cat: [
         { id: "yes", label: "Да", hr: 1 },
-        { id: "no", label: "Нет", hr: 1.3, improveTo: "yes" },
+        { id: "no", label: "Нет", hr: 1.25, improveTo: "yes" },
       ],
     },
     typical: "yes",
@@ -71,14 +71,22 @@ export const PET_FACTORS: PetFactor[] = [
     modifiable: true,
     question: "Какое сложение у питомца?",
     help: "Проведите ладонями по бокам. В норме рёбра прощупываются под тонким слоем жира, а сверху видна талия.",
-    options: [
-      { id: "thin", label: "Худой: рёбра и позвоночник видны", hr: 1.3, improveTo: "ideal" },
-      { id: "ideal", label: "В норме: рёбра прощупываются, талия видна", hr: 1 },
-      { id: "over", label: "Полноват: рёбра прощупываются с трудом, талии почти нет", hr: 1.15, improveTo: "ideal" },
-      { id: "obese", label: "Толстый: рёбер не прощупать, живот свисает", hr: 1.4, improveTo: "over" },
-    ],
+    options: {
+      dog: [
+        { id: "thin", label: "Худой: рёбра и позвоночник видны", hr: 1.3, improveTo: "ideal" },
+        { id: "ideal", label: "В норме: рёбра прощупываются, талия видна", hr: 1 },
+        { id: "over", label: "Полноват: рёбра прощупываются с трудом, талии почти нет", hr: 1.4, improveTo: "ideal" },
+        { id: "obese", label: "Толстый: рёбер не прощупать, живот свисает", hr: 1.8, improveTo: "over" },
+      ],
+      cat: [
+        { id: "thin", label: "Худой: рёбра и позвоночник видны", hr: 1.5, improveTo: "ideal" },
+        { id: "ideal", label: "В норме: рёбра прощупываются, талия видна", hr: 1 },
+        { id: "over", label: "Полноват: рёбра прощупываются с трудом, талии почти нет", hr: 1.15, improveTo: "ideal" },
+        { id: "obese", label: "Толстый: рёбер не прощупать, живот свисает", hr: 1.3, improveTo: "over" },
+      ],
+    },
     typical: "over",
-    summary: "Лишний вес отнимает у собак и кошек до двух с половиной лет.",
+    summary: "Лишний вес отнимает у собак до двух с половиной лет. Резкая худоба часто признак болезни.",
   },
   {
     slug: "activity",
@@ -113,13 +121,13 @@ export const PET_FACTORS: PetFactor[] = [
     options: {
       dog: [
         { id: "safe", label: "Только на поводке или во дворе за забором", hr: 1 },
-        { id: "offlead", label: "Иногда без поводка рядом с дорогами", hr: 1, lambda: 0.006, improveTo: "safe" },
-        { id: "free", label: "Свободно бегает по улице сама", hr: 1, lambda: 0.025, improveTo: "safe" },
+        { id: "offlead", label: "Иногда без поводка рядом с дорогами", hr: 1, lambda: 0.003, improveTo: "safe" },
+        { id: "free", label: "Свободно бегает по улице сама", hr: 1.1, lambda: 0.01, improveTo: "safe" },
       ],
       cat: [
         { id: "safe", label: "Живёт дома, балкон или окна с сеткой", hr: 1 },
-        { id: "supervised", label: "Гуляет на шлейке или в огороженном вольере", hr: 1, lambda: 0.003 },
-        { id: "free", label: "Свободно гуляет на улице", hr: 1.1, lambda: 0.025, improveTo: "supervised" },
+        { id: "supervised", label: "Гуляет на шлейке или в огороженном вольере", hr: 1, lambda: 0.002 },
+        { id: "free", label: "Свободно гуляет на улице", hr: 1.05, lambda: 0.011, improveTo: "supervised" },
       ],
     },
     typical: { dog: "safe", cat: "free" },
@@ -133,8 +141,8 @@ export const PET_FACTORS: PetFactor[] = [
     question: "Питомец получает прививки по графику?",
     options: [
       { id: "regular", label: "Да, каждый год или как назначил ветеринар", hr: 1 },
-      { id: "lapsed", label: "Прививали раньше, сейчас нет", hr: 1.1, improveTo: "regular" },
-      { id: "never", label: "Никогда не прививали", hr: 1.25, improveTo: "regular" },
+      { id: "lapsed", label: "Прививали раньше, сейчас нет", hr: 1.06, improveTo: "regular" },
+      { id: "never", label: "Никогда не прививали", hr: 1.15, improveTo: "regular" },
     ],
     typical: "regular",
     summary: "Чума, парвовирус и бешенство до сих пор убивают непривитых собак и кошек.",
@@ -147,8 +155,8 @@ export const PET_FACTORS: PetFactor[] = [
     question: "Обрабатываете ли вы питомца от глистов, блох и клещей?",
     options: [
       { id: "regular", label: "Да, регулярно", hr: 1 },
-      { id: "sometimes", label: "Иногда", hr: 1.04, improveTo: "regular" },
-      { id: "never", label: "Нет", hr: 1.1, improveTo: "regular" },
+      { id: "sometimes", label: "Иногда", hr: 1.02, improveTo: "regular" },
+      { id: "never", label: "Нет", hr: 1.05, improveTo: "regular" },
     ],
     typical: "regular",
     summary: "Клещи переносят пироплазмоз, комары дирофиляриоз. Обработка дешевле лечения.",
@@ -161,8 +169,8 @@ export const PET_FACTORS: PetFactor[] = [
     question: "Как часто питомец бывает у ветеринара?",
     options: [
       { id: "yearly", label: "Раз в год и чаще, даже здоровым", hr: 1 },
-      { id: "sick", label: "Только когда заболеет", hr: 1.08, improveTo: "yearly" },
-      { id: "never", label: "Почти никогда", hr: 1.15, improveTo: "yearly" },
+      { id: "sick", label: "Только когда заболеет", hr: 1.05, improveTo: "yearly" },
+      { id: "never", label: "Почти никогда", hr: 1.1, improveTo: "yearly" },
     ],
     typical: "sick",
     summary: "Болезни почек, сердца и зубов у животных долго не видны, осмотр находит их раньше.",
@@ -175,8 +183,8 @@ export const PET_FACTORS: PetFactor[] = [
     question: "Есть ли у питомца зубной камень, запах изо рта или красные дёсны?",
     options: [
       { id: "no", label: "Нет", hr: 1 },
-      { id: "yes", label: "Да", hr: 1.1, improveTo: "no" },
-      { id: "unknown", label: "Не знаю", hr: 1.05, unknown: true },
+      { id: "yes", label: "Да", hr: 1.15, improveTo: "no" },
+      { id: "unknown", label: "Не знаю", hr: 1.15, unknown: true },
     ],
     typical: "yes",
     summary: "Болезни дёсен есть у большинства взрослых собак и кошек и связаны с болезнями почек и сердца.",
@@ -190,7 +198,7 @@ export const PET_FACTORS: PetFactor[] = [
     options: [
       { id: "complete", label: "Готовым полнорационным кормом", hr: 1 },
       { id: "planned", label: "Домашней едой по совету ветеринара", hr: 1 },
-      { id: "table", label: "Едой со стола и объедками", hr: 1.1, improveTo: "complete" },
+      { id: "table", label: "Едой со стола и объедками", hr: 1.05, improveTo: "complete" },
     ],
     typical: "complete",
     summary: "Еда со стола часто перекармливает и даёт опасное: лук, чеснок, виноград, кости.",

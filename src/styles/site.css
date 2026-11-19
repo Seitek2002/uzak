@@ -10,6 +10,7 @@
 /* Hallmark · waive 44c · the Stage field bleeds off the right edge of the page by design · the ultramarine runs from a column line to the bleed */
 /* Hallmark · dismissed 77 · the factor, method, privacy and disclaimer pages are reference documents with one long section, not landing pages */
 /* Hallmark · answered F6 · every figure carries the .figure class, which sets tabular-nums */
+/* Hallmark · waive 79 · the start fork is one question centred in a full-screen ultramarine field · the field is the visual, the two answers sit on its centre line */
 @import url("./tokens.css");
 @import url("./base.css");
 
@@ -408,6 +409,8 @@ html:not(.js) .switch__panels [role="tabpanel"] { display: grid !important; marg
 ul.close__options { margin: 0; padding: 0; list-style: none; }
 ul.close__options > li { display: grid; }
 a.choice-big { text-decoration: none; }
+.choice-big--tall { flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: var(--space-sm); min-height: 260px; padding-bottom: var(--space-md); font-size: var(--text-display-s); }
+.choice-big__note { font: 500 var(--text-md)/1.4 var(--font-body); letter-spacing: 0; }
 
 /* The fork between the two tests fills the first screen. */
 .start { display: grid; align-content: center; min-height: calc(100svh - var(--nav-bar) - var(--nav-banner)); }

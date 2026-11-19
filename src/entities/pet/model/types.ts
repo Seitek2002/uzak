@@ -11,6 +11,8 @@ export interface PetOption {
   label: string;
   /** Hazard ratio against the healthiest option (1.0). */
   hr: number;
+  /** Ratios by sex when the cohorts show a clear difference; they override hr. */
+  hrBySex?: Record<PetSex, number>;
   /** Extra yearly death risk from accidents, for roaming outside. */
   lambda?: number;
   /** "I do not know": counts as the typical answer and becomes a vet check. */

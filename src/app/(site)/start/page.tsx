@@ -15,23 +15,21 @@ export default function StartPage() {
       <div className="container cols close">
         <div className="close__head">
           <h1 id="start-title">Для кого тест?</h1>
-          <p className="lead">
-            {nb(
-              `Для себя: ${SITE.questions} вопросов, около ${SITE.minutes} минут. Для кошки или собаки: ${PET_QUESTIONS} вопросов, около ${PET_MINUTES} минут.`,
-            )}
-          </p>
+          <p className="lead">{nb("Оба теста бесплатные и без регистрации. Ответы остаются на вашем устройстве.")}</p>
         </div>
         <div className="close__choice">
           <p id="start-question">Кого проверяем</p>
           <ul className="close__options" aria-labelledby="start-question">
             <li>
-              <Link href="/test" className="choice-big">
-                Себя
+              <Link href="/test" className="choice-big choice-big--tall">
+                <span>Себя</span>
+                <span className="choice-big__note">{nb(`${SITE.questions} вопросов, около ${SITE.minutes} минут`)}</span>
               </Link>
             </li>
             <li>
-              <Link href="/pet/test" className="choice-big">
-                Питомца
+              <Link href="/pet/test" className="choice-big choice-big--tall">
+                <span>Питомца</span>
+                <span className="choice-big__note">{nb(`Кошку или собаку: до ${PET_QUESTIONS} вопросов, около ${PET_MINUTES} минут`)}</span>
               </Link>
             </li>
           </ul>
