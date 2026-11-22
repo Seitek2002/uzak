@@ -6,6 +6,7 @@ import { decimal } from "@/shared/lib/format";
 import { Question, type HeadingRef } from "@/shared/ui/Quiz";
 import { BODY_LIMITS, validBody, validHeight, validWeight } from "../model/body";
 import { useQuiz } from "../model/store";
+import { LOOKS } from "./visuals";
 
 /** Countries that measure people in feet and pounds. */
 const IMPERIAL_COUNTRIES = ["USA", "LBR", "MMR"];
@@ -80,7 +81,7 @@ export function BodyStep({ headingRef, error }: { headingRef: HeadingRef; error:
 
   return (
     <fieldset>
-      <Question headingRef={headingRef} title={factor.question} help={factor.help} helpId="help-body" />
+      <Question look={LOOKS.bmi} headingRef={headingRef} title={factor.question} help={factor.help} helpId="help-body" />
       <div className="sliders">
         <Slider
           key={`height-${units}`}
@@ -116,6 +117,7 @@ export function BodyStep({ headingRef, error }: { headingRef: HeadingRef; error:
           </>
         )}
       </div>
+      {bmi !== null && <BmiScale bmi={bmi} />}
     </fieldset>
   );
 }
@@ -206,6 +208,20 @@ function Slider({
           +
         </button>
       </div>
+    </div>
+  );
+}
+
+const BMI_FROM = 15;
+const BMI_TO = 40;
+
+/** The index on its scale: the blue stretch is the norm, the red mark is the person. */
+function BmiScale({ bmi }: { bmi: number }) {
+  const place = (v: number) => ((Math.min(Math.max(v, BMI_FROM), BMI_TO) - BMI_FROM) / (BMI_TO - BMI_FROM)) * 100;
+  return (
+    <div className="bmi-scale" aria-hidden="true">
+      <span className="bmi-scale__norm" style={{ insetInline: `${place(18.5)}% ${100 - place(25)}%` }} />
+      <span className="bmi-scale__you" style={{ insetInlineStart: `${place(bmi)}%` }} />
     </div>
   );
 }

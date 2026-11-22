@@ -89,13 +89,18 @@ try {
     await page.goto(`${BASE}/test`, { waitUntil: "networkidle" });
     check("test opens on question 1", (await progress(page)).startsWith("Вопрос 1 из"));
     let guard = 0;
+    const bare = [];
     while (!page.url().includes("/report") && guard < 60) {
+      if (!(await page.locator(".quiz__icon svg").count())) bare.push(await progress(page));
+      const rows = await page.locator(".option").count();
+      if (rows !== (await page.locator(".option .option__visual").count())) bare.push(await progress(page));
       if ((await heading(page)).startsWith("Есть ли у вас свежие анализы")) await answer(page, 0);
       else await answer(page, 1);
       guard += 1;
     }
     await page.waitForURL(/\/report\/?$/);
     await page.waitForSelector("#report-title");
+    check("every question and every answer has a picture", bare.length === 0, bare.join(", "));
     check("full pass ends on the report", (await page.locator("#report-title").innerText()) === "Ваш отчёт");
     const s = await store(page);
     check("one attempt saved", s.history?.length === 1, `history ${s.history?.length}`);

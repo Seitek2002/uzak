@@ -9,6 +9,7 @@ import { isEditLink, readStepFromUrl, writeStepToUrl } from "@/shared/lib/step-u
 import { Options, Question, QuizTop, type HeadingRef } from "@/shared/ui/Quiz";
 import { PET_QUESTIONS, stepsFor } from "../model/steps";
 import { ageOf, usePetHydrated, usePetQuiz } from "../model/store";
+import { FALLBACK_PET_LOOK, PET_LOOKS } from "./visuals";
 
 /** First question without an answer, or -1 when the sheet is complete. */
 function missingStep(): number {
@@ -182,7 +183,10 @@ export function PetQuizApp() {
           </form>
           <aside className="quiz__aside" aria-label="Почему мы это спрашиваем">
             <p className="label">{factor ? factor.title : "О питомце"}</p>
-            <p>{nb(factor?.summary ?? "Вид, пол и возраст задают исходную кривую: кошки и собаки разных размеров стареют с разной скоростью.")}</p>
+            <details className="quiz__more" key={id}>
+              <summary>Почему спрашиваем</summary>
+              <p>{nb(factor?.summary ?? "Вид, пол и возраст задают исходную кривую: кошки и собаки разных размеров стареют с разной скоростью.")}</p>
+            </details>
             <Link className="link" href="/pet" target="_blank" rel="noopener">
               Как это считается
               <span className="visually-hidden"> (откроется в новой вкладке)</span>
@@ -199,8 +203,9 @@ function SpeciesStep({ headingRef, onPick, error }: { headingRef: HeadingRef; on
   const setSpecies = usePetQuiz((s) => s.setSpecies);
   return (
     <fieldset>
-      <Question headingRef={headingRef} title="Кто ваш питомец?" help="Модель построена на данных о кошках и собаках." helpId="help-species" />
+      <Question look={PET_LOOKS.species} headingRef={headingRef} title="Кто ваш питомец?" help="Модель построена на данных о кошках и собаках." helpId="help-species" />
       <Options
+        look={PET_LOOKS.species}
         name="species"
         value={species}
         onChange={(v) => setSpecies(v as Species)}
@@ -221,7 +226,7 @@ function NameStep({ headingRef }: { headingRef: HeadingRef }) {
   const setName = usePetQuiz((s) => s.setName);
   return (
     <fieldset>
-      <Question headingRef={headingRef} title="Как зовут питомца?" help="Необязательно: имя появится в отчёте. Можно пропустить." helpId="help-name" />
+      <Question look={PET_LOOKS.name} headingRef={headingRef} title="Как зовут питомца?" help="Необязательно: имя появится в отчёте. Можно пропустить." helpId="help-name" />
       <div className="text-field">
         <label htmlFor="pet-name">Кличка</label>
         <input
@@ -244,8 +249,9 @@ function SexStep({ headingRef, onPick, error }: { headingRef: HeadingRef; onPick
   const setSex = usePetQuiz((s) => s.setSex);
   return (
     <fieldset>
-      <Question headingRef={headingRef} title="Это мальчик или девочка?" help="Самки обоих видов в среднем живут немного дольше." helpId="help-pet-sex" />
+      <Question look={PET_LOOKS.sex} headingRef={headingRef} title="Это мальчик или девочка?" help="Самки обоих видов в среднем живут немного дольше." helpId="help-pet-sex" />
       <Options
+        look={PET_LOOKS.sex}
         name="pet-sex"
         value={sex}
         onChange={(v) => setSex(v as "male" | "female")}
@@ -276,7 +282,7 @@ function AgeStep({ headingRef, error }: { headingRef: HeadingRef; error: string 
   };
   return (
     <fieldset>
-      <Question headingRef={headingRef} title="Сколько питомцу лет?" help="Если точно не знаете, укажите примерно." helpId="help-pet-age" />
+      <Question look={PET_LOOKS.age} headingRef={headingRef} title="Сколько питомцу лет?" help="Если точно не знаете, укажите примерно." helpId="help-pet-age" />
       <div className="numbers">
         <div className="number">
           <label htmlFor="pet-years">Лет</label>
@@ -340,10 +346,12 @@ function FactorStep({
   const answer = usePetQuiz((s) => s.answer);
   const help = petHelp(factor, species);
   const helpId = `help-pet-${factor.slug}`;
+  const look = PET_LOOKS[factor.slug] ?? FALLBACK_PET_LOOK;
   return (
     <fieldset>
-      <Question headingRef={headingRef} title={petQuestion(factor, species)} help={help} helpId={helpId} />
+      <Question look={look} headingRef={headingRef} title={petQuestion(factor, species)} help={help} helpId={helpId} />
       <Options
+        look={look}
         name={`pet-${factor.slug}`}
         value={value}
         onChange={(v) => answer(factor.slug, v)}

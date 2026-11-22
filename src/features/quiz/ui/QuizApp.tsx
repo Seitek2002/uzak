@@ -12,6 +12,7 @@ import { validBody } from "../model/body";
 import { useHydrated, useQuiz } from "../model/store";
 import { BodyStep } from "./BodyStep";
 import { CountryStep } from "./CountryStep";
+import { FALLBACK_LOOK, LOOKS } from "./visuals";
 
 const readStepFromUrl = () => readStep(STEPS.length);
 
@@ -201,7 +202,10 @@ export function QuizApp() {
           </form>
           <aside className="quiz__aside" aria-label="Почему мы это спрашиваем">
             <p className="label">{groupTitle}</p>
-            <p>{nb(aside)}</p>
+            <details className="quiz__more" key={id}>
+              <summary>Почему спрашиваем</summary>
+              <p>{nb(aside)}</p>
+            </details>
             {factor && (
               <Link className="link" href={`/factors/${factor.slug}`} target="_blank" rel="noopener">
                 Как это считается
@@ -222,7 +226,7 @@ function NameStep({ headingRef }: { headingRef: HeadingRef }) {
   const setName = useQuiz((s) => s.setName);
   return (
     <fieldset>
-      <Question headingRef={headingRef} title="Как вас зовут?" help="Можно не указывать." helpId="help-name" />
+      <Question look={LOOKS.name} headingRef={headingRef} title="Как вас зовут?" help="Можно не указывать." helpId="help-name" />
       <div className="text-field">
         <label htmlFor="name">Имя</label>
         <input
@@ -245,8 +249,9 @@ function SexStep({ headingRef, onPick, error }: { headingRef: HeadingRef; onPick
   const setSex = useQuiz((s) => s.setSex);
   return (
     <fieldset>
-      <Question headingRef={headingRef} title="Ваш пол" help="У мужчин и женщин разная исходная продолжительность жизни." helpId="help-sex" />
+      <Question look={LOOKS.sex} headingRef={headingRef} title="Ваш пол" help="У мужчин и женщин разная исходная продолжительность жизни." helpId="help-sex" />
       <Options
+        look={LOOKS.sex}
         name="sex"
         value={sex}
         onChange={(v) => setSex(v as "male" | "female")}
@@ -268,7 +273,7 @@ function AgeStep({ headingRef, error }: { headingRef: HeadingRef; error: string 
   const [raw, setRaw] = useState(age ? String(age) : "");
   return (
     <fieldset>
-      <Question headingRef={headingRef} title="Сколько вам полных лет?" help="Тест рассчитан на взрослых от 18 до 99 лет." helpId="help-age" />
+      <Question look={LOOKS.age} headingRef={headingRef} title="Сколько вам полных лет?" help="Тест для взрослых от 18 до 99 лет." helpId="help-age" />
       <div className="numbers">
         <div className="number">
           <label htmlFor="age">Возраст</label>
@@ -306,12 +311,14 @@ function LabsStep({ headingRef, onPick, error }: { headingRef: HeadingRef; onPic
   return (
     <fieldset>
       <Question
+        look={LOOKS.labs}
         headingRef={headingRef}
         title="Есть ли у вас свежие анализы крови?"
-        help="Осталось четыре вопроса о холестерине, сахаре, воспалении и омега-3. Подойдут результаты за последний год."
+        help="Холестерин, сахар, СРБ и омега-3 за год."
         helpId="help-labs"
       />
       <Options
+        look={LOOKS.labs}
         name="labs"
         value={labs}
         onChange={(v) => setLabs(v as "yes" | "skip")}
@@ -341,10 +348,12 @@ function ChoiceStep({
   const value = useQuiz((s) => s.answers[factor.slug]);
   const answer = useQuiz((s) => s.answer);
   const helpId = `help-${factor.slug}`;
+  const look = LOOKS[factor.slug] ?? FALLBACK_LOOK;
   return (
     <fieldset>
-      <Question headingRef={headingRef} title={factor.question} help={factor.help} helpId={helpId} />
+      <Question look={look} headingRef={headingRef} title={factor.question} help={factor.help} helpId={helpId} />
       <Options
+        look={look}
         name={factor.slug}
         value={value}
         onChange={(v) => answer(factor.slug, v)}

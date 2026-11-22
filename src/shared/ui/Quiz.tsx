@@ -2,7 +2,11 @@
 
 import { useEffect, useRef, type ReactNode, type RefObject } from "react";
 import { nb } from "@/shared/lib/format";
+import { HintRow, OptionVisual, type QuestionLook } from "./Visual";
 import { Wordmark } from "./Wordmark";
+
+/** Help up to this length stays in sight; longer help folds under "Подсказка". */
+const SHORT_HELP = 48;
 
 /** Pause between a tap on an answer and the next question: long enough to see the pick land. */
 export const AUTO_ADVANCE_MS = 280;
@@ -36,19 +40,44 @@ export function QuizTop({ step, total, extra }: { step: number; total: number; e
 }
 
 /** The question as the fieldset legend and the page heading, with an optional hint under it. */
-export function Question({ headingRef, title, help, helpId }: { headingRef: HeadingRef; title: string; help?: string; helpId: string }) {
+export function Question({
+  headingRef,
+  title,
+  help,
+  helpId,
+  look,
+}: {
+  headingRef: HeadingRef;
+  title: string;
+  help?: string;
+  helpId: string;
+  look: QuestionLook;
+}) {
+  const Glyph = look.icon;
   return (
     <>
       <legend>
+        <span className="quiz__icon" aria-hidden="true">
+          <Glyph size={32} strokeWidth={2} />
+        </span>
         <h1 ref={headingRef} tabIndex={-1}>
           {nb(title)}
         </h1>
       </legend>
-      {help && (
-        <p className="quiz__help" id={helpId}>
-          {nb(help)}
-        </p>
-      )}
+      {look.hints && <HintRow hints={look.hints} />}
+      {help &&
+        (help.length <= SHORT_HELP ? (
+          <p className="quiz__help" id={helpId}>
+            {nb(help)}
+          </p>
+        ) : (
+          <details className="quiz__more">
+            <summary>Подсказка</summary>
+            <p className="quiz__help" id={helpId}>
+              {nb(help)}
+            </p>
+          </details>
+        ))}
     </>
   );
 }
@@ -80,6 +109,7 @@ export function Options({
   onPick,
   describedBy,
   error,
+  look,
 }: {
   name: string;
   options: { id: string; label: string }[];
@@ -88,6 +118,7 @@ export function Options({
   onPick: () => void;
   describedBy?: string;
   error: string;
+  look: QuestionLook;
 }) {
   const { onPointerDown, afterChange } = usePointerAdvance(onPick);
   return (
@@ -107,7 +138,10 @@ export function Options({
                 afterChange();
               }}
             />
-            <label htmlFor={`${name}-${o.id}`}>{o.label}</label>
+            <label htmlFor={`${name}-${o.id}`}>
+              <span>{o.label}</span>
+              {look.options?.[o.id] && <OptionVisual visual={look.options[o.id]} />}
+            </label>
           </li>
         ))}
       </ul>

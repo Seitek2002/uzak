@@ -6,6 +6,7 @@ import { COUNTRIES } from "@/shared/data/countries";
 import { countryByIp } from "@/shared/lib/country-by-ip";
 import { Question, type HeadingRef } from "@/shared/ui/Quiz";
 import { useQuiz } from "../model/store";
+import { FALLBACK_LOOK, LOOKS } from "./visuals";
 
 type Lookup = "idle" | "looking" | "found" | "failed";
 
@@ -47,7 +48,7 @@ export function CountryStep({ factor, headingRef, error }: { factor: Factor; hea
 
   return (
     <fieldset>
-      <Question headingRef={headingRef} title={factor.question} help={factor.help} helpId={helpId} />
+      <Question look={LOOKS[factor.slug] ?? FALLBACK_LOOK} headingRef={headingRef} title={factor.question} help={factor.help} helpId={helpId} />
       <div className="select">
         <label htmlFor={fieldId}>Страна</label>
         <select
