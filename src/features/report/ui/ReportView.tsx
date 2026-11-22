@@ -82,7 +82,7 @@ function Report({ attempt, history }: { attempt: Attempt; history: Attempt[] }) 
           <div className="report-hero__row">
             <div>
               <Figure parts={deltaParts(gain)} />
-              <p>Потенциал: столько добавят изменения из списка ниже</p>
+              <p>Потенциал: столько добавят все возможные улучшения</p>
             </div>
             <div>
               <Figure parts={ageParts(result.bioAge)} />
@@ -157,7 +157,7 @@ function Starts({ result }: { result: Assessment }) {
                     <Link href={`/factors/${f.slug}`}>{factor.title}</Link>
                   </h3>
                   <p>
-                    Сейчас: {lower(from.label)}. Цель: {lower(to.label)}.
+                    Сейчас: {lower(from.label)}. Цель: {lower(to.goal ?? to.label)}.
                   </p>
                   <p>{contentOf(f.slug).advice[0]}</p>
                 </li>

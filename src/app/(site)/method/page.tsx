@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { FACTORS, SOURCES } from "@/entities/factor";
 import { ATTENUATION, FALLBACK_COUNT, FALLBACK_YEAR, IMPROVEMENT, LIFE_TABLE_YEAR, lifeExpectancyAt, WORLD } from "@/entities/result";
-import { age } from "@/shared/lib/format";
+import { age, decimal } from "@/shared/lib/format";
 import { SourcesToggle } from "@/widgets/sources-list/SourcesToggle";
 
 export const metadata: Metadata = {
@@ -82,7 +82,7 @@ export default function MethodPage() {
           <h2 id="years">Как риск превращается в годы</h2>
           <p>Годовой риск через t лет, когда вам будет x лет:</p>
           <p className="formula">
-            μ = μ<sub>страны</sub>(x) × 0,99<sup>t</sup> × (HR / HR<sub>сверстников</sub>)<sup>k(x)</sup> + λ
+            μ = μ<sub>страны</sub>(x) × {decimal(1 - IMPROVEMENT, 2)}<sup>t</sup> × (HR / HR<sub>сверстников</sub>)<sup>k(x)</sup> + λ
           </p>
           <p>
             HR: итог ваших ответов, k: сила относительных рисков. До 55 лет k равно 1, к 80 годам падает на{" "}

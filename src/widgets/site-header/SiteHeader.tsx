@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { NAV } from "@/shared/config/site";
+import { LanguageSwitch } from "@/widgets/language/LanguageSwitch";
 import { Wordmark } from "@/shared/ui/Wordmark";
 
 /** A banner that scrolls away over a bar that tucks up on the way down and returns on the way up. */
@@ -46,8 +47,9 @@ export function SiteHeader() {
   return (
     <>
       <aside className="banner" aria-label="Коротко о тесте">
-        <div className="container">
+        <div className="container banner__inner">
           <p>Бесплатно и без регистрации. Ответы хранятся только в вашем браузере.</p>
+          <LanguageSwitch />
         </div>
       </aside>
       <header className={`bar${tucked && !open ? " is-tucked" : ""}`}>

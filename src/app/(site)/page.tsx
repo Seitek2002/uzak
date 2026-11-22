@@ -2,6 +2,7 @@ import { Activity, Apple, Brain, Car, Cat, Cigarette, Dna, Dog, MapPin, Scale, S
 import Link from "next/link";
 import { FACTORS, GROUPS, factorsInGroup, type GroupId } from "@/entities/factor";
 import { assess, factorRange, lifeExpectancyAt, PEER_ANSWERS, WORLD, type Answers } from "@/entities/result";
+import { LOCALE } from "@/shared/config/locale";
 import { SITE } from "@/shared/config/site";
 import { COUNTRIES } from "@/shared/data/countries";
 import { age, counted, delta, nb } from "@/shared/lib/format";
@@ -49,7 +50,7 @@ export default function HomePage() {
   const deepest = Math.min(...impact.map((row) => row.worst));
   const world = WORLD_SAMPLE.map((code) => ({
     code,
-    name: code === WORLD ? "Мир в среднем" : COUNTRIES.find((c) => c.code === code)!.ru,
+    name: code === WORLD ? "Мир в среднем" : COUNTRIES.find((c) => c.code === code)![LOCALE],
     until: (lifeExpectancyAt(code, "male") + lifeExpectancyAt(code, "female")) / 2,
   })).sort((a, b) => b.until - a.until);
 
@@ -87,7 +88,7 @@ export default function HomePage() {
           <div className="product__shots">
             <figure>
               <img
-                src={`${BASE_PATH}/landing/question.jpg`}
+                src={`${BASE_PATH}/landing/${LOCALE}/question.jpg`}
                 width={720}
                 height={1440}
                 loading="lazy"
@@ -98,7 +99,7 @@ export default function HomePage() {
             </figure>
             <figure>
               <img
-                src={`${BASE_PATH}/landing/result.jpg`}
+                src={`${BASE_PATH}/landing/${LOCALE}/result.jpg`}
                 width={720}
                 height={1440}
                 loading="lazy"

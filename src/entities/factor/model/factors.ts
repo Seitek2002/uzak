@@ -1,3 +1,4 @@
+import { INTL, LOCALE } from "../../../shared/config/locale.ts";
 import { COUNTRIES } from "../../../shared/data/countries.ts";
 import type { Factor, FactorOption, Group, GroupId } from "./types.ts";
 
@@ -21,10 +22,10 @@ export const GROUPS: Group[] = [
 ];
 
 /** Countries share one hazard ratio: their effect comes from the life table, not from a ratio. */
-const RU_ORDER = new Intl.Collator("ru");
+const ORDER = new Intl.Collator(INTL[LOCALE]);
 const COUNTRY_OPTIONS: FactorOption[] = [...COUNTRIES]
-  .sort((a, b) => Number(a.code === "GLOBAL") - Number(b.code === "GLOBAL") || RU_ORDER.compare(a.ru, b.ru))
-  .map((c) => ({ id: c.code, label: c.ru, hr: 1 }));
+  .sort((a, b) => Number(a.code === "GLOBAL") - Number(b.code === "GLOBAL") || ORDER.compare(a[LOCALE], b[LOCALE]))
+  .map((c) => ({ id: c.code, label: c[LOCALE], hr: 1 }));
 
 export const FACTORS: Factor[] = [
   {
@@ -51,7 +52,7 @@ export const FACTORS: Factor[] = [
     options: COUNTRY_OPTIONS,
     typical: "GLOBAL",
     best: "GLOBAL",
-    summary: "Страна влияет на прогноз сильнее любой привычки: медицина, дороги и воздух везде разные.",
+    summary: "Страна может менять прогноз сильнее любой привычки: медицина, дороги и воздух везде разные.",
   },
   {
     slug: "relationship",
@@ -80,7 +81,7 @@ export const FACTORS: Factor[] = [
     kind: "choice",
     options: [
       { id: "never", label: "Никогда не курил(а)", hr: 1 },
-      { id: "quit10", label: "Бросил(а) 10+ лет назад", hr: 1.1 },
+      { id: "quit10", label: "Бросил(а) 10+ лет назад", goal: "жизнь без табака и никотина", hr: 1.1 },
       { id: "quit", label: "Бросил(а) меньше 10 лет назад", hr: 1.45, improveTo: "quit10" },
       { id: "smokeless", label: "Только вейп или бездымный табак", hr: 1.2, improveTo: "quit10" },
       { id: "light", label: "До 10 сигарет в день", hr: 1.9, improveTo: "quit10" },
@@ -88,7 +89,7 @@ export const FACTORS: Factor[] = [
     ],
     typical: "quit",
     best: "never",
-    summary: "Самый сильный фактор, который можно изменить, и единственный, где отказ работает в любом возрасте.",
+    summary: "Один из самых сильных факторов, которые можно изменить. Отказ продлевает жизнь даже в 60 лет.",
   },
   {
     slug: "alcohol",
@@ -134,7 +135,7 @@ export const FACTORS: Factor[] = [
     group: "movement",
     modifiable: true,
     question: "Сколько минут в неделю вы двигаетесь до учащённого дыхания?",
-    help: "Быстрая ходьба, велосипед, плавание, танцы, футбол, работа в саду. Считайте только отрезки от 10 минут.",
+    help: "Быстрая ходьба, велосипед, плавание, танцы, футбол, работа в саду. Считается каждая минута.",
     kind: "choice",
     options: [
       { id: "none", label: "Почти нисколько", hr: 1.64, improveTo: "150to300" },
@@ -198,7 +199,7 @@ export const FACTORS: Factor[] = [
     ],
     typical: "4to6",
     best: "gt10",
-    summary: "Самый простой способ измерить движение. Около 8 или 10 тысяч шагов в день дают почти всю пользу.",
+    summary: "Самый простой способ измерить движение. От 8 до 10 тысяч шагов в день дают почти всю пользу.",
   },
   {
     slug: "fruits-vegetables",
@@ -234,7 +235,7 @@ export const FACTORS: Factor[] = [
     ],
     typical: "weekly",
     best: "rare",
-    summary: "Солёное, копчёное и вяленое мясо повышает риск, свежее мясо почти не влияет.",
+    summary: "Солёное, копчёное и вяленое мясо повышает риск, у свежего мяса связь слабее.",
   },
   {
     slug: "sugary-drinks",
@@ -289,7 +290,7 @@ export const FACTORS: Factor[] = [
       { id: "120", label: "Верхнее от 120 до 129, нижнее ниже 80", hr: 1.05, improveTo: "lt120" },
       { id: "130", label: "Верхнее от 130 до 139 или нижнее от 80 до 89", hr: 1.15, improveTo: "lt120" },
       { id: "140", label: "Верхнее от 140 до 159 или нижнее от 90 до 99", hr: 1.35, improveTo: "120" },
-      { id: "160", label: "160 на 100 и выше", hr: 1.8, improveTo: "130" },
+      { id: "160", label: "Верхнее от 160 или нижнее от 100", hr: 1.8, improveTo: "130" },
       { id: "unknown", label: "Не знаю", hr: 1.15, unknown: true },
     ],
     typical: "130",
@@ -568,7 +569,7 @@ export const FACTORS: Factor[] = [
     group: "tests",
     modifiable: true,
     question: "Какой у вас ЛПНП, «плохой» холестерин?",
-    help: "Строка ЛПНП или LDL в липидном профиле, Первая цифра в ммоль/л, в скобках та же в мг/дл.",
+    help: "Строка ЛПНП или LDL в липидном профиле. Первая цифра в ммоль/л, в скобках та же в мг/дл.",
     kind: "choice",
     options: [
       { id: "lt18", label: "Ниже 1,8 (70)", hr: 1 },

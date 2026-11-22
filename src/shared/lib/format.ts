@@ -1,17 +1,21 @@
+import { INTL, KY_AGE, KY_DATE, LOCALE } from "../config/locale.ts";
+
 const MINUS = "\u2212";
 
 /** Russian typesetting: a one-letter word never ends a line, it sticks to the next word. */
 export const nb = (text: string) => text.replace(/(^|[\s(\u00ab])([\u0432\u0441\u043a\u043e\u0443\u0438\u0430\u044f\u0412\u0421\u041a\u041e\u0423\u0418\u0410\u042f])\s+/g, "$1$2\u00a0");
 
-/** Russian plural: 1 год, 2 года, 5 лет. Fractions take the "few" form. */
 /** "33 фактора": the number and the noun in the right form. */
 export const counted = (n: number, forms: [string, string, string]) => `${n} ${plural(n, forms)}`;
 
-/** Group counts in the prepositional case, as in "в десяти группах". */
-export const inGroups = (n: number) =>
-  `в ${({ 8: "восьми", 9: "девяти", 10: "десяти", 11: "одиннадцати", 12: "двенадцати" } as Record<number, string>)[n] ?? n} группах`;
-
+/**
+ * Russian plural: 1 год, 2 года, 5 лет; fractions take the second form. A
+ * translation fills the same three places: English uses the first for one and
+ * the second for the rest, Kyrgyz keeps the noun after a number unchanged.
+ */
 export function plural(n: number, forms: [string, string, string]): string {
+  if (LOCALE === "ky") return forms[0];
+  if (LOCALE === "en") return Math.abs(n) === 1 ? forms[0] : forms[1];
   if (!Number.isInteger(n)) return forms[1];
   const a = Math.abs(n) % 100;
   const b = a % 10;
@@ -25,14 +29,16 @@ const YEARS: [string, string, string] = ["год", "года", "лет"];
 const MONTHS: [string, string, string] = ["месяц", "месяца", "месяцев"];
 
 export const decimal = (n: number, digits = 1) =>
-  n.toLocaleString("ru-RU", { maximumFractionDigits: digits, minimumFractionDigits: 0 });
+  n.toLocaleString(INTL[LOCALE], { maximumFractionDigits: digits, minimumFractionDigits: 0 });
 
-export const integer = (n: number) => Math.round(n).toLocaleString("ru-RU");
+export const integer = (n: number) => Math.round(n).toLocaleString(INTL[LOCALE]);
+
+const ageWord = (n: number) => (LOCALE === "ky" ? KY_AGE : plural(n, YEARS));
 
 /** "81 год", "37 лет". */
 export function age(n: number): string {
   const r = Math.round(n);
-  return `${r}\u00a0${plural(r, YEARS)}`;
+  return `${r}\u00a0${ageWord(r)}`;
 }
 
 export const yearsWord = (n: number) => plural(Math.round(n), YEARS);
@@ -52,12 +58,14 @@ export function delta(years: number, { sign = true }: { sign?: boolean } = {}): 
 }
 
 export function shortDate(iso: string): string {
-  return new Date(iso)
-    .toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })
+  const at = new Date(iso);
+  if (LOCALE === "ky") return KY_DATE(at.getDate(), at.getMonth(), at.getFullYear());
+  return at
+    .toLocaleDateString(INTL[LOCALE], { day: "numeric", month: "long", year: "numeric" })
     .replace(/\s?г\.$/, "");
 }
 
-export const thousands = (n: number) => n.toLocaleString("ru-RU");
+export const thousands = (n: number) => n.toLocaleString(INTL[LOCALE]);
 
 export interface Parts {
   num: string;
@@ -67,7 +75,7 @@ export interface Parts {
 /** A figure split so the number can be set large and the unit small. */
 export function deltaParts(years: number): Parts {
   const text = delta(years);
-  const m = text.match(/^([+\u2212]?[\d,]+)\u00a0(.+)$/);
+  const m = text.match(/^([+\u2212]?[\d.,]+)\u00a0(.+)$/);
   return m ? { num: m[1], unit: m[2] } : { num: text === "0" ? "0" : "", unit: text === "0" ? "" : text };
 }
 
@@ -78,7 +86,7 @@ export function petAgeParts(n: number): Parts {
     return { num: String(m), unit: plural(m, MONTHS) };
   }
   const v = Math.round(n * 10) / 10;
-  return { num: decimal(v), unit: plural(v, YEARS) };
+  return { num: decimal(v), unit: ageWord(v) };
 }
 
 export const petAge = (n: number) => {
@@ -88,5 +96,5 @@ export const petAge = (n: number) => {
 
 export function ageParts(n: number): Parts {
   const r = Math.round(n);
-  return { num: String(r), unit: plural(r, YEARS) };
+  return { num: String(r), unit: ageWord(r) };
 }

@@ -53,11 +53,11 @@ export const PET_FACTORS: PetFactor[] = [
     question: "Питомец стерилизован или кастрирован?",
     options: {
       dog: [
-        { id: "yes", label: "Да", hr: 1 },
+        { id: "yes", label: "Да", goal: "стерилизация", hr: 1 },
         { id: "no", label: "Нет", hr: 1.4, hrBySex: { female: 1.5, male: 1.3 }, improveTo: "yes" },
       ],
       cat: [
-        { id: "yes", label: "Да", hr: 1 },
+        { id: "yes", label: "Да", goal: "стерилизация", hr: 1 },
         { id: "no", label: "Нет", hr: 1.25, improveTo: "yes" },
       ],
     },
@@ -182,7 +182,7 @@ export const PET_FACTORS: PetFactor[] = [
     modifiable: true,
     question: "Есть ли у питомца зубной камень, запах изо рта или красные дёсны?",
     options: [
-      { id: "no", label: "Нет", hr: 1 },
+      { id: "no", label: "Нет", goal: "чистые зубы и здоровые дёсны", hr: 1 },
       { id: "yes", label: "Да", hr: 1.15, improveTo: "no" },
       { id: "unknown", label: "Не знаю", hr: 1.15, unknown: true },
     ],

@@ -5,12 +5,16 @@
   "scripts": {
     "dev": "next dev --port 3100",
     "build": "next build",
+    "build:pages": "node scripts/i18n/build.mjs",
+    "i18n:extract": "node scripts/i18n/catalog.mjs extract",
+    "i18n:check": "node scripts/i18n/catalog.mjs check",
     "start": "next start --port 3100",
     "typecheck": "tsc --noEmit",
     "test:model": "node --experimental-strip-types --no-warnings scripts/validate-model.ts",
     "test:pet": "node --experimental-strip-types --no-warnings scripts/validate-pet.ts",
     "model:print": "node --experimental-strip-types --no-warnings scripts/check-model.ts",
     "test:e2e": "node scripts/e2e.mjs",
+    "test:e2e:locales": "node scripts/e2e-locales.mjs",
     "life-tables": "node scripts/life-tables.mjs"
   },
   "dependencies": {

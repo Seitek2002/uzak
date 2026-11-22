@@ -7,6 +7,9 @@ export const dynamic = "force-static";
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: { userAgent: "*", allow: "/" },
-    sitemap: `${SITE.url}/sitemap.xml`,
+    sitemap:
+      process.env.GITHUB_PAGES === "true"
+        ? ["", "/en", "/ky"].map((lang) => `${SITE.url}${lang}/sitemap.xml`)
+        : `${SITE.url}/sitemap.xml`,
   };
 }

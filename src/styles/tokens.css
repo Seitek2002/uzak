@@ -18,6 +18,11 @@
   --color-mark-text: oklch(50% 0.2 29); --color-field-text: oklch(42% 0.2 266);
   --font-display: var(--font-wix-display), "Wix Madefor Display", ui-sans-serif, system-ui, sans-serif; --font-body: var(--font-wix-text), "Wix Madefor Text", ui-sans-serif, system-ui, sans-serif;
   --font-outlier: var(--font-display);
+  --font-kyrgyz: var(--font-onest), "Onest", ui-sans-serif, system-ui, sans-serif;
+  --font-brand: var(--font-kyrgyz);
   --radius-card: 0; --radius-pill: 0; --rule-hair: 1px; --shadow-card: none;
   --tracking-display: -0.035em; --display-weight: 700;
 }
+/* Wix Madefor has no Kyrgyz letters, so that language takes one face that has them; the Latin brand keeps Wix. */
+:root:lang(ky) { --font-display: var(--font-kyrgyz); --font-body: var(--font-kyrgyz); }
+:root:lang(en) { --font-brand: var(--font-display); }

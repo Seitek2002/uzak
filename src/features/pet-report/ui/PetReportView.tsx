@@ -49,6 +49,12 @@ const optionLabel = (species: Species, slug: string, id: string | undefined) => 
   return (opts.find((o) => o.id === id) ?? opts.find((o) => o.id === petTypical(f, species)))?.label;
 };
 
+const goalLabel = (species: Species, slug: string, id: string) => {
+  const f = PET_FACTOR_BY_SLUG.get(slug);
+  const option = f && petOptions(f, species).find((o) => o.id === id);
+  return option?.goal ?? option?.label ?? "";
+};
+
 function Report({ attempt, history }: { attempt: PetAttempt; history: PetAttempt[] }) {
   const profile = { species: attempt.species, sex: attempt.sex, age: attempt.age };
   const result = useMemo(() => assessPet(profile, attempt.answers, attempt.date), [attempt]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -84,7 +90,7 @@ function Report({ attempt, history }: { attempt: PetAttempt; history: PetAttempt
           <div className="report-hero__row">
             <div>
               <Figure parts={deltaParts(gain)} />
-              <p>Потенциал: столько добавят изменения из списка ниже</p>
+              <p>Потенциал: столько добавят все возможные улучшения</p>
             </div>
             <div>
               <Figure parts={ageParts(human)} />
@@ -164,7 +170,7 @@ function Starts({ result, species }: { result: PetAssessment; species: Species }
                     <Link href={`/pet#${f.slug}`}>{factor.title}</Link>
                   </h3>
                   <p>
-                    Сейчас: {lower(optionLabel(species, f.slug, f.option) ?? "")}. Цель: {lower(optionLabel(species, f.slug, f.improveTo) ?? "")}.
+                    Сейчас: {lower(optionLabel(species, f.slug, f.option) ?? "")}. Цель: {lower(goalLabel(species, f.slug, f.improveTo!))}.
                   </p>
                 </li>
               );

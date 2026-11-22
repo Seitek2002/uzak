@@ -40,6 +40,7 @@ export interface CardPaint {
   markInk: string;
   display: string;
   body: string;
+  brand: string;
 }
 
 /** The tokens as the canvas needs them: resolved colours and real family names. */
@@ -53,6 +54,7 @@ export function paintFrom(element: Element): CardPaint {
     markInk: token("--color-mark-ink"),
     display: token("--font-display"),
     body: token("--font-body"),
+    brand: token("--font-brand"),
   };
 }
 
@@ -63,6 +65,8 @@ export async function loadFaces(paint: CardPaint, sample: string) {
       document.fonts.load(`700 64px ${paint.display}`, sample),
       document.fonts.load(`400 64px ${paint.display}`, sample),
       document.fonts.load(`500 40px ${paint.body}`, sample),
+      document.fonts.load(`700 46px ${paint.brand}`, sample),
+      document.fonts.load(`400 46px ${paint.brand}`, sample),
     ]);
   } catch {
     /* the fallback face still draws a readable picture */
@@ -139,8 +143,8 @@ export function drawCard(ctx: CanvasRenderingContext2D, data: CardData, paint: C
   // Brand
   ctx.fillStyle = paint.mark;
   ctx.fillRect(PAD, PAD, BRAND_SIZE, BRAND_SIZE);
-  write(data.brand[0], PAD + BRAND_SIZE + 28, PAD + 42, bold(46));
-  write(data.brand[1], PAD + BRAND_SIZE + 28, PAD + 90, light(46));
+  write(data.brand[0], PAD + BRAND_SIZE + 28, PAD + 42, `700 46px ${paint.brand}`);
+  write(data.brand[1], PAD + BRAND_SIZE + 28, PAD + 90, `400 46px ${paint.brand}`);
 
   const blocks: Block[] = [];
 

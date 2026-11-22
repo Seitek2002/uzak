@@ -3,8 +3,9 @@
  * Takes the two screens the landing shows from the product itself, so the
  * pictures never drift from what people get:
  *
- *   BASE_URL=http://localhost:3100 node scripts/landing-shots.mjs
+ *   BASE_URL=http://localhost:3200/uzak node scripts/landing-shots.mjs [ru en ky]
  *
+ * BASE_URL serves the static copy of scripts/i18n/build.mjs; build again after the shots.
  * Run it after a change to the test or to the result screen. Needs Playwright
  * and Chrome, like scripts/e2e.mjs. The person on the pictures is made up.
  */
@@ -23,9 +24,10 @@ const { chromium } = (() => {
   }
 })();
 
-const BASE = process.env.BASE_URL ?? "http://localhost:3100";
+const BASE = process.env.BASE_URL ?? "http://localhost:3200/uzak";
 const OUT = fileURLToPath(new URL("../public/landing/", import.meta.url));
-mkdirSync(OUT, { recursive: true });
+const BROWSER_LANGUAGE = { ru: "ru-RU", en: "en-US", ky: "ky-KG" };
+const languages = process.argv.length > 2 ? process.argv.slice(2) : Object.keys(BROWSER_LANGUAGE);
 
 const place = { "country-before": "GLOBAL", "country-next": "GLOBAL" };
 const person = {
@@ -38,29 +40,34 @@ const person = {
 const draft = { ...place, relationship: "married", smoking: "light", alcohol: "mid" };
 
 const browser = await chromium.launch({ channel: "chrome" });
-async function shot(name, route, state, ready) {
-  const ctx = await browser.newContext({ viewport: { width: 360, height: 720 }, deviceScaleFactor: 2 });
+async function shot(lang, name, route, state, ready) {
+  const ctx = await browser.newContext({ viewport: { width: 360, height: 720 }, deviceScaleFactor: 2, locale: BROWSER_LANGUAGE[lang] });
   await ctx.addInitScript((s) => localStorage.setItem("uzak-v1", JSON.stringify({ state: s, version: 2 })), state);
   const page = await ctx.newPage();
-  await page.goto(`${BASE}${route}`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}${lang === "ru" ? "" : `/${lang}`}${route}`, { waitUntil: "networkidle" });
   await page.waitForSelector(ready, { timeout: 15000 });
   await page.evaluate(() => document.activeElement?.blur());
   await page.waitForTimeout(400);
-  await page.screenshot({ path: path.join(OUT, `${name}.jpg`), type: "jpeg", quality: 78 });
+  await page.screenshot({ path: path.join(OUT, lang, `${name}.jpg`), type: "jpeg", quality: 78 });
   await ctx.close();
 }
 
-await shot(
-  "question",
-  "/test/?q=8",
-  { name: "", sex: "male", age: 40, answers: draft, step: 7, completed: false, editing: false, history: [] },
-  ".option .option__visual",
-);
-await shot(
-  "result",
-  "/result/",
-  { name: "", answers: {}, step: 0, completed: true, editing: false, history: [person] },
-  ".result__card[data-ready=true]",
-);
+for (const lang of languages) {
+  mkdirSync(path.join(OUT, lang), { recursive: true });
+  await shot(
+    lang,
+    "question",
+    "/test/?q=8",
+    { name: "", sex: "male", age: 40, answers: draft, step: 7, completed: false, editing: false, history: [] },
+    ".option .option__visual",
+  );
+  await shot(
+    lang,
+    "result",
+    "/result/",
+    { name: "", answers: {}, step: 0, completed: true, editing: false, history: [person] },
+    ".result__card[data-ready=true]",
+  );
+}
 await browser.close();
 console.log(`landing screens written to ${OUT}`);

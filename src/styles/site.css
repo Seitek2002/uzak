@@ -1,6 +1,6 @@
 /* Hallmark · shape: Stage, product screens, two data bands · genre: editorial · theme: Grid (deal 1/3, seed prompt-c700·627ca231·2026-11-19·r0) · job: try · draw: 8e9417
  * hero: Stage (swapped from Corridor: Grid never centres a head) · nav: banner over a retracting bar · footer: mast · imagery: the product itself (the model live on four habits in the hero, screens captured from the test and the result), no photographs · signature: four habit switches on the ultramarine field, years at poster scale
- * axes: light/grotesk-sans/cool · posture: full-palette · contrast: pass · fold: pass · fonts: Wix Madefor Display and Text stand in for Radio Canada, which has no Cyrillic · v2.0.0 */
+ * axes: light/grotesk-sans/cool · posture: full-palette · contrast: pass · fold: pass · fonts: Wix Madefor Display and Text stand in for Radio Canada, which has no Cyrillic; Onest carries Kyrgyz and the brand, whose letters Wix lacks · v2.0.0 */
 /* Hallmark · hero-review: folded into the finish review · finish-review: subagent · 7 findings · 6 resolved 1 partial (the forecast tile keeps some air above the figure) · gap: none */
 /* Hallmark · pre-emit critique: P4 H4 E4 S5 R4 V4 · weakest: P, a health test drifts into reassurance; the page argues that habits are years and sets them as numbers you can move */
 /* Hallmark · waive 23 · the ultramarine is the field token under the declared full-palette posture · the hero field carries the live habit switches and the close carries question one */
@@ -11,10 +11,12 @@
 /* Hallmark · dismissed 77 · the factor, method, privacy and disclaimer pages are reference documents with one long section, not landing pages */
 /* Hallmark · answered F6 · every figure carries the .figure class, which sets tabular-nums */
 /* Hallmark · waive 79 · the start fork is one question centred in a full-screen ultramarine field · the field is the visual, the two answers sit on its centre line */
+/* Hallmark · dismissed 58 · the rule counts the answers inside closed details and Latin words only · counted by visible words in any script the busiest screen has 55 (ru), 66 (en), 64 (ky) */
 @import url("./tokens.css");
 @import url("./base.css");
 
 .overflow-x-clip { overflow-x: clip; }
+.wordmark, .wordmark b, .wordmark span, .brand-name { font-family: var(--font-brand); }
 
 :root {
   --nav-banner: 40px;
@@ -133,6 +135,16 @@
 
 .banner { background: var(--color-ink); color: var(--color-paper); font-size: var(--text-sm); }
 .banner p { display: flex; align-items: center; min-height: var(--nav-banner); max-width: none; }
+.banner__inner { display: flex; justify-content: space-between; align-items: center; gap: var(--space-md); }
+.langs { display: flex; gap: var(--space-xs); margin: 0; padding: 0; list-style: none; }
+.langs a { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: var(--nav-banner); padding-inline: var(--space-xs); color: inherit; text-decoration: none; }
+.langs a:hover { text-decoration: underline; text-underline-offset: 0.24em; }
+.langs a:active { transform: translateY(1px); }
+.langs a:focus-visible { outline: 2px solid currentColor; outline-offset: -2px; }
+.langs a[aria-current] { text-decoration: underline 2px; text-underline-offset: 0.32em; }
+.langs--full { flex-wrap: wrap; margin-bottom: var(--space-lg); }
+.langs--full a { min-height: 44px; padding-inline: 0 var(--space-md); }
+.mast__review { margin-bottom: var(--space-md); font-size: var(--text-sm); color: var(--color-ink-2); }
 
 .bar {
   position: sticky;
@@ -402,7 +414,7 @@ a.choice-big { text-decoration: none; }
 /* ---------- Footer: a mast ---------- */
 
 .mast { padding-block: var(--section-gap-s) var(--space-xl); background: var(--color-paper-2); }
-.mast__name { font-family: var(--font-display); font-size: var(--figure-xl); line-height: 0.88; letter-spacing: -0.045em; overflow-wrap: break-word; min-width: 0; }
+.mast__name { font-family: var(--font-brand); font-size: var(--figure-xl); line-height: 0.88; letter-spacing: -0.045em; overflow-wrap: break-word; min-width: 0; }
 .mast__name b { font-weight: 700; }
 .mast__name span { font-weight: 400; }
 .mast__links { display: flex; flex-wrap: wrap; gap: var(--space-2xs) var(--space-xl); margin: var(--space-2xl) 0 var(--space-xl); padding: 0; list-style: none; }
@@ -798,7 +810,9 @@ a.choice-big { text-decoration: none; }
 }
 
 @media (max-width: 40rem) {
-  :root { --nav-banner: 48px; }
+  :root { --nav-banner: 44px; }
+  .banner p { display: none; }
+  .banner__inner { justify-content: flex-end; }
   .impact li { grid-template-columns: 32px minmax(0, 1fr) auto; padding-block: var(--space-sm); }
   .impact__track { grid-column: 2 / -1; grid-row: 2; height: 12px; }
   .impact b { grid-column: 3; grid-row: 1; }
@@ -820,7 +834,7 @@ a.choice-big { text-decoration: none; }
   .bars th { grid-column: 1 / -1; white-space: nowrap; }
   .bars__chart, .bars__years { width: auto; }
   .library__item { grid-template-columns: minmax(0, 1fr); }
-  .library__item .range-note { grid-column: 1; grid-row: auto; text-align: start; }
+  .library__item .range-note { grid-column: 1; grid-row: auto; grid-template-columns: repeat(2, minmax(0, 1fr)); text-align: start; white-space: normal; }
   .quiz__nav .btn { min-width: 0; flex: 1 0 auto; }
   .quiz { padding-top: var(--space-lg); }
   .quiz h1 { font-size: var(--text-2xl); }

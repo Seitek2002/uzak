@@ -30,15 +30,16 @@ jobs:
       - name: Check the models
         run: npm run test:model && npm run test:pet
 
+      - name: Check the translations
+        run: npm run i18n:check
+
       - name: Site address
         run: |
           echo "NEXT_PUBLIC_BASE_PATH=/${GITHUB_REPOSITORY#*/}" >> "$GITHUB_ENV"
           echo "NEXT_PUBLIC_SITE_URL=https://${GITHUB_REPOSITORY_OWNER,,}.github.io/${GITHUB_REPOSITORY#*/}" >> "$GITHUB_ENV"
 
-      - name: Build the static copy
-        run: npm run build && node scripts/flatten-segments.mjs out
-        env:
-          GITHUB_PAGES: "true"
+      - name: Build the static copy in three languages
+        run: npm run build:pages
 
       - name: Publish to gh-pages
         run: |

@@ -19,6 +19,8 @@ export interface PetOption {
   unknown?: boolean;
   /** Where a realistic improvement leads. */
   improveTo?: string;
+  /** How this option reads as a goal in the report, where the label does not fit. */
+  goal?: string;
   /** For the dog size question: the baseline group this answer selects. */
   group?: PetGroup;
 }

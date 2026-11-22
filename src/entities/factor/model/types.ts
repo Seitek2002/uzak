@@ -41,6 +41,8 @@ export interface FactorOption {
   unknown?: boolean;
   /** Where an improvement realistically leads from this option. */
   improveTo?: string;
+  /** How this option reads as a goal in the report, where the label does not fit. */
+  goal?: string;
   /** BMI band bounds, only for the BMI factor. */
   range?: [number, number];
 }

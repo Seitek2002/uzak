@@ -385,7 +385,7 @@ function validate(id: string): string {
   if (id === "bmi") {
     return s.height && s.weight && validBody(s.height, s.weight)
       ? ""
-      : "Укажите рост и вес: от 120 до 230 см и от 30 до 300 кг.";
+      : "Укажите рост от 120 до 230 см (от 3′11″ до 7′7″) и вес от 30 до 300 кг (от 66 до 661 фунта).";
   }
   if (FACTOR_BY_SLUG.get(id)?.kind === "country") return s.answers[id] ? "" : "Выберите страну из списка.";
   return s.answers[id] ? "" : "Выберите один из вариантов.";
