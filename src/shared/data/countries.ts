@@ -191,7 +191,7 @@ export const COUNTRIES: Country[] = [
   {"code":"UKR","iso2":"UA","ru":"Украина","en":"Ukraine","ky":"Украина"},
   {"code":"ARE","iso2":"AE","ru":"ОАЭ","en":"United Arab Emirates","ky":"Бириккен Араб Эмираттары"},
   {"code":"GBR","iso2":"GB","ru":"Великобритания","en":"United Kingdom","ky":"Улуу Британия"},
-  {"code":"USA","iso2":"US","ru":"Соединенные Штаты","en":"United States","ky":"Кошмо Штаттар"},
+  {"code":"USA","iso2":"US","ru":"США","en":"United States","ky":"Кошмо Штаттар"},
   {"code":"URY","iso2":"UY","ru":"Уругвай","en":"Uruguay","ky":"Уругвай"},
   {"code":"UZB","iso2":"UZ","ru":"Узбекистан","en":"Uzbekistan","ky":"Өзбекстан"},
   {"code":"VUT","iso2":"VU","ru":"Вануату","en":"Vanuatu","ky":"Вануату"},

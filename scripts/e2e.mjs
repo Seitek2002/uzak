@@ -355,6 +355,24 @@ try {
     }
   }
 
+  // 12. The landing shows the product: the live habits and both screens.
+  {
+    const { ctx, page, errors } = await freshPage(browser, { width: 1280, height: 800 });
+    await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
+    const years = () => page.locator(".lab__result .figure").innerText();
+    const one = await years();
+    await page.getByRole("button", { name: "Снизить вес" }).click();
+    const two = await years();
+    const value = (text) => Number(text.replace(",", ".").match(/[\d.]+/)[0]);
+    check("a second habit adds years on the landing", value(two) > value(one), `${one} and ${two}`);
+    await page.locator(".product__shots").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(800);
+    const loaded = await page.$$eval(".product__shots img", (all) => all.map((img) => img.complete && img.naturalWidth > 0));
+    check("both product screens load", loaded.length === 2 && loaded.every(Boolean));
+    check("no console errors on the landing", errors.length === 0, errors.join(" | "));
+    await ctx.close();
+  }
+
   // 11. The questions the customer asked for on 2026-11-22 (kanban 6910-6915).
   {
     const open = async (country, q, extra = {}) => {

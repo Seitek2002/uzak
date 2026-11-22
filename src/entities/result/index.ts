@@ -7,6 +7,7 @@ export {
   improvedAnswers,
   lifeExpectancyAt,
   optionEffect,
+  PEER_ANSWERS,
   stepsEffect,
   ATTENUATION,
   WORLD,

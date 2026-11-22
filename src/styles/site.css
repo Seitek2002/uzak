@@ -1,9 +1,9 @@
-/* Hallmark · shape: Bento Grid · genre: editorial · theme: Grid (deal 1/3, seed prompt-c700·627ca231·2026-11-19·r0) · job: try · draw: 8e9417
- * hero: Stage (swapped from Corridor: Grid never centres a head) · nav: banner over a retracting bar · footer: mast · imagery: the product built (the model live on one factor in the hero, report fragments in the bento), no photographs · signature: the steps slider on the ultramarine field, years at poster scale
+/* Hallmark · shape: Stage, product screens, two data bands · genre: editorial · theme: Grid (deal 1/3, seed prompt-c700·627ca231·2026-11-19·r0) · job: try · draw: 8e9417
+ * hero: Stage (swapped from Corridor: Grid never centres a head) · nav: banner over a retracting bar · footer: mast · imagery: the product itself (the model live on four habits in the hero, screens captured from the test and the result), no photographs · signature: four habit switches on the ultramarine field, years at poster scale
  * axes: light/grotesk-sans/cool · posture: full-palette · contrast: pass · fold: pass · fonts: Wix Madefor Display and Text stand in for Radio Canada, which has no Cyrillic · v2.0.0 */
 /* Hallmark · hero-review: folded into the finish review · finish-review: subagent · 7 findings · 6 resolved 1 partial (the forecast tile keeps some air above the figure) · gap: none */
 /* Hallmark · pre-emit critique: P4 H4 E4 S5 R4 V4 · weakest: P, a health test drifts into reassurance; the page argues that habits are years and sets them as numbers you can move */
-/* Hallmark · waive 23 · the ultramarine is the field token under the declared full-palette posture · the hero field carries the live steps question and the close carries question one */
+/* Hallmark · waive 23 · the ultramarine is the field token under the declared full-palette posture · the hero field carries the live habit switches and the close carries question one */
 /* Hallmark · waive 39b · the 96px name field and its start row on the close, type at text-3xl over a hairline · they are the first test question, answered right on the home page */
 /* Hallmark · dismissed 25 · the probe line is a one-sentence caption under the years figure, set from 28ch */
 /* Hallmark · dismissed F4 · the selected tab fill is a state of the habit switcher; .btn is the only filled button recipe */
@@ -200,14 +200,40 @@
   padding: var(--space-2xl) var(--gutter) var(--space-2xl) var(--space-2xl);
 }
 
-.probe { display: grid; gap: var(--space-lg); max-width: 30rem; }
-.probe__meta { display: flex; justify-content: space-between; gap: var(--space-md); font-size: var(--text-sm); font-weight: 500; }
-.probe__q { font-family: var(--font-display); font-weight: 700; font-size: var(--text-title); line-height: 1.15; letter-spacing: -0.02em; }
-.probe__value { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-md); }
-.probe__value output { font-size: var(--text-xl); font-weight: 500; font-variant-numeric: tabular-nums; }
-.probe__years { display: grid; gap: var(--space-xs); }
-.probe__years .figure { font-size: var(--figure-xl); }
-.probe__years p:not(.figure) { font-size: var(--text-sm); max-width: 30ch; }
+.lab { display: grid; gap: var(--space-lg); max-width: 34rem; }
+.lab__who { font-size: var(--text-sm); font-weight: 500; }
+.lab__habits { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-sm); margin: 0; padding: 0; list-style: none; }
+.lab__habits li { display: grid; }
+.lab__habit {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-sm);
+  min-height: 72px;
+  padding: var(--space-sm);
+  border: 0;
+  border-bottom: 1px solid var(--color-field-ink);
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-field-ink);
+  font: 500 var(--text-md)/1.2 var(--font-body);
+  text-align: start;
+  cursor: pointer;
+  transition: background-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out);
+}
+.lab__habit:hover { text-decoration: underline; text-underline-offset: 0.24em; }
+.lab__habit[aria-pressed="true"] { background: var(--color-field-ink); color: var(--color-field-text); }
+.lab__habit:active { transform: translateY(1px); }
+.lab__habit:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+.lab__habit:disabled { opacity: 0.55; cursor: not-allowed; }
+.lab__result { display: grid; gap: var(--space-xs); }
+.lab__result .figure { font-size: var(--figure-xl); }
+.lab__result p:not(.figure) { font-size: var(--text-sm); font-variant-numeric: tabular-nums; }
+.life { position: relative; height: 24px; overflow: hidden; }
+.life::before { content: ""; position: absolute; inset: 0; background: currentColor; opacity: 0.25; }
+.life span { position: absolute; inset: 0; transform-origin: left center; transition: transform var(--dur-short) var(--ease-out); }
+.life__gain { background: var(--color-mark); }
+.life__now { background: var(--color-field-ink); }
 
 .range {
   width: 100%;
@@ -235,35 +261,6 @@
 .range:active::-webkit-slider-thumb { transform: scale(1.1); }
 .range:disabled { opacity: 0.55; cursor: not-allowed; }
 
-/* ---------- Bento: the report, shown in parts ---------- */
-
-.bento {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  grid-auto-rows: auto;
-  gap: var(--gap-columns);
-}
-.tile { display: flex; flex-direction: column; gap: var(--space-md); padding: var(--space-xl); background: var(--color-paper-2); min-width: 0; }
-.tile h3 { font-size: var(--text-title); }
-.tile--lead { grid-column: 1 / span 7; grid-row: 1 / span 2; justify-content: space-between; }
-.tile--bio { grid-column: 8 / span 5; grid-row: 1; justify-content: space-between; }
-.tile--start { grid-column: 8 / span 5; grid-row: 2; }
-.tile--map { grid-column: 1 / span 7; grid-row: 3; }
-.tile--check { grid-column: 8 / span 5; grid-row: 3; }
-.tile--lead .figure { font-size: var(--figure-xl); }
-.tile--bio .figure { font-size: var(--figure-l); }
-.tile__pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap-columns); align-items: end; }
-.tile__pair .figure { font-size: var(--figure-m); }
-
-.gains { display: grid; gap: var(--space-sm); margin: 0; padding: 0; list-style: none; }
-.gains li { display: flex; justify-content: space-between; gap: var(--space-md); padding-top: var(--space-sm); border-top: 1px solid var(--color-rule); }
-.gains li:first-child { border-top: 0; padding-top: 0; }
-.gains b { font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--color-field-text); }
-
-.plainlist { display: grid; gap: var(--space-sm); margin: 0; padding: 0; list-style: none; }
-.plainlist li { padding-top: var(--space-sm); border-top: 1px solid var(--color-rule); }
-.plainlist li:first-child { border-top: 0; padding-top: 0; }
-
 /* Diverging bars: years a factor adds (right, ultramarine) or takes (left, red). */
 .bars { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
 .bars caption { text-align: start; }
@@ -285,66 +282,53 @@
 .track--one::before { left: 0; }
 .track--one .minus, .track--one .plus { left: 0; right: auto; }
 
-/* ---------- Index: the factors by group ---------- */
+/* ---------- The product: its own screens ---------- */
 
-.index { margin: 0; padding: 0; list-style: none; }
-.index__row { padding-block: var(--space-lg); border-top: 1px solid var(--color-rule); align-items: baseline; }
-.index__row:last-child { border-bottom: 1px solid var(--color-rule); }
-.index__row h3 { grid-column: 1 / span 3; font-size: var(--text-title); }
-.index__links { grid-column: 4 / span 7; display: flex; flex-wrap: wrap; gap: var(--space-2xs) var(--space-lg); margin: 0; padding: 0; list-style: none; }
-.index__links a { white-space: nowrap; display: inline-flex; min-height: 44px; align-items: center; font-size: var(--text-lead); color: var(--color-ink); text-decoration: underline var(--rule-hair); text-decoration-color: var(--color-rule); text-underline-offset: 0.24em; transition: color var(--dur-short) var(--ease-out); }
-.index__links a:hover { color: var(--color-mark-text); }
-.index__range { grid-column: 11 / span 2; text-align: end; font-variant-numeric: tabular-nums; }
-.index__range b { display: block; font-size: var(--text-title); font-weight: 500; }
-.index__foot { margin-top: var(--space-xl); }
+.product { align-items: center; row-gap: var(--space-2xl); }
+.product__head { grid-column: 1 / span 4; display: grid; gap: var(--space-lg); }
+.product__shots { grid-column: 6 / span 7; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap-columns); align-items: start; }
+.product__shots figure { display: grid; gap: var(--space-sm); margin: 0; min-width: 0; }
+.product__shots img { display: block; width: 100%; height: auto; background: var(--color-paper-2); }
+.product__shots figure:last-child { padding-top: var(--space-2xl); }
+.product__shots figcaption { font-size: var(--text-sm); font-weight: 500; }
 
-/* ---------- Switcher on the red field ---------- */
+/* ---------- Impact: what each group can take ---------- */
 
-.switch { align-items: start; row-gap: var(--space-2xl); }
-.switch__head { grid-column: 1 / span 5; display: grid; gap: var(--space-lg); }
-.switch__head h2 { max-width: 14ch; }
-.switch__panels { grid-column: 7 / span 6; }
-
-.seg { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin: 0; padding: 0; border: 0; }
-.seg button {
-  min-height: 44px;
-  padding: 0 var(--space-md);
-  border: 0;
-  border-radius: var(--radius-pill);
-  background: transparent;
-  color: inherit;
-  font: 500 var(--text-md)/1 var(--font-body);
-  text-decoration: underline var(--rule-hair);
-  text-underline-offset: 0.32em;
-  cursor: pointer;
-  transition: background-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out);
+.impact { margin: 0; padding: 0; list-style: none; }
+.impact li {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 18rem) minmax(0, 1fr) 8rem;
+  align-items: center;
+  gap: var(--space-sm) var(--space-lg);
+  min-height: 72px;
+  border-top: 1px solid var(--color-rule);
 }
-.seg button:hover { text-decoration-thickness: 2px; }
-.seg button[aria-selected="true"] { background: var(--color-ink); color: var(--color-paper); text-decoration: none; }
-.seg button:active { transform: translateY(1px); }
-.seg button:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
-.seg button:disabled { opacity: 0.55; cursor: not-allowed; }
+.impact li:last-child { border-bottom: 1px solid var(--color-rule); }
+.impact svg { color: var(--color-field-text); }
+.impact h3 { font-size: var(--text-title); }
+.impact__track { display: block; height: 20px; }
+.impact__track span { display: block; height: 100%; background: var(--color-mark); transform-origin: left center; }
+.impact b { text-align: end; font-weight: 500; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.impact__foot { margin-top: var(--space-xl); }
 
-.scenario { display: grid; gap: var(--space-xl); }
-.scenario__pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--gap-columns); }
-.scenario__pair div { display: grid; gap: var(--space-sm); align-content: start; }
-.scenario__pair { align-items: end; }
-.scenario__pair .figure { font-size: var(--figure-l); }
-.scenario__pair .figure--after { font-size: var(--figure-xl); }
-.scenario p { max-width: 46ch; }
-.js .switch__panels [role="tabpanel"][hidden] { display: none; }
-html:not(.js) .switch .seg { display: none; }
-html:not(.js) .switch__panels [role="tabpanel"] { display: grid !important; margin-bottom: var(--space-2xl); }
+/* ---------- The world on the red field ---------- */
 
-/* ---------- Method: one figure, three short rows ---------- */
+.world { align-items: center; row-gap: var(--space-2xl); }
+.world__head { grid-column: 1 / span 5; display: grid; gap: var(--space-lg); }
+.world__head h2 { max-width: 14ch; }
+.world__list { grid-column: 7 / span 6; display: grid; gap: var(--space-md); margin: 0; padding: 0; list-style: none; }
+.world__list li { display: grid; grid-template-columns: minmax(0, 11rem) minmax(0, 1fr) 4.5rem; align-items: center; gap: var(--space-md); font-weight: 500; }
+.world__track { display: block; height: 20px; }
+.world__track > span { display: block; height: 100%; background: currentColor; transform-origin: left center; }
+.world__list b { text-align: end; white-space: nowrap; font-variant-numeric: tabular-nums; }
 
-.method { align-items: start; row-gap: var(--space-2xl); }
-.method__lead { grid-column: 1 / span 6; display: grid; gap: var(--space-lg); }
-.method__figure { font-size: var(--figure-xl); }
-.method__rows { grid-column: 8 / span 5; display: grid; gap: var(--space-xl); padding-top: var(--space-xs); }
-.method__rows > div { display: grid; gap: var(--space-sm); }
-.method__rows h3 { font-size: var(--text-title); }
-.method__rows p { color: var(--color-ink-2); max-width: 46ch; }
+/* ---------- The pet test ---------- */
+
+.pets { align-items: center; row-gap: var(--space-xl); }
+.pets__icons { grid-column: 1 / span 4; display: flex; gap: var(--space-md); margin: 0; }
+.pets__icons span { display: grid; place-items: center; width: 96px; height: 96px; background: var(--color-field); color: var(--color-field-ink); }
+.pets__head { grid-column: 6 / span 7; display: grid; justify-items: start; gap: var(--space-lg); }
+
 .formula { font-family: var(--font-display); font-weight: 700; font-size: var(--text-xl); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 
 .well { background: var(--color-paper-2); }
@@ -775,9 +759,6 @@ a.choice-big { text-decoration: none; }
   .bar__nav ul { gap: var(--space-md); }
   .hero__field { padding-inline: var(--space-xl); }
   .report-hero__field { padding-inline: var(--space-xl); }
-  .tile--lead, .tile--map, .tile--check { grid-column: 1 / -1; grid-row: auto; }
-  .tile--bio { grid-column: 1 / span 6; grid-row: auto; }
-  .tile--start { grid-column: 7 / span 6; grid-row: auto; }
 }
 
 @media (max-width: 60rem) {
@@ -804,12 +785,9 @@ a.choice-big { text-decoration: none; }
   .hero, .report-hero { min-height: 0; }
   .head--split > h2, .head--split > .lead { grid-column: 1 / -1; }
 
-  .switch__head, .switch__panels, .close__head, .close__choice, .faq__head, .faq__list { grid-column: 1 / -1; }
+  .product__head, .product__shots, .world__head, .world__list, .pets__icons, .pets__head { grid-column: 1 / -1; }
+  .close__head, .close__choice, .faq__head, .faq__list { grid-column: 1 / -1; }
   .faq { row-gap: var(--space-xl); }
-  .index__row h3 { grid-column: 1 / -1; }
-  .index__links { grid-column: 1 / span 9; }
-  .index__range { grid-column: 10 / span 3; }
-  .method__lead, .method__rows { grid-column: 1 / -1; }
   .starts { grid-template-columns: minmax(0, 1fr); }
   .split-page__main, .split-page__aside { grid-column: 1 / -1; }
   .split-page__aside { position: static; }
@@ -821,13 +799,16 @@ a.choice-big { text-decoration: none; }
 
 @media (max-width: 40rem) {
   :root { --nav-banner: 48px; }
-  .bento { grid-auto-rows: auto; }
-  .tile--bio, .tile--start { grid-column: 1 / -1; }
-  .tile { padding: var(--space-lg); }
-  .index__links, .index__range { grid-column: 1 / -1; text-align: start; }
+  .impact li { grid-template-columns: 32px minmax(0, 1fr) auto; padding-block: var(--space-sm); }
+  .impact__track { grid-column: 2 / -1; grid-row: 2; height: 12px; }
+  .impact b { grid-column: 3; grid-row: 1; }
+  .impact h3 { font-size: var(--text-md); }
+  .world__list li { grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-2xs) var(--space-md); }
+  .world__track { grid-column: 1 / -1; grid-row: 2; height: 12px; }
+  .product__shots { gap: var(--space-sm); }
+  .lab__habit { grid-template-columns: minmax(0, 1fr); align-content: center; gap: var(--space-xs); }
   .close__options, .start-name { grid-template-columns: minmax(0, 1fr); }
   .choice-big { min-height: 72px; }
-  .scenario__pair { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-lg); }
   .checks { grid-template-columns: minmax(0, 1fr); }
   .answers dl { grid-template-columns: minmax(0, 1fr); }
   .select select { font-size: var(--text-xl); }
@@ -849,7 +830,7 @@ a.choice-big { text-decoration: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .bar, .bar.is-tucked { transform: none; transition: none; }
-  .progress span { transition: none; }
+  .progress span, .life span { transition: none; }
   .faq summary::after { transition: none; }
 }
 

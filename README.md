@@ -12,6 +12,7 @@ npm run typecheck
 npm run test:model   # защита модели от поломок (63 проверки)
 npm run model:print  # прогнозы для типовых профилей и диапазоны факторов
 npm run test:e2e     # сценарии в браузере, нужен запущенный сайт и Playwright
+node scripts/landing-shots.mjs # переснять два экрана для лендинга (нужен запущенный сайт)
 npm run life-tables  # обновить таблицы, профили стран и названия (раз в год)
 ```
 

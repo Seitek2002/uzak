@@ -216,7 +216,7 @@ ${CODES.map((code) => `  ${code}: [${INDICATORS.flatMap(([id]) => profiles.get(c
 );
 
 /** Where CLDR differs from the name the readers use. */
-const RU_NAMES = { KGZ: "Кыргызстан", KOR: "Южная Корея", PRK: "Северная Корея", COD: "ДР Конго", COG: "Республика Конго" };
+const RU_NAMES = { KGZ: "Кыргызстан", KOR: "Южная Корея", PRK: "Северная Корея", COD: "ДР Конго", COG: "Республика Конго", USA: "США", ARE: "ОАЭ" };
 const names = Object.fromEntries(["ru", "en", "ky"].map((lang) => [lang, new Intl.DisplayNames([lang], { type: "region" })]));
 const collator = new Intl.Collator("en");
 const countries = Object.entries(ISO2)

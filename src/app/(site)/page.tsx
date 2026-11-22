@@ -1,106 +1,64 @@
+import { Activity, Apple, Brain, Car, Cat, Cigarette, Dna, Dog, MapPin, Scale, Stethoscope, TestTube, type LucideIcon } from "lucide-react";
 import Link from "next/link";
-import { FACTOR_BY_SLUG, FACTORS, GROUPS, factorsInGroup } from "@/entities/factor";
-import { assess, factorRange, stepsEffect, type Answers } from "@/entities/result";
-import { FactorBars } from "@/entities/result/ui/FactorBars";
-import { checksFor } from "@/features/report/model/checks";
-import { age, ageParts, counted, delta, deltaParts, inGroups, nb } from "@/shared/lib/format";
-import { Figure } from "@/shared/ui/Figure";
-import { HeroProbe } from "@/widgets/home/HeroProbe";
-import { STEPS_MAX, STEPS_MIN, STEPS_STEP } from "@/widgets/home/steps";
-import { Scenarios, type Scenario } from "@/widgets/home/Scenarios";
-import { StartName } from "@/widgets/home/StartName";
+import { FACTORS, GROUPS, factorsInGroup, type GroupId } from "@/entities/factor";
+import { assess, factorRange, lifeExpectancyAt, PEER_ANSWERS, WORLD, type Answers } from "@/entities/result";
 import { SITE } from "@/shared/config/site";
+import { COUNTRIES } from "@/shared/data/countries";
+import { age, counted, delta, nb } from "@/shared/lib/format";
+import { HABITS } from "@/widgets/home/habits";
+import { HabitLab } from "@/widgets/home/HabitLab";
+import { StartName } from "@/widgets/home/StartName";
 
-/* A sample profile for the report preview. Every figure on it is the model's own output for these answers. */
-const SAMPLE_PROFILE = { sex: "male" as const, age: 40 };
-const SAMPLE: Answers = {
-  smoking: "light",
-  alcohol: "mid",
-  sleep: "6to7",
-  activity: "lt150",
-  strength: "none",
-  steps: "4to6",
-  "fruits-vegetables": "1to2",
-  "processed-meat": "often",
-  "sugary-drinks": "daily",
-  bmi: "27to30",
-  "blood-pressure": "unknown",
-  "heart-rate": "unknown",
-  "seat-belt": "front",
-  "phone-driving": "sometimes",
-  "close-people": "three5",
-  distress: "sometimes",
-  optimism: "mixed",
-  parents: "other",
-  "family-heart": "unknown",
-  diabetes: "unknown",
-  "heart-disease": "no",
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
+const GROUP_ICONS: Record<GroupId, LucideIcon> = {
+  place: MapPin,
+  habits: Cigarette,
+  movement: Activity,
+  food: Apple,
+  body: Scale,
+  road: Car,
+  mind: Brain,
+  family: Dna,
+  diagnoses: Stethoscope,
+  tests: TestTube,
 };
 
-function scenario(id: string, tab: string, slug: string, from: string, to: string, labels: [string, string], text: string): Scenario {
-  const who = { sex: "male" as const, age: 40 };
-  const before = assess(who, { [slug]: from }).forecast;
-  const after = assess(who, { [slug]: to }).forecast;
-  return {
-    id,
-    tab,
-    before: { value: ageParts(before), label: labels[0] },
-    after: { value: ageParts(after), label: labels[1] },
-    change: `Разница ${delta(after - before)}`,
-    text,
-  };
+/** Countries on the world band, from long lives to short ones around the world average. */
+const WORLD_SAMPLE = ["JPN", "DEU", "USA", "BRA", WORLD, "IND", "NGA"];
+
+/** The right edge of the bars of the world band, in years of age. */
+const WORLD_BAR_END = 90;
+
+/** The model's forecast for the sample person under every combination of the hero switches. */
+function habitForecasts(): number[] {
+  return Array.from({ length: 2 ** HABITS.length }, (_, mask) => {
+    const answers: Answers = { ...PEER_ANSWERS };
+    HABITS.forEach((habit, i) => {
+      answers[habit.id] = mask & (1 << i) ? habit.to : habit.from;
+    });
+    return assess({ sex: "male", age: 40 }, answers).forecast;
+  });
 }
 
 export default function HomePage() {
-  const stepsTable = Array.from({ length: (STEPS_MAX - STEPS_MIN) / STEPS_STEP + 1 }, (_, i) =>
-    stepsEffect(STEPS_MIN + i * STEPS_STEP),
-  );
-  const sample = assess(SAMPLE_PROFILE, SAMPLE);
-  const top = [...sample.factors].filter((f) => f.gain >= 0.1).sort((a, b) => b.gain - a.gain).slice(0, 3);
-  const mapRows = [...sample.factors]
-    .filter((f) => Math.abs(f.years) >= 0.05)
-    .sort((a, b) => Math.abs(b.years) - Math.abs(a.years))
-    .slice(0, 6)
-    .sort((a, b) => a.years - b.years)
-    .map((f) => ({ slug: f.slug, title: FACTOR_BY_SLUG.get(f.slug)!.title, years: f.years }));
-  const checks = checksFor(SAMPLE_PROFILE, SAMPLE).slice(0, 4);
-
-  const scenarios = [
-    scenario(
-      "smoking",
-      "Курение",
-      "smoking",
-      "heavy",
-      "quit10",
-      ["курит 10 сигарет в день и больше", "через 10 лет без сигарет"],
-      "С каждым годом без сигарет риск приближается к риску некурящего.",
-    ),
-    scenario(
-      "weight",
-      "Вес",
-      "bmi",
-      "30to35",
-      "25to27",
-      ["индекс массы тела 32", "индекс массы тела 26"],
-      "При росте 177 см это 100 и 82 кг.",
-    ),
-    scenario(
-      "steps",
-      "Шаги",
-      "steps",
-      "lt4",
-      "8to10",
-      ["3 000 шагов в день", "9 000 шагов в день"],
-      "Шесть тысяч шагов: около часа ходьбы в день.",
-    ),
-  ];
+  const impact = GROUPS.map((group) => ({
+    group,
+    worst: Math.min(...factorsInGroup(group.id).map((f) => factorRange(f).min)),
+  })).sort((a, b) => a.worst - b.worst);
+  const deepest = Math.min(...impact.map((row) => row.worst));
+  const world = WORLD_SAMPLE.map((code) => ({
+    code,
+    name: code === WORLD ? "Мир в среднем" : COUNTRIES.find((c) => c.code === code)!.ru,
+    until: (lifeExpectancyAt(code, "male") + lifeExpectancyAt(code, "female")) / 2,
+  })).sort((a, b) => b.until - a.until);
 
   return (
     <>
       <section className="sheet hero" aria-labelledby="hero-title">
         <div className="hero__text">
-          <h1 id="hero-title">{nb("Ваши привычки в годах жизни")}</h1>
-          <p className="lead">{nb(`Тест на ${SITE.questions} вопросов: прогноз, биологический возраст и что менять первым.`)}</p>
+          <h1 id="hero-title">{nb("Сколько лет вы можете добавить?")}</h1>
+          <p className="lead">{nb(`${SITE.questions} вопросов, ${SITE.minutes} минут, любая страна мира.`)}</p>
           <div className="actions">
             <Link href="/test" className="btn">
               Пройти тест
@@ -114,68 +72,41 @@ export default function HomePage() {
           className="hero__field field"
           data-slot="hero"
           data-kind="product"
-          data-alt="Модель на одном факторе: шаги в день и годы, которые они добавляют"
+          data-alt="Модель на четырёх привычках: включите изменение и увидите, сколько лет оно добавит"
         >
-          <HeroProbe years={stepsTable} total={FACTORS.length} />
+          <HabitLab forecasts={habitForecasts()} />
         </div>
       </section>
 
-      <section className="section" aria-labelledby="report-title">
-        <div className="container">
-          <div className="head head--split">
-            <h2 id="report-title">Отчёт мужчины 40&nbsp;лет, который курит</h2>
-            <p className="lead">{nb("Ещё он ходит около 5\u00a0000 шагов в день и не знает своего давления.")}</p>
+      <section className="section" aria-labelledby="product-title">
+        <div className="container cols product">
+          <div className="product__head">
+            <h2 id="product-title">От вопроса до истории в соцсетях</h2>
+            <p className="lead">{nb("В конце один экран: сколько лет можно добавить и с чего начать.")}</p>
           </div>
-          <div className="bento">
-            <div className="tile tile--lead">
-              <h3>Прогноз</h3>
-              <div>
-                <Figure parts={ageParts(sample.forecast)} />
-                <p className="muted">ожидаемый возраст, если ничего не менять</p>
-              </div>
-              <div className="tile__pair">
-                <div>
-                  <Figure parts={deltaParts(sample.potential - sample.forecast)} />
-                  <p className="muted">потенциал, если изменить привычки</p>
-                </div>
-                <div>
-                  <Figure parts={ageParts(sample.potential)} />
-                  <p className="muted">прогноз после изменений</p>
-                </div>
-              </div>
-            </div>
-            <div className="tile tile--bio">
-              <h3>Биологический возраст</h3>
-              <div>
-                <Figure parts={ageParts(sample.bioAge)} />
-                <p className="muted">паспортный возраст {age(SAMPLE_PROFILE.age)}</p>
-              </div>
-            </div>
-            <div className="tile tile--start">
-              <h3>С чего начать</h3>
-              <p className="muted">Годы, если сделать следующий шаг</p>
-              <ol className="gains">
-                {top.map((f) => (
-                  <li key={f.slug}>
-                    <span>{FACTOR_BY_SLUG.get(f.slug)!.title}</span>
-                    <b>{delta(f.gain)}</b>
-                  </li>
-                ))}
-              </ol>
-            </div>
-            <div className="tile tile--map">
-              <h3>Карта факторов</h3>
-              <p className="muted">Годы против среднего ответа</p>
-              <FactorBars caption="Факторы с самым большим влиянием в примере" rows={mapRows} />
-            </div>
-            <div className="tile tile--check">
-              <h3>Что обсудить с врачом</h3>
-              <ul className="plainlist">
-                {checks.map((c) => (
-                  <li key={c.id}>{c.title}</li>
-                ))}
-              </ul>
-            </div>
+          <div className="product__shots">
+            <figure>
+              <img
+                src={`${BASE_PATH}/landing/question.jpg`}
+                width={720}
+                height={1440}
+                loading="lazy"
+                decoding="async"
+                alt="Вопрос об алкоголе: порции показаны картинками, ответы шкалой"
+              />
+              <figcaption>Вопросы картинками</figcaption>
+            </figure>
+            <figure>
+              <img
+                src={`${BASE_PATH}/landing/result.jpg`}
+                width={720}
+                height={1440}
+                loading="lazy"
+                decoding="async"
+                alt="Экран результата: сколько лет добавят изменения привычек и три первых шага"
+              />
+              <figcaption>Пример результата для публикации</figcaption>
+            </figure>
           </div>
         </div>
       </section>
@@ -183,32 +114,25 @@ export default function HomePage() {
       <section className="section section--flush-top" aria-labelledby="factors-title">
         <div className="container">
           <div className="head head--split">
-            <h2 id="factors-title">{nb(`${counted(FACTORS.length, ["фактор", "фактора", "факторов"])} ${inGroups(GROUPS.length)}`)}</h2>
-            <p className="lead">{nb("Цифра у группы: сколько её худший ответ отнимает у среднего человека 40\u00a0лет.")}</p>
+            <h2 id="factors-title">{nb(`${counted(FACTORS.length, ["фактор", "фактора", "факторов"])}: что отнимает годы`)}</h2>
+            <p className="lead">{nb("Худший ответ в группе для среднего человека 40\u00a0лет.")}</p>
           </div>
-          <ul className="index">
-            {GROUPS.map((g) => {
-              const items = factorsInGroup(g.id);
-              const worst = Math.min(...items.map((f) => factorRange(f).min));
+          <ul className="impact">
+            {impact.map(({ group, worst }) => {
+              const Glyph = GROUP_ICONS[group.id];
               return (
-                <li key={g.id} className="index__row cols">
-                  <h3>{g.title}</h3>
-                  <ul className="index__links">
-                    {items.map((f) => (
-                      <li key={f.slug}>
-                        <Link href={`/factors/${f.slug}`}>{f.title}</Link>
-                      </li>
-                    ))}
-                  </ul>
-                  <p className="index__range">
-                    <b>{delta(worst)}</b>
-                    <span className="visually-hidden">в худшем случае</span>
-                  </p>
+                <li key={group.id}>
+                  <Glyph size={32} strokeWidth={2} aria-hidden="true" />
+                  <h3>{group.title}</h3>
+                  <span className="impact__track" aria-hidden="true">
+                    <span style={{ transform: `scaleX(${worst / deepest})` }} />
+                  </span>
+                  <b>{delta(worst)}</b>
                 </li>
               );
             })}
           </ul>
-          <p className="index__foot">
+          <p className="impact__foot">
             <Link href="/factors" className="link">
               Все факторы и исследования
             </Link>
@@ -216,47 +140,42 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="section field--mark" aria-labelledby="habit-title">
-        <div className="container">
-          <Scenarios
-            items={scenarios}
-            head={
-              <>
-                <h2 id="habit-title">Одна привычка, два прогноза</h2>
-                <p className="lead">{nb("Тот же мужчина 40\u00a0лет, остальные ответы средние.")}</p>
-              </>
-            }
-          />
+      <section className="section field--mark" aria-labelledby="world-title">
+        <div className="container cols world">
+          <div className="world__head">
+            <h2 id="world-title">{nb(`${COUNTRIES.length - 1} стран, у каждой своя кривая`)}</h2>
+            <p className="lead">{nb("До какого возраста в среднем доживают те, кому сейчас 30, по таблицам ВОЗ.")}</p>
+          </div>
+          <ul className="world__list">
+            {world.map(({ code, name, until }) => (
+              <li key={code}>
+                <span>{name}</span>
+                <span className="world__track" aria-hidden="true">
+                  <span style={{ transform: `scaleX(${until / WORLD_BAR_END})` }} />
+                </span>
+                <b>{age(until)}</b>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
-      <section className="section section--l" aria-labelledby="method-title">
-        <div className="container cols method">
-          <div className="method__lead">
-            <h2 id="method-title">Как модель считает годы</h2>
-            <p className="figure method__figure">×2</p>
-            <p className="lead">
-              {nb("Каждые 8 лет растёт годовой риск смерти взрослого. По этой кривой Гомперца модель переводит риск в годы.")}
-            </p>
-          </div>
-          <div className="method__rows">
-            <div>
-              <h3>Риск каждого ответа</h3>
-              <p>{nb("Отношение рисков из исследований: во сколько раз выше или ниже смертность.")}</p>
-            </div>
-            <div>
-              <h3>Риски перемножаются</h3>
-              <p>{nb("Похожие факторы, вроде шагов и нагрузки, учитываются не целиком.")}</p>
-            </div>
-            <div>
-              <h3>Биологический возраст</h3>
-              <p>{nb("Возраст, в котором средний человек вашего пола несёт такой же риск, как вы.")}</p>
-            </div>
-            <p>
-              <Link href="/method" className="link">
-                Вся методика и источники
-              </Link>
-            </p>
+      <section className="section well" aria-labelledby="pets-title">
+        <div className="container cols pets">
+          <p className="pets__icons" aria-hidden="true">
+            <span>
+              <Cat size={32} strokeWidth={2} />
+            </span>
+            <span>
+              <Dog size={32} strokeWidth={2} />
+            </span>
+          </p>
+          <div className="pets__head">
+            <h2 id="pets-title">Питомцу тоже можно добавить годы</h2>
+            <p className="lead">{nb("Отдельный тест для кошки или собаки, около трёх минут.")}</p>
+            <Link href="/pet/test" className="link">
+              Проверить питомца
+            </Link>
           </div>
         </div>
       </section>
