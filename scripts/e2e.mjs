@@ -68,7 +68,7 @@ async function answer(page, pick = 0) {
     const n = await labels.count();
     await labels.nth(Math.min(pick, n - 1)).click();
   }
-  await page.waitForFunction((b) => document.querySelector("#quiz-progress")?.textContent?.trim() !== b || /\/report\/?$/.test(location.pathname), before, { timeout: 4000 });
+  await page.waitForFunction((b) => document.querySelector("#quiz-progress")?.textContent?.trim() !== b || /\/(report|result)\/?$/.test(location.pathname), before, { timeout: 4000 });
 }
 
 async function freshPage(browser, viewport) {
@@ -90,7 +90,7 @@ try {
     check("test opens on question 1", (await progress(page)).startsWith("Вопрос 1 из"));
     let guard = 0;
     const bare = [];
-    while (!page.url().includes("/report") && guard < 60) {
+    while (!/\/(report|result)/.test(page.url()) && guard < 60) {
       if (!(await page.locator(".quiz__icon svg").count())) bare.push(await progress(page));
       const rows = await page.locator(".option").count();
       if (rows !== (await page.locator(".option .option__visual").count())) bare.push(await progress(page));
@@ -98,7 +98,24 @@ try {
       else await answer(page, 1);
       guard += 1;
     }
-    await page.waitForURL(/\/report\/?$/);
+    await page.waitForURL(/\/result\/?$/);
+    await page.waitForSelector(".result__card[data-ready=true]", { timeout: 15000 });
+    const fits = await page.evaluate(() => {
+      const card = document.querySelector(".result__card").getBoundingClientRect();
+      const main = document.querySelector(".btn").getBoundingClientRect();
+      return card.top >= 0 && card.bottom <= innerHeight && main.bottom <= innerHeight;
+    });
+    check("the result and its main button fit one phone screen", fits);
+    const [saved] = await Promise.all([page.waitForEvent("download"), page.getByRole("button", { name: "Скачать" }).click()]);
+    const png = await (await import("node:fs/promises")).readFile(await saved.path());
+    check("the picture is a 1080 by 1920 PNG", png.readUInt32BE(16) === 1080 && png.readUInt32BE(20) === 1920, `${png.readUInt32BE(16)}x${png.readUInt32BE(20)}`);
+    const told = await page.getAttribute(".result__card", "aria-label");
+    check("the picture says how to live longer", told.includes("С чего начать"), told);
+    await page.click(".result summary");
+    await page.getByLabel("Что менять", { exact: true }).uncheck();
+    await page.waitForSelector(".result__card[data-ready=true]", { timeout: 15000 });
+    check("habits can be taken off the picture", !(await page.getAttribute(".result__card", "aria-label")).includes("С чего начать"));
+    await page.getByRole("link", { name: "Полный отчёт" }).click();
     await page.waitForSelector("#report-title");
     check("every question and every answer has a picture", bare.length === 0, bare.join(", "));
     check("full pass ends on the report", (await page.locator("#report-title").innerText()) === "Ваш отчёт");
@@ -198,9 +215,10 @@ try {
       guard += 1;
     }
     await page.locator(".option label").nth(1).click();
-    await page.waitForURL(/\/report\/?$/);
+    await page.waitForURL(/\/result\/?$/);
     const s = await store(page);
     check("skipping the tests saves them as unknown", s.history?.[0]?.answers?.crp === "unknown");
+    await page.goto(`${BASE}/report`, { waitUntil: "networkidle" });
     await page.waitForSelector("#checks-title");
     check("the report lists the lipid test", (await page.getByText("Сдайте липидный профиль").count()) === 1);
     await ctx.close();

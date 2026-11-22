@@ -106,8 +106,10 @@ export function QuizApp() {
 
   const finish = () => {
     const state = useQuiz.getState();
-    const saved = state.editing ? state.amend() : state.complete();
-    if (saved) router.push("/report");
+    const { editing: wasEditing } = state;
+    const saved = wasEditing ? state.amend() : state.complete();
+    // A new attempt opens on the one-screen result; a correction returns to the report it came from.
+    if (saved) router.push(wasEditing ? "/report" : "/result");
   };
 
   const next = () => {

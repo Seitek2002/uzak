@@ -64,6 +64,9 @@ function Report({ attempt, history }: { attempt: Attempt; history: Attempt[] }) 
             <Link href="/test" className="btn" onClick={() => useQuiz.getState().restart()}>
               Пройти заново
             </Link>
+            <Link href="/result" className="link">
+              Картинка для соцсетей
+            </Link>
             <button type="button" className="link" onClick={() => window.print()}>
               Сохранить в PDF
             </button>

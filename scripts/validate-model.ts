@@ -17,6 +17,7 @@ import { FACTORS } from "../src/entities/factor/model/factors.ts";
 import { CONTENT } from "../src/entities/factor/model/content.ts";
 import { LIFE_TABLES } from "../src/entities/result/model/life-tables.ts";
 import { SITE } from "../src/shared/config/site.ts";
+import { actionFor } from "../src/features/share/model/actions.ts";
 import { COUNTRIES } from "../src/shared/data/countries.ts";
 import { RISK_PROFILES } from "../src/entities/result/model/risk-profiles.ts";
 import { peerShares } from "../src/entities/result/model/peers.ts";
@@ -167,6 +168,12 @@ truth("never smoking adds more in Indonesia than in Sweden", neverIn("IDN") > ne
 
 // 22. Living parents past 85 count as long-lived ones.
 truth("living parents past 85 are worth a long life", Math.abs(optionEffect("parents", "alive85") - optionEffect("parents", "long")) < 1e-9 && optionEffect("parents", "alive85") > 0.1);
+
+// 23. Whatever can end up on the picture for social networks has its short action.
+const silent = FACTORS.filter((f) => f.modifiable).flatMap((f) =>
+  f.options.filter((o) => o.improveTo && !actionFor(f.slug, o.id)).map((o) => `${f.slug}:${o.id}`),
+);
+truth("every improvement has a short action for the picture", silent.length === 0, silent.join(", "));
 
 console.log(failed ?`\n${failed} check(s) failed` : "\nall checks passed");
 process.exit(failed ? 1 : 0);
