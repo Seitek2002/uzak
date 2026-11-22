@@ -250,6 +250,65 @@ try {
     check("a dog gets 16 questions", total === 16, String(total));
     await ctx.close();
   }
+
+  // 10. Regressions found on the live site on 2026-11-22 (kanban 6918-6922).
+  {
+    const seeded = async (key, state, route) => {
+      const ctx = await browser.newContext({ viewport: { width: 375, height: 812 }, locale: "ru-RU" });
+      await ctx.addInitScript(([k, s]) => localStorage.getItem(k) ?? localStorage.setItem(k, JSON.stringify({ state: s, version: 1 })), [key, state]);
+      const page = await ctx.newPage();
+      await page.goto(`${BASE}${route}`, { waitUntil: "networkidle" });
+      await page.waitForTimeout(500);
+      const read = () => page.evaluate((k) => JSON.parse(localStorage.getItem(k)).state, key);
+      return { ctx, page, read };
+    };
+    const date = "2026-11-19T10:00:00.000Z";
+    const answers = { smoking: "light", ldl: "unknown", hba1c: "unknown", crp: "unknown", omega3: "unknown" };
+    const last = { date, profile: { sex: "male", age: 40 }, answers, body: { height: 178, weight: 82 } };
+    const draft = { sex: "male", age: 40, answers, labs: "skip", step: 0, history: [last] };
+    {
+      const { ctx, page } = await seeded("uzak-v1", { ...draft, completed: true, editing: false }, "/test?q=34&edit=1");
+      const [, n, of] = (await progress(page)).match(/(\d+) из (\d+)/);
+      check("editing a skipped blood test stays inside the test", Number(n) <= Number(of), `${n} of ${of}`);
+      await page.reload({ waitUntil: "networkidle" });
+      await page.waitForTimeout(300);
+      check("a reload continues the edit", (await page.getByRole("button", { name: "Пересчитать отчёт" }).count()) === 1);
+      await ctx.close();
+    }
+    {
+      const abandoned = { ...draft, answers: { ...answers, smoking: "never" }, step: 4, completed: false, editing: true };
+      const { ctx, page, read } = await seeded("uzak-v1", abandoned, "/test");
+      check("a plain visit leaves an abandoned edit", (await page.getByRole("button", { name: "Пересчитать отчёт" }).count()) === 0);
+      const s = await read();
+      check("an abandoned edit keeps the saved attempt", s.editing === false && s.history[0].answers.smoking === "light" && s.answers.smoking === "light");
+      await ctx.close();
+    }
+    const cat = { date, species: "cat", sex: "female", age: 3, answers: { breed: "mixed", neutered: "yes", body: "ideal", activity: "high", outdoors: "safe", vaccines: "regular", parasites: "regular", vet: "yearly", teeth: "no", diet: "complete", chronic: "no" } };
+    const petDraft = { name: "", answers: {}, step: 0, completed: true, editing: false };
+    {
+      const { ctx, page } = await seeded("uzak-pet-v1", { ...petDraft, history: [cat, { ...cat, date: "2026-11-20T10:00:00.000Z" }] }, "/pet/report");
+      check("zero pet potential reads 0", (await page.locator(".history tbody tr").first().locator("td").last().innerText()).trim() === "0");
+      await ctx.close();
+    }
+    {
+      const { ctx, page, read } = await seeded("uzak-pet-v1", { ...petDraft, history: [cat] }, "/pet/test?q=1&edit=1");
+      await page.locator(".option label", { hasText: "Собака" }).click();
+      for (let i = 0; i < 6 && !page.url().includes("/pet/report"); i += 1) {
+        await page.getByRole("button", { name: "Пересчитать отчёт" }).click();
+        await page.waitForTimeout(700);
+        if (page.url().includes("/pet/report")) break;
+        await page.locator(".option label").first().click();
+      }
+      const a = (await read()).history[0].answers;
+      check("a species change asks the missing questions", page.url().includes("/pet/report") && Boolean(a.size && a.breed && a.outdoors), JSON.stringify(a));
+      await ctx.close();
+    }
+    {
+      const { ctx, page } = await seeded("uzak-v1", { answers: {}, step: 0, history: [] }, "/");
+      check("the FAQ knows about the blood tests", (await page.getByText("Почему нет анализов крови?").count()) === 0);
+      await ctx.close();
+    }
+  }
 } finally {
   await browser.close();
 }

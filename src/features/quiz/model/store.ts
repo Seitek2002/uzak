@@ -4,7 +4,7 @@ import { useEffect, useSyncExternalStore } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist, type StateStorage } from "zustand/middleware";
 import type { Answers, Profile, Sex } from "@/entities/result";
-import { TEST_SLUGS, TOTAL } from "./steps";
+import { LABS_STEP, TEST_SLUGS, TOTAL } from "./steps";
 
 export interface Attempt {
   date: string;
@@ -38,6 +38,8 @@ interface QuizState {
   complete: () => Attempt | null;
   /** Loads the last attempt back into the test to change some answers. */
   startEdit: (step: number) => void;
+  /** Drops an abandoned edit: the saved attempt stays as it was and the test starts over. */
+  cancelEdit: () => void;
   /** Saves the changed answers over the last attempt. */
   amend: () => Attempt | null;
   restart: () => void;
@@ -125,11 +127,16 @@ export const useQuiz = create<QuizState>()(
           height: last.body?.height,
           weight: last.body?.weight,
           answers: { ...last.answers },
-          labs: TEST_SLUGS.every((slug) => last.answers[slug] === "unknown") ? "skip" : "yes",
+          // Opening a blood test for editing means the person has the number now.
+          labs: step <= LABS_STEP && TEST_SLUGS.every((slug) => last.answers[slug] === "unknown") ? "skip" : "yes",
           step: Math.min(Math.max(step, 0), TOTAL - 1),
           completed: false,
           editing: true,
         });
+      },
+      cancelEdit: () => {
+        get().startEdit(0);
+        get().restart();
       },
       amend: () => {
         const state = get();

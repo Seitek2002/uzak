@@ -7,21 +7,25 @@ import { PET_FACTOR_BY_SLUG, petHelp, petOptions, petQuestion, type PetFactor, t
 import { nb } from "@/shared/lib/format";
 import { isEditLink, readStepFromUrl, writeStepToUrl } from "@/shared/lib/step-url";
 import { Options, Question, QuizTop, type HeadingRef } from "@/shared/ui/Quiz";
-import { stepsFor } from "../model/steps";
+import { PET_QUESTIONS, stepsFor } from "../model/steps";
 import { ageOf, usePetHydrated, usePetQuiz } from "../model/store";
 
-/** First question without an answer: the furthest a link or the forward button may lead. */
-function firstOpenStep(): number {
+/** First question without an answer, or -1 when the sheet is complete. */
+function missingStep(): number {
   const s = usePetQuiz.getState();
-  const steps = stepsFor(s.species);
-  const open = steps.findIndex((id) => {
+  return stepsFor(s.species).findIndex((id) => {
     if (id === "species") return !s.species;
     if (id === "name") return false;
     if (id === "sex") return !s.sex;
     if (id === "age") return !(ageOf(s.years, s.months) > 0);
     return !s.answers[id];
   });
-  return open === -1 ? steps.length - 1 : open;
+}
+
+/** The furthest a link or the forward button may lead. */
+function firstOpenStep(): number {
+  const open = missingStep();
+  return open === -1 ? stepsFor(usePetQuiz.getState().species).length - 1 : open;
 }
 
 export function PetQuizApp() {
@@ -45,11 +49,15 @@ export function PetQuizApp() {
   useEffect(() => {
     if (!hydrated) return;
     const state = usePetQuiz.getState();
-    const fromUrl = readStepFromUrl(stepsFor(state.species).length);
-    if (fromUrl !== null && state.history.length > 0 && (isEditLink() || state.completed)) state.startEdit(fromUrl);
-    else if (state.completed) state.restart();
+    // The link may point at the longer list of the last pet, not at the list of the draft.
+    const fromUrl = readStepFromUrl(PET_QUESTIONS);
+    if (fromUrl !== null && state.history.length > 0 && (isEditLink() || state.completed)) {
+      if (state.editing) state.goTo(fromUrl);
+      else state.startEdit(fromUrl);
+    } else if (state.completed || state.editing) state.restart();
     else if (fromUrl !== null) state.goTo(Math.min(fromUrl, firstOpenStep()));
-    writeStepToUrl(usePetQuiz.getState().step, "replace");
+    const arrived = usePetQuiz.getState();
+    writeStepToUrl(arrived.step, "replace", arrived.editing);
   }, [hydrated]);
 
   useEffect(() => {
@@ -60,6 +68,8 @@ export function PetQuizApp() {
       depth.current = Math.max(depth.current + (fromUrl < current ? -1 : 1), 0);
       setError("");
       usePetQuiz.getState().goTo(Math.min(fromUrl, firstOpenStep()));
+      const now = usePetQuiz.getState();
+      writeStepToUrl(now.step, "replace", now.editing);
     };
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
@@ -85,6 +95,14 @@ export function PetQuizApp() {
 
   const finish = () => {
     const state = usePetQuiz.getState();
+    const missing = missingStep();
+    if (missing !== -1) {
+      goTo(missing);
+      writeStepToUrl(missing, "push", state.editing);
+      depth.current += 1;
+      showProblem("Для отчёта не хватает ответа на этот вопрос.");
+      return;
+    }
     const saved = state.editing ? state.amend() : state.complete();
     if (saved) router.push("/pet/report");
   };
@@ -100,7 +118,7 @@ export function PetQuizApp() {
     const target = state.step + 1;
     goTo(target);
     depth.current += 1;
-    writeStepToUrl(target, "push");
+    writeStepToUrl(target, "push", state.editing);
   };
 
   const onSubmit = (e: FormEvent) => {
@@ -115,7 +133,7 @@ export function PetQuizApp() {
       return;
     }
     goTo(step - 1);
-    writeStepToUrl(step - 1, "replace");
+    writeStepToUrl(step - 1, "replace", editing);
   };
 
   const saveNow = () => {

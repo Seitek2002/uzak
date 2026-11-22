@@ -9,9 +9,12 @@ export function readStepFromUrl(total: number): number | null {
   return Number.isInteger(q) && q >= 1 && q <= total ? q - 1 : null;
 }
 
-export function writeStepToUrl(step: number, mode: "push" | "replace") {
+/** `editing` keeps edit=1 in the address, so a reload continues the edit and a plain visit does not. */
+export function writeStepToUrl(step: number, mode: "push" | "replace", editing: boolean) {
   const params = new URLSearchParams(window.location.search);
   params.set("q", String(step + 1));
+  if (editing) params.set("edit", "1");
+  else params.delete("edit");
   const url = `${window.location.pathname}?${params.toString()}`;
   if (mode === "push") window.history.pushState(null, "", url);
   else window.history.replaceState(null, "", url);

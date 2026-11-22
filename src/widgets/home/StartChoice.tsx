@@ -10,6 +10,7 @@ export function StartChoice() {
   useHydrated();
   const pick = (sex: Sex) => {
     const s = useQuiz.getState();
+    if (s.editing) s.cancelEdit();
     s.setSex(sex);
     s.goTo(1);
     router.push("/test");

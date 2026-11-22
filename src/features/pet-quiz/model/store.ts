@@ -91,7 +91,7 @@ export const usePetQuiz = create<PetQuizState>()(
       ...blank,
       history: [],
       setSpecies: (species) =>
-        set((s) => (s.species === species ? {} : { species, answers: species === "cat" ? omit(s.answers, "size") : s.answers })),
+        set((s) => (s.species === species ? {} : { species, answers: withoutSpeciesAnswers(s.answers) })),
       setName: (name) => set({ name: name.slice(0, 40) }),
       setSex: (sex) => set({ sex }),
       setAge: (years, months) => set({ years, months }),
@@ -153,10 +153,11 @@ export const usePetQuiz = create<PetQuizState>()(
   ),
 );
 
-function omit(answers: Record<string, string>, key: string) {
-  const next = { ...answers };
-  delete next[key];
-  return next;
+/** Questions that mean something else for the other species are asked again. */
+const SPECIES_QUESTIONS = ["size", "breed", "activity", "outdoors"];
+
+function withoutSpeciesAnswers(answers: Record<string, string>) {
+  return Object.fromEntries(Object.entries(answers).filter(([slug]) => !SPECIES_QUESTIONS.includes(slug)));
 }
 
 const subscribeHydration = (cb: () => void) => usePetQuiz.persist.onFinishHydration(cb);

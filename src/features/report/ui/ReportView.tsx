@@ -210,7 +210,7 @@ function AnswerList({ attempt }: { attempt: Attempt }) {
       const id2 = attempt.answers[id] ?? (factor.kind === "country" ? "KGZ" : undefined);
       value = factor.options.find((o) => o.id === id2)?.label ?? value;
     }
-    return [{ id, title, value, href: `/test?q=${i + 1}&edit=1` }];
+    return [{ id, step: i, title, value, href: `/test?q=${i + 1}&edit=1` }];
   });
   return (
     <section className="section no-print" aria-labelledby="answers-title">
@@ -226,7 +226,7 @@ function AnswerList({ attempt }: { attempt: Attempt }) {
                 <dt>{r.title}</dt>
                 <dd>
                   <span>{r.value}</span>
-                  <Link href={r.href} className="link">
+                  <Link href={r.href} className="link" onClick={() => useQuiz.getState().startEdit(r.step)}>
                     Изменить<span className="visually-hidden">: {r.title}</span>
                   </Link>
                 </dd>

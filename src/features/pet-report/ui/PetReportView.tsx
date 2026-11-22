@@ -7,7 +7,7 @@ import { assessPet, humanYears, type PetAssessment } from "@/entities/pet/engine
 import { FactorBars } from "@/entities/result/ui/FactorBars";
 import { stepsFor } from "@/features/pet-quiz/model/steps";
 import { usePetHydrated, usePetQuiz, type PetAttempt } from "@/features/pet-quiz/model/store";
-import { ageParts, deltaParts, nb, petAge, petAgeParts, shortDate } from "@/shared/lib/format";
+import { ageParts, delta, deltaParts, nb, petAge, petAgeParts, shortDate } from "@/shared/lib/format";
 import { Figure } from "@/shared/ui/Figure";
 import { petChecksFor } from "../model/checks";
 
@@ -207,7 +207,7 @@ function AnswerList({ attempt }: { attempt: PetAttempt }) {
     if (id === "name") [title, value] = ["Кличка", attempt.name ?? "Не указана"];
     if (id === "sex") [title, value] = ["Пол", attempt.sex === "female" ? "Девочка" : "Мальчик"];
     if (id === "age") [title, value] = ["Возраст", petAge(attempt.age)];
-    return { id, title, value, href: `/pet/test?q=${i + 1}&edit=1` };
+    return { id, step: i, title, value, href: `/pet/test?q=${i + 1}&edit=1` };
   });
   return (
     <section className="section no-print" aria-labelledby="pet-answers-title">
@@ -223,7 +223,7 @@ function AnswerList({ attempt }: { attempt: PetAttempt }) {
                 <dt>{r.title}</dt>
                 <dd>
                   <span>{r.value}</span>
-                  <Link href={r.href} className="link">
+                  <Link href={r.href} className="link" onClick={() => usePetQuiz.getState().startEdit(r.step)}>
                     Изменить<span className="visually-hidden">: {r.title}</span>
                   </Link>
                 </dd>
@@ -262,7 +262,7 @@ function History({ history }: { history: PetAttempt[] }) {
                 <th scope="row">{shortDate(h.date)}</th>
                 <td>{h.name ?? SPECIES[h.species]}</td>
                 <td>{petAge(r.forecast)}</td>
-                <td>{petAge(Math.max(r.potential - r.forecast, 0))}</td>
+                <td>{delta(Math.max(r.potential - r.forecast, 0))}</td>
               </tr>
             ))}
           </tbody>

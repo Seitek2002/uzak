@@ -52,11 +52,16 @@ export function QuizApp() {
     const state = useQuiz.getState();
     const fromUrl = readStepFromUrl();
     const editLink = isEditLink();
-    if (editLink && state.history.length > 0 && fromUrl !== null) state.startEdit(fromUrl);
-    else if (state.completed && fromUrl !== null && state.history.length > 0) state.startEdit(fromUrl);
+    if (editLink && state.history.length > 0 && fromUrl !== null) {
+      // Already editing means a reload or a click in the report: the draft stays.
+      if (state.editing) state.goTo(fromUrl);
+      else state.startEdit(fromUrl);
+    } else if (state.completed && fromUrl !== null && state.history.length > 0) state.startEdit(fromUrl);
+    else if (state.editing) state.cancelEdit();
     else if (state.completed) state.restart();
     else if (fromUrl !== null) state.goTo(Math.min(fromUrl, firstOpenStep()));
-    writeStepToUrl(useQuiz.getState().step, "replace");
+    const arrived = useQuiz.getState();
+    writeStepToUrl(arrived.step, "replace", arrived.editing);
   }, [hydrated]);
 
   useEffect(() => {
@@ -67,6 +72,8 @@ export function QuizApp() {
       depth.current = Math.max(depth.current + (fromUrl < current ? -1 : 1), 0);
       setError("");
       useQuiz.getState().goTo(Math.min(fromUrl, firstOpenStep()));
+      const now = useQuiz.getState();
+      writeStepToUrl(now.step, "replace", now.editing);
     };
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
@@ -112,7 +119,7 @@ export function QuizApp() {
     const target = state.step + 1;
     goTo(target);
     depth.current += 1;
-    writeStepToUrl(target, "push");
+    writeStepToUrl(target, "push", state.editing);
   };
 
   const onSubmit = (e: FormEvent) => {
@@ -127,7 +134,7 @@ export function QuizApp() {
       return;
     }
     goTo(step - 1);
-    writeStepToUrl(step - 1, "replace");
+    writeStepToUrl(step - 1, "replace", editing);
   };
 
   const saveNow = () => {
