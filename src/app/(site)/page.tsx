@@ -8,7 +8,7 @@ import { Figure } from "@/shared/ui/Figure";
 import { HeroProbe } from "@/widgets/home/HeroProbe";
 import { STEPS_MAX, STEPS_MIN, STEPS_STEP } from "@/widgets/home/steps";
 import { Scenarios, type Scenario } from "@/widgets/home/Scenarios";
-import { StartChoice } from "@/widgets/home/StartChoice";
+import { StartName } from "@/widgets/home/StartName";
 import { SITE } from "@/shared/config/site";
 
 /* A sample profile for the report preview. Every figure on it is the model's own output for these answers. */
@@ -280,7 +280,7 @@ export default function HomePage() {
             </details>
             <details>
               <summary>Куда уходят мои ответы?</summary>
-              <p>Никуда. Они хранятся в браузере на этом устройстве, удалить их можно одной кнопкой в отчёте.</p>
+              <p>Никуда. Они хранятся в браузере на этом устройстве, удалить их можно одной кнопкой в отчёте. Наружу уходит только запрос страны по IP-адресу, без ответов.</p>
             </details>
             <details>
               <summary>А если у меня нет анализов крови?</summary>
@@ -301,8 +301,7 @@ export default function HomePage() {
             <p className="lead">{nb(`Ещё ${SITE.questions - 1} вопросов, около ${SITE.minutes} минут. Ответы сохраняются по ходу теста.`)}</p>
           </div>
           <div className="close__choice">
-            <p id="first-question">Ваш пол</p>
-            <StartChoice />
+            <StartName />
           </div>
         </div>
       </section>

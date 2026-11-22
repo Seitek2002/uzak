@@ -33,10 +33,27 @@ const heading = async (page) => (await page.locator(".quiz h1").innerText()).rep
 const progress = async (page) => (await page.locator("#quiz-progress").innerText()).trim();
 const store = (page) => page.evaluate(() => JSON.parse(localStorage.getItem("uzak-v1") ?? "{}").state ?? {});
 
+/*
+ * The country lookup never leaves the machine: every context answers it here.
+ * `country` null means both services fail.
+ */
+async function stubCountry(ctx, country = "KG") {
+  const asked = [];
+  await ctx.route(/api\.country\.is|get\.geojs\.io/, (route) => {
+    asked.push(route.request().url());
+    return country
+      ? route.fulfill({ json: { country }, headers: { "access-control-allow-origin": "*" } })
+      : route.fulfill({ status: 503, body: "", headers: { "access-control-allow-origin": "*" } });
+  });
+  return asked;
+}
+
 /** Answers the visible question: numbers get typed, lists keep their default, choices take option `pick`. */
 async function answer(page, pick = 0) {
   const before = await progress(page);
-  if (await page.locator("#age").count()) {
+  if (await page.locator("#name").count()) {
+    await page.click("button[type=submit]");
+  } else if (await page.locator("#age").count()) {
     await page.fill("#age", "40");
     await page.click("button[type=submit]");
   } else if (await page.locator("#height").count()) {
@@ -44,6 +61,7 @@ async function answer(page, pick = 0) {
     await page.locator("#weight").pressSequentially("82,5");
     await page.click("button[type=submit]");
   } else if (await page.locator(".quiz select").count()) {
+    await page.waitForFunction(() => document.querySelector(".quiz select")?.value !== "", null, { timeout: 8000 });
     await page.click("button[type=submit]");
   } else {
     const labels = page.locator(".option label");
@@ -55,6 +73,7 @@ async function answer(page, pick = 0) {
 
 async function freshPage(browser, viewport) {
   const ctx = await browser.newContext({ viewport, locale: "ru-RU" });
+  await stubCountry(ctx);
   const page = await ctx.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
@@ -130,8 +149,8 @@ try {
     check("on-page back goes to question 3", true);
     await page.goto(`${BASE}/test?q=20`, { waitUntil: "networkidle" });
     await page.waitForTimeout(300);
-    // Question 4 is the second country, answered by its preset value; question 5 is the first one without an answer.
-    check("a link cannot skip unanswered questions", (await progress(page)).startsWith("Вопрос 5 из"), await progress(page));
+    // Question 4 is filled from the IP address and 5 repeats it; question 6 is the first one without an answer.
+    check("a link cannot skip unanswered questions", (await progress(page)).startsWith("Вопрос 6 из"), await progress(page));
     await ctx.close();
   }
 
@@ -139,25 +158,27 @@ try {
   {
     const { ctx, page } = await freshPage(browser, { width: 1280, height: 800 });
     await page.goto(`${BASE}/test`, { waitUntil: "networkidle" });
+    await answer(page);
     await page.focus("#sex-female");
     await page.keyboard.press("Space");
     await page.keyboard.press("Enter");
-    await page.waitForFunction(() => document.querySelector("#quiz-progress")?.textContent?.includes("Вопрос 2 из"));
+    await page.waitForFunction(() => document.querySelector("#quiz-progress")?.textContent?.includes("Вопрос 3 из"));
     check("Space picks and Enter confirms a choice", true);
     await page.click("button[type=submit]");
     check("empty age shows an error", (await page.locator("#age-error").innerText()).includes("от 18 до 99"));
     check("empty age marks the field", (await page.getAttribute("#age", "aria-invalid")) === "true");
     await page.fill("#age", "17");
     await page.click("button[type=submit]");
-    check("age 17 is refused", (await progress(page)).startsWith("Вопрос 2 из"));
+    check("age 17 is refused", (await progress(page)).startsWith("Вопрос 3 из"));
     await page.fill("#age", "45");
     await page.keyboard.press("Enter");
-    await page.waitForFunction(() => document.querySelector("#quiz-progress")?.textContent?.includes("Вопрос 3 из"));
+    await page.waitForFunction(() => document.querySelector("#quiz-progress")?.textContent?.includes("Вопрос 4 из"));
     check("valid age moves on with Enter", true);
-    check("country list starts at Kyrgyzstan", (await page.locator(".quiz select").inputValue()) === "KGZ");
+    await page.waitForFunction(() => document.querySelector(".quiz select")?.value === "KGZ");
+    check("the country comes from the IP address", true);
     await page.selectOption(".quiz select", "KAZ");
     await page.click("button[type=submit]");
-    await page.waitForFunction(() => document.querySelector("#quiz-progress")?.textContent?.includes("Вопрос 4 из"));
+    await page.waitForFunction(() => document.querySelector("#quiz-progress")?.textContent?.includes("Вопрос 5 из"));
     check("next country defaults to the previous one", (await page.locator(".quiz select").inputValue()) === "KAZ");
     await ctx.close();
   }
@@ -255,6 +276,7 @@ try {
   {
     const seeded = async (key, state, route) => {
       const ctx = await browser.newContext({ viewport: { width: 375, height: 812 }, locale: "ru-RU" });
+      await stubCountry(ctx);
       await ctx.addInitScript(([k, s]) => localStorage.getItem(k) ?? localStorage.setItem(k, JSON.stringify({ state: s, version: 1 })), [key, state]);
       const page = await ctx.newPage();
       await page.goto(`${BASE}${route}`, { waitUntil: "networkidle" });
@@ -267,7 +289,7 @@ try {
     const last = { date, profile: { sex: "male", age: 40 }, answers, body: { height: 178, weight: 82 } };
     const draft = { sex: "male", age: 40, answers, labs: "skip", step: 0, history: [last] };
     {
-      const { ctx, page } = await seeded("uzak-v1", { ...draft, completed: true, editing: false }, "/test?q=34&edit=1");
+      const { ctx, page } = await seeded("uzak-v1", { ...draft, completed: true, editing: false }, "/test?q=35&edit=1");
       const [, n, of] = (await progress(page)).match(/(\d+) из (\d+)/);
       check("editing a skipped blood test stays inside the test", Number(n) <= Number(of), `${n} of ${of}`);
       await page.reload({ waitUntil: "networkidle" });
@@ -306,6 +328,79 @@ try {
     {
       const { ctx, page } = await seeded("uzak-v1", { answers: {}, step: 0, history: [] }, "/");
       check("the FAQ knows about the blood tests", (await page.getByText("Почему нет анализов крови?").count()) === 0);
+      await ctx.close();
+    }
+  }
+
+  // 11. The questions the customer asked for on 2026-11-22 (kanban 6910-6915).
+  {
+    const open = async (country, q, extra = {}) => {
+      const ctx = await browser.newContext({ viewport: { width: 375, height: 812 }, locale: "ru-RU" });
+      const asked = await stubCountry(ctx, country);
+      const state = { name: "", sex: "male", age: 40, answers: {}, step: q - 1, completed: false, editing: false, history: [], ...extra };
+      await ctx.addInitScript((s) => localStorage.getItem("uzak-v1") ?? localStorage.setItem("uzak-v1", JSON.stringify({ state: s, version: 2 })), state);
+      const page = await ctx.newPage();
+      await page.goto(`${BASE}/test?q=${q}`, { waitUntil: "networkidle" });
+      await page.waitForTimeout(400);
+      return { ctx, page, asked };
+    };
+    {
+      const { ctx, page, asked } = await open("DE", 4);
+      check("a visitor from Germany gets Germany", (await page.locator(".quiz select").inputValue()) === "DEU");
+      check("one lookup when the first service answers", asked.length === 1, asked.join(" "));
+      await ctx.close();
+    }
+    {
+      const { ctx, page, asked } = await open(null, 4);
+      check("both services are tried when the first fails", asked.length === 2, asked.join(" "));
+      await page.click("button[type=submit]");
+      check("an unknown country must be picked", (await page.locator(".quiz [role=alert]").innerText()).includes("Выберите страну"));
+      check("the country list covers the world", (await page.locator(".quiz select option").count()) === 187);
+      await ctx.close();
+    }
+    {
+      const { ctx, page, asked } = await open("DE", 1);
+      check("no lookup before the country question", asked.length === 0, asked.join(" "));
+      check("the test opens with the name", (await heading(page)).startsWith("Как вас зовут"));
+      await page.fill("#name", "Айгуль");
+      await page.keyboard.press("Enter");
+      await page.waitForFunction(() => document.querySelector("#quiz-progress")?.textContent?.includes("Вопрос 2 из"));
+      check("the name is kept", (await store(page)).name === "Айгуль");
+      await ctx.close();
+    }
+    {
+      const history = [{ date: "2026-11-22T10:00:00.000Z", name: "Айгуль", profile: { sex: "female", age: 34 }, answers: { "country-before": "DEU", "country-next": "DEU", parents: "alive85" } }];
+      const { ctx, page } = await open("DE", 1, { history });
+      await page.goto(`${BASE}/report`, { waitUntil: "networkidle" });
+      await page.waitForSelector("#report-title");
+      check("the report greets by name", (await page.locator("#report-title").innerText()).includes("Айгуль"));
+      await page.click(".answers summary");
+      check("living parents past 85 show in the answers", (await page.locator(".answers").innerText()).includes("ему уже 85 или больше"));
+      await ctx.close();
+    }
+    {
+      // The body question, found by its control rather than by a number.
+      const answers = { "country-before": "DEU", "country-next": "DEU" };
+      for (const slug of ["relationship", "smoking", "alcohol", "sleep", "activity", "strength", "muscle", "steps", "fruits-vegetables", "processed-meat", "sugary-drinks"]) answers[slug] = "x";
+      const { ctx, page } = await open("DE", 17, { answers });
+      check("height and weight have sliders", (await page.locator("#height-range").count()) === 1 && (await page.locator("#weight-range").count()) === 1);
+      check("an untouched slider is no answer", (await store(page)).height === undefined);
+      await page.focus("#height-range");
+      await page.keyboard.press("ArrowRight");
+      await page.focus("#weight-range");
+      await page.keyboard.press("ArrowRight");
+      const s = await store(page);
+      check("sliders answer from the keyboard", s.height === 171 && s.weight === 70.5, `${s.height} ${s.weight}`);
+      await page.getByRole("button", { name: "Указать в футах и фунтах" }).click();
+      check("feet and pounds show the same body", (await page.locator(".slider__output").innerText()) === "5′7″" && (await page.locator("#weight").inputValue()) === "155");
+      await ctx.close();
+    }
+    {
+      const history = [{ date: "2026-11-22T10:00:00.000Z", profile: { sex: "male", age: 40 }, answers: { "country-before": "DEU", "country-next": "DEU" }, body: { height: 178, weight: 82.5 } }];
+      const { ctx, page } = await open("DE", 1, { history });
+      await page.goto(`${BASE}/test?q=17&edit=1`, { waitUntil: "networkidle" });
+      await page.waitForTimeout(400);
+      check("a direct edit link shows the saved body", (await page.locator("#height").inputValue()) === "178" && (await page.locator("#weight").inputValue()) === "82.5");
       await ctx.close();
     }
   }

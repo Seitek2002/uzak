@@ -17,9 +17,9 @@
  *    diagnoses are added on top.
  * 4. Peers. The life table already contains smokers, people with high
  *    pressure and everyone else. So the person's ratio is divided by the
- *    average ratio of people of the same sex and age in Kyrgyzstan, built
- *    from survey prevalence (population.ts). An average answer sheet lands
- *    on the life table, not above or below it.
+ *    average ratio of people of the same sex and age in each of the two
+ *    countries, built from WHO prevalence (peers.ts). An average answer sheet
+ *    lands near the life table with the progress of step 2.
  * 5. Age. Relative risks shrink in old age: smoking and weight carry about
  *    half their log ratio at 80 compared with 50 (Jha 2013, GBMC 2016). The
  *    log ratio keeps full strength to 55 and loses ATTENUATION by 80.
@@ -29,7 +29,8 @@
 import { FACTORS } from "../../factor/model/factors.ts";
 import type { Factor, FactorOption } from "../../factor/model/types.ts";
 import { AGE_GROUPS, LIFE_TABLES, type LifeTable } from "./life-tables.ts";
-import { BAND_CENTRES, sharesFor, type Band } from "./population.ts";
+import { peerShares, roadScale } from "./peers.ts";
+import { BAND_CENTRES, type Band } from "./population.ts";
 
 export type Sex = "male" | "female";
 export type Answers = Record<string, string>;
@@ -39,7 +40,8 @@ export interface Profile {
   age: number;
 }
 
-export const HOME_COUNTRY = "KGZ";
+/** Stands in until the person names a country: the world average. */
+export const WORLD = "GLOBAL";
 /** Yearly fall of future death rates. */
 export const IMPROVEMENT = 0.01;
 /** Share of the past country in today's risk, fading with PAST_FADE years. */
@@ -75,7 +77,7 @@ const CLUSTERS: Record<string, { id: string; fixed?: boolean }> = {
 };
 const MAX_AGE = 120;
 const STEP = 0.25;
-const PEER_SAMPLES = 4000;
+const PEER_SAMPLES = 2000;
 
 const optionOf = (f: Factor, id: string | undefined): FactorOption =>
   f.options.find((o) => o.id === id) ?? f.options.find((o) => o.id === f.typical)!;
@@ -99,18 +101,18 @@ function bandsAt(age: number): { a: Band; b: Band; t: number } {
 }
 
 /** Average ratio and road risk of one factor among peers of this sex and age. */
-function peerMean(f: Factor, sex: Sex, age: number) {
+function peerMean(f: Factor, sex: Sex, age: number, country: string) {
   const { a, b, t } = bandsAt(age);
-  const x = peerMeanOfBand(f, sex, a);
-  const y = peerMeanOfBand(f, sex, b);
+  const x = peerMeanOfBand(f, sex, a, country);
+  const y = peerMeanOfBand(f, sex, b, country);
   return { hr: Math.exp((1 - t) * Math.log(x.hr) + t * Math.log(y.hr)), lambda: (1 - t) * x.lambda + t * y.lambda };
 }
 
-function peerMeanOfBand(f: Factor, sex: Sex, band: Band) {
-  const key = `${f.slug}:${sex}:${band}`;
+function peerMeanOfBand(f: Factor, sex: Sex, band: Band, country: string) {
+  const key = `${f.slug}:${sex}:${band}:${country}`;
   const cached = peerMeanCache.get(key);
   if (cached) return cached;
-  const shares = Object.entries(sharesFor(f, sex, band));
+  const shares = Object.entries(peerShares(f, sex, band, country));
   const mean = {
     hr: shares.reduce((acc, [id, p]) => acc + p * hrOf(optionOf(f, id), sex), 0),
     lambda: shares.reduce((acc, [id, p]) => acc + p * (optionOf(f, id).lambda ?? 0), 0),
@@ -131,8 +133,15 @@ interface Curve {
 const MIDPOINTS = AGE_GROUPS.slice(0, -1).map((a) => a + 2.5);
 const curves = new Map<string, Curve>();
 
-const tableOf = (code: string | undefined): LifeTable =>
-  LIFE_TABLES.find((t) => t.code === code) ?? LIFE_TABLES.find((t) => t.code === HOME_COUNTRY)!;
+const TABLE_BY_CODE = new Map(LIFE_TABLES.map((t) => [t.code, t]));
+
+const tableOf = (code: string | undefined): LifeTable => TABLE_BY_CODE.get(code ?? WORLD) ?? TABLE_BY_CODE.get(WORLD)!;
+
+/** The two countries of an answer sheet: an unnamed one means no move. */
+function placesOf(answers: Answers): { past: string; future: string } {
+  const past = answers["country-before"] ?? answers["country-next"] ?? WORLD;
+  return { past, future: answers["country-next"] ?? past };
+}
 
 function curveOf(code: string | undefined, sex: Sex): Curve {
   const table = tableOf(code);
@@ -168,7 +177,8 @@ interface Hazard {
   lambda: number;
 }
 
-function hazardOf(answers: Answers, sex: Sex, age: number, extraModifiable = 0): Hazard {
+/** `home` is the country whose peers stand in for "as a peer" and "do not know": the one the person lived in. */
+function hazardOf(answers: Answers, sex: Sex, age: number, home: string, extraModifiable = 0): Hazard {
   let modifiable = extraModifiable;
   let fixed = 0;
   let lambda = 0;
@@ -178,7 +188,7 @@ function hazardOf(answers: Answers, sex: Sex, age: number, extraModifiable = 0):
     const id = answers[f.slug];
     const chosen = optionOf(f, id);
     const asPeers = id === PEERS || chosen.unknown;
-    const peer = asPeers ? peerMean(f, sex, age) : undefined;
+    const peer = asPeers ? peerMean(f, sex, age, home) : undefined;
     const ratio = peer ? peer.hr : hrOf(chosen, sex);
     const d = Math.log(ratio) - Math.log(hrOf(typicalOf(f), sex));
     lambda += peer ? peer.lambda : (chosen.lambda ?? 0);
@@ -216,33 +226,75 @@ function random(seed: number) {
   };
 }
 
-function peersOf(sex: Sex, band: Band) {
-  const key = `${sex}:${band}`;
+/*
+ * The average over PEER_SAMPLES random answer sheets. It is hazardOf unrolled
+ * into number arrays: every country needs four of these, so each has to take
+ * a millisecond on a phone, not a tenth of a second.
+ */
+function peersOf(sex: Sex, band: Band, country: string) {
+  const key = `${sex}:${band}:${country}`;
   const cached = peerCache.get(key);
   if (cached) return cached;
   const next = random(band * 2 + (sex === "male" ? 1 : 2));
-  const plan = FACTORS.filter((f) => f.kind !== "country").map((f) => ({
-    slug: f.slug,
-    shares: Object.entries(sharesFor(f, sex, band)),
-  }));
+  const clusterIds = [...new Set(Object.values(CLUSTERS).map((c) => c.id))];
+  const clusterFixed = clusterIds.map((id) => Object.values(CLUSTERS).some((c) => c.id === id && c.fixed));
+  const plan = FACTORS.filter((f) => f.kind !== "country").map((f) => {
+    const typical = Math.log(hrOf(typicalOf(f), sex));
+    const entries = Object.entries(peerShares(f, sex, band, country));
+    const options = entries.map(([id]) => optionOf(f, id));
+    const cluster = CLUSTERS[f.slug];
+    return {
+      share: Float64Array.from(entries, ([, share]) => share),
+      ln: Float64Array.from(options, (o) => Math.log(hrOf(o, sex)) - typical),
+      road: Float64Array.from(options, (o) => o.lambda ?? 0),
+      cluster: cluster ? clusterIds.indexOf(cluster.id) : -1,
+      modifiable: f.modifiable,
+    };
+  });
+  const width = plan.length;
+  const values = new Float64Array(clusterIds.length * width);
+  const sizes = new Uint8Array(clusterIds.length);
   let sum = 0;
   let lambda = 0;
   for (let n = 0; n < PEER_SAMPLES; n += 1) {
-    const answers: Answers = {};
-    for (const { slug, shares } of plan) {
-      let r = next();
-      for (const [id, p] of shares) {
-        r -= p;
-        if (r <= 0) {
-          answers[slug] = id;
-          break;
-        }
+    let modifiable = 0;
+    let fixed = 0;
+    sizes.fill(0);
+    for (let k = 0; k < width; k += 1) {
+      const factor = plan[k];
+      const { share } = factor;
+      let pick = 0;
+      let left = next() - share[0];
+      while (left > 0 && pick < share.length - 1) {
+        pick += 1;
+        left -= share[pick];
       }
-      answers[slug] ??= shares[shares.length - 1][0];
+      const d = factor.ln[pick];
+      lambda += factor.road[pick];
+      const c = factor.cluster;
+      if (c < 0) {
+        if (factor.modifiable) modifiable += d;
+        else fixed += d;
+        continue;
+      }
+      // Each cluster stays sorted by size of effect as it fills.
+      const first = c * width;
+      let at = first + sizes[c];
+      while (at > first && Math.abs(values[at - 1]) < Math.abs(d)) {
+        values[at] = values[at - 1];
+        at -= 1;
+      }
+      values[at] = d;
+      sizes[c] += 1;
     }
-    const h = hazardOf(answers, sex, BAND_CENTRES[band]);
-    sum += Math.exp(h.ln);
-    lambda += h.lambda;
+    for (let c = 0; c < clusterFixed.length; c += 1) {
+      let total = 0;
+      const size = Math.min(sizes[c], CLUSTER_WEIGHTS.length);
+      for (let i = 0; i < size; i += 1) total += values[c * width + i] * CLUSTER_WEIGHTS[i];
+      if (clusterFixed[c]) fixed += total;
+      else modifiable += total;
+    }
+    sum += Math.exp(SOFT_CAP * Math.tanh(modifiable / SOFT_CAP) + fixed);
   }
   const peers = { lnMean: Math.log(sum / PEER_SAMPLES), lambda: lambda / PEER_SAMPLES };
   peerCache.set(key, peers);
@@ -250,10 +302,10 @@ function peersOf(sex: Sex, band: Band) {
 }
 
 /** Peer averages at the age, interpolated between the survey age bands. */
-function peersAt(sex: Sex, age: number) {
+function peersAt(sex: Sex, age: number, country: string) {
   const { a, b, t } = bandsAt(age);
-  const x = peersOf(sex, a);
-  const y = peersOf(sex, b);
+  const x = peersOf(sex, a, country);
+  const y = peersOf(sex, b, country);
   return { lnMean: x.lnMean + t * (y.lnMean - x.lnMean), lambda: x.lambda + t * (y.lambda - x.lambda) };
 }
 
@@ -263,33 +315,43 @@ const fade = (x: number) => 1 - ATTENUATION * Math.min(Math.max((x - FADE_FROM) 
 
 interface Person {
   profile: Profile;
-  before: Curve;
-  next: Curve;
+  before: Standing;
+  next: Standing;
+}
+
+/** Where the person stands in one country: its curve and the distance from its peers. */
+interface Standing {
+  curve: Curve;
   /** Log ratio against peers at today's age. */
   lnRatio: number;
-  /** Yearly road risk against peers. */
+  /** Yearly road risk against peers, on the roads of this country. */
   lambda: number;
 }
 
 function personOf(profile: Profile, answers: Answers, extraModifiable = 0): Person {
-  const h = hazardOf(answers, profile.sex, profile.age, extraModifiable);
-  const peers = peersAt(profile.sex, profile.age);
-  return {
-    profile,
-    before: curveOf(answers["country-before"], profile.sex),
-    next: curveOf(answers["country-next"], profile.sex),
-    lnRatio: h.ln - peers.lnMean,
-    lambda: h.lambda - peers.lambda,
+  const { sex, age } = profile;
+  const { past, future } = placesOf(answers);
+  const h = hazardOf(answers, sex, age, past, extraModifiable);
+  const standingIn = (country: string): Standing => {
+    const peers = peersAt(sex, age, country);
+    return {
+      curve: curveOf(country, sex),
+      lnRatio: h.ln - peers.lnMean,
+      lambda: (h.lambda - peers.lambda) * roadScale(country),
+    };
   };
+  const before = standingIn(past);
+  return { profile, before, next: past === future ? before : standingIn(future) };
 }
 
 /** Yearly death rate t years from now. */
 function rateAt(p: Person, t: number): number {
   const x = p.profile.age + t;
   const w = PAST_WEIGHT * Math.exp(-t / PAST_FADE);
-  const base = Math.exp(w * lnRate(p.before, x) + (1 - w) * lnRate(p.next, x)) * (1 - IMPROVEMENT) ** t;
-  const personal = base * Math.exp(p.lnRatio * fade(x));
-  return Math.max(personal + p.lambda, personal * 0.5);
+  const { before, next } = p;
+  const base = Math.exp(w * lnRate(before.curve, x) + (1 - w) * lnRate(next.curve, x)) * (1 - IMPROVEMENT) ** t;
+  const personal = base * Math.exp((w * before.lnRatio + (1 - w) * next.lnRatio) * fade(x));
+  return Math.max(personal + w * before.lambda + (1 - w) * next.lambda, personal * 0.5);
 }
 
 /** Age at death expected for the person. */
@@ -316,8 +378,9 @@ function forecastOf(profile: Profile, answers: Answers, extraModifiable = 0): nu
 /** The age at which an average person in the same countries carries the same yearly risk. */
 function biologicalAge(profile: Profile, answers: Answers): number {
   const p = personOf(profile, answers);
-  const lnBase = (x: number) => PAST_WEIGHT * lnRate(p.before, x) + (1 - PAST_WEIGHT) * lnRate(p.next, x);
-  const target = lnBase(profile.age) + p.lnRatio * fade(profile.age);
+  const mix = (a: number, b: number) => PAST_WEIGHT * a + (1 - PAST_WEIGHT) * b;
+  const lnBase = (x: number) => mix(lnRate(p.before.curve, x), lnRate(p.next.curve, x));
+  const target = lnBase(profile.age) + mix(p.before.lnRatio, p.next.lnRatio) * fade(profile.age);
   // Death rates dip in the early twenties; a running maximum keeps the curve monotone.
   let best = 18;
   let peak = -Infinity;
@@ -365,21 +428,20 @@ export function improvedAnswers(answers: Answers): Answers {
 
 /** Expected age of the average person: peers' ratio, same countries. */
 function peersForecast(profile: Profile, answers: Answers): number {
-  return expectedAge({
-    profile,
-    before: curveOf(answers["country-before"], profile.sex),
-    next: curveOf(answers["country-next"], profile.sex),
-    lnRatio: 0,
-    lambda: 0,
-  });
+  const { past, future } = placesOf(answers);
+  const average = (country: string): Standing => ({ curve: curveOf(country, profile.sex), lnRatio: 0, lambda: 0 });
+  return expectedAge({ profile, before: average(past), next: average(future) });
 }
 
 export function assess(profile: Profile, answers: Answers, date = new Date().toISOString()): Assessment {
   const forecast = forecastOf(profile, answers);
+  const { past, future } = placesOf(answers);
+  const placed: Answers = { ...answers, "country-before": past, "country-next": future };
   const factors = FACTORS.map((f): FactorResult => {
-    const option = optionOf(f, answers[f.slug]);
-    // Each answer is weighed against the average peer; a country against staying in Kyrgyzstan.
-    const asTypical = forecastOf(profile, { ...answers, [f.slug]: f.kind === "country" ? f.typical : PEERS });
+    const option = optionOf(f, placed[f.slug]);
+    // Each answer is weighed against the average peer; each country against the other one, that is against no move.
+    const reference = f.kind !== "country" ? PEERS : f.slug === "country-next" ? past : future;
+    const asTypical = forecastOf(profile, { ...placed, [f.slug]: reference });
     const improveTo = f.modifiable ? option.improveTo : undefined;
     const gain = improveTo ? forecastOf(profile, { ...answers, [f.slug]: improveTo }) - forecast : 0;
     return { slug: f.slug, option: option.id, years: forecast - asTypical, gain: Math.max(gain, 0), improveTo };
@@ -395,14 +457,14 @@ export function assess(profile: Profile, answers: Answers, date = new Date().toI
   };
 }
 
-/** Every answer as the average peer: the reference person of the factor pages. */
+/** Every answer as the average peer of the world: the reference person of the factor pages. */
 export const PEER_ANSWERS: Answers = Object.fromEntries(
-  FACTORS.filter((f) => f.kind !== "country").map((f) => [f.slug, PEERS]),
+  FACTORS.map((f) => [f.slug, f.kind === "country" ? WORLD : PEERS]),
 );
 
 /** Expected age of the average person of one sex and age. */
-export function averageForecast(profile: Profile): number {
-  return forecastOf(profile, PEER_ANSWERS);
+export function averageForecast(profile: Profile, country = WORLD): number {
+  return forecastOf(profile, { ...PEER_ANSWERS, "country-before": country, "country-next": country });
 }
 
 /** Years an option moves an otherwise average person of `age`, averaged over both sexes. */

@@ -49,12 +49,14 @@ function Report({ attempt, history }: { attempt: Attempt; history: Attempt[] }) 
   const bmi = attempt.body ? bmiOf(attempt.body.height, attempt.body.weight) : undefined;
   const sexLabel = attempt.profile.sex === "female" ? "Женщина" : "Мужчина";
   const gain = result.potential - result.forecast;
+  const { "country-before": past, "country-next": future } = attempt.answers;
+  const peersLabel = future && future !== past ? "У сверстников в тех же странах в среднем" : "У сверстников в вашей стране в среднем";
 
   return (
     <>
       <section className="sheet report-hero" aria-labelledby="report-title">
         <div className="report-hero__text">
-          <h1 id="report-title">Ваш отчёт</h1>
+          <h1 id="report-title">{attempt.name ? `${attempt.name}, ваш отчёт` : "Ваш отчёт"}</h1>
           <p className="lead">
             {sexLabel}, {age(attempt.profile.age)}. Тест пройден {shortDate(attempt.date)}.
           </p>
@@ -71,7 +73,7 @@ function Report({ attempt, history }: { attempt: Attempt; history: Attempt[] }) 
           <div className="report-hero__main">
             <Figure parts={ageParts(result.forecast)} />
             <p>
-              Прогноз: ожидаемый возраст, если ничего не менять. У сверстников в среднем {age(result.peers)}
+              Прогноз: ожидаемый возраст, если ничего не менять. {peersLabel} {age(result.peers)}
             </p>
           </div>
           <div className="report-hero__row">
@@ -197,7 +199,10 @@ function AnswerList({ attempt }: { attempt: Attempt }) {
     const factor = FACTOR_BY_SLUG.get(id);
     let title = factor?.title ?? "";
     let value = "Нет ответа";
-    if (id === "sex") {
+    if (id === "name") {
+      title = "Имя";
+      value = attempt.name ?? "Не указано";
+    } else if (id === "sex") {
       title = "Пол";
       value = attempt.profile.sex === "female" ? "Женский" : "Мужской";
     } else if (id === "age") {
@@ -205,9 +210,9 @@ function AnswerList({ attempt }: { attempt: Attempt }) {
       value = age(attempt.profile.age);
     } else if (factor?.kind === "bmi" && attempt.body) {
       title = "Рост и вес";
-      value = `${attempt.body.height} см, ${decimal(attempt.body.weight)} кг`;
+      value = `${decimal(attempt.body.height, 0)} см, ${decimal(attempt.body.weight)} кг`;
     } else if (factor) {
-      const id2 = attempt.answers[id] ?? (factor.kind === "country" ? "KGZ" : undefined);
+      const id2 = attempt.answers[id] ?? (factor.kind === "country" ? "GLOBAL" : undefined);
       value = factor.options.find((o) => o.id === id2)?.label ?? value;
     }
     return [{ id, step: i, title, value, href: `/test?q=${i + 1}&edit=1` }];

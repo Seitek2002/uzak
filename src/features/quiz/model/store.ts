@@ -8,6 +8,7 @@ import { LABS_STEP, TEST_SLUGS, TOTAL } from "./steps";
 
 export interface Attempt {
   date: string;
+  name?: string;
   profile: Profile;
   answers: Answers;
   /** Height and weight, kept so the report can show the BMI. */
@@ -15,6 +16,7 @@ export interface Attempt {
 }
 
 interface QuizState {
+  name: string;
   sex?: Sex;
   age?: number;
   height?: number;
@@ -28,6 +30,7 @@ interface QuizState {
   /** Changing answers of the last attempt instead of starting a new one. */
   editing: boolean;
   history: Attempt[];
+  setName: (name: string) => void;
   setSex: (sex: Sex) => void;
   setAge: (age: number) => void;
   /** Height, weight and the BMI band the quiz computed from them. */
@@ -72,6 +75,7 @@ const safeStorage: StateStorage = {
 };
 
 const blank = {
+  name: "",
   sex: undefined,
   age: undefined,
   height: undefined,
@@ -83,21 +87,44 @@ const blank = {
   editing: false,
 };
 
-const attemptOf = (s: Pick<QuizState, "sex" | "age" | "answers" | "height" | "weight">, date: string): Attempt | null =>
+const attemptOf = (s: Pick<QuizState, "name" | "sex" | "age" | "answers" | "height" | "weight">, date: string): Attempt | null =>
   s.sex && s.age
     ? {
         date,
+        name: s.name.trim() || undefined,
         profile: { sex: s.sex, age: s.age },
         answers: s.answers,
         body: s.height && s.weight ? { height: s.height, weight: s.weight } : undefined,
       }
     : null;
 
+/**
+ * Version 1 had no name step and every attempt meant Kyrgyzstan unless the
+ * person chose another country, so old forecasts must keep that country.
+ */
+function fromV1(saved: QuizState): QuizState {
+  const placed = (answers: Answers): Answers => {
+    const past = answers["country-before"] ?? V1_COUNTRY;
+    return { ...answers, "country-before": past, "country-next": answers["country-next"] ?? past };
+  };
+  const answers = saved.answers ?? {};
+  return {
+    ...saved,
+    name: "",
+    step: saved.step > 0 ? saved.step + 1 : 0,
+    answers: answers["country-before"] || saved.completed || saved.editing ? placed(answers) : answers,
+    history: (saved.history ?? []).map((attempt) => ({ ...attempt, answers: placed(attempt.answers) })),
+  };
+}
+
+const V1_COUNTRY = "KGZ";
+
 export const useQuiz = create<QuizState>()(
   persist(
     (set, get) => ({
       ...blank,
       history: [],
+      setName: (name) => set({ name: name.slice(0, 40) }),
       setSex: (sex) => set({ sex }),
       setAge: (age) => set({ age }),
       setBody: (height, weight, band) => set((s) => ({ height, weight, answers: { ...s.answers, bmi: band } })),
@@ -122,6 +149,7 @@ export const useQuiz = create<QuizState>()(
         const last = get().history.at(-1);
         if (!last) return;
         set({
+          name: last.name ?? "",
           sex: last.profile.sex,
           age: last.profile.age,
           height: last.body?.height,
@@ -152,11 +180,13 @@ export const useQuiz = create<QuizState>()(
     }),
     {
       name: "uzak-v1",
-      version: 1,
+      version: 2,
+      migrate: (saved, version) => (version < 2 ? fromV1(saved as QuizState) : (saved as QuizState)),
       // The server renders the blank state; saved answers are read after mount so the markup always matches.
       skipHydration: true,
       storage: createJSONStorage(() => safeStorage),
-      partialize: ({ sex, age, height, weight, answers, labs, step, completed, editing, history }) => ({
+      partialize: ({ name, sex, age, height, weight, answers, labs, step, completed, editing, history }) => ({
+        name,
         sex,
         age,
         height,

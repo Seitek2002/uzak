@@ -21,7 +21,10 @@ export const GROUPS: Group[] = [
 ];
 
 /** Countries share one hazard ratio: their effect comes from the life table, not from a ratio. */
-const COUNTRY_OPTIONS: FactorOption[] = COUNTRIES.map((c) => ({ id: c.code, label: c.name, hr: 1 }));
+const RU_ORDER = new Intl.Collator("ru");
+const COUNTRY_OPTIONS: FactorOption[] = [...COUNTRIES]
+  .sort((a, b) => Number(a.code === "GLOBAL") - Number(b.code === "GLOBAL") || RU_ORDER.compare(a.ru, b.ru))
+  .map((c) => ({ id: c.code, label: c.ru, hr: 1 }));
 
 export const FACTORS: Factor[] = [
   {
@@ -33,8 +36,8 @@ export const FACTORS: Factor[] = [
     help: "Если переезжали, выберите страну, где провели больше времени.",
     kind: "country",
     options: COUNTRY_OPTIONS,
-    typical: "KGZ",
-    best: "KGZ",
+    typical: "GLOBAL",
+    best: "GLOBAL",
     summary: "Годы в стране уже сказались на здоровье: через медицину, воздух, дороги и привычную еду.",
   },
   {
@@ -46,8 +49,8 @@ export const FACTORS: Factor[] = [
     help: "Если переезд не планируется, оставьте свою страну.",
     kind: "country",
     options: COUNTRY_OPTIONS,
-    typical: "KGZ",
-    best: "KGZ",
+    typical: "GLOBAL",
+    best: "GLOBAL",
     summary: "Страна влияет на прогноз сильнее любой привычки: медицина, дороги и воздух везде разные.",
   },
   {
@@ -73,13 +76,13 @@ export const FACTORS: Factor[] = [
     group: "habits",
     modifiable: true,
     question: "Курите ли вы?",
-    help: "Считайте сигареты, IQOS и кальян. Если вы курите и при этом пользуетесь насваем или вейпом, отвечайте как курящий.",
+    help: "Считайте сигареты, IQOS и кальян. Если вы курите и при этом пользуетесь вейпом или бездымным табаком, отвечайте как курящий.",
     kind: "choice",
     options: [
       { id: "never", label: "Никогда не курил(а)", hr: 1 },
       { id: "quit10", label: "Бросил(а) больше 10 лет назад", hr: 1.1 },
       { id: "quit", label: "Бросил(а) меньше 10 лет назад", hr: 1.45, improveTo: "quit10" },
-      { id: "smokeless", label: "Не курю, но пользуюсь насваем, снюсом или вейпом", hr: 1.2, improveTo: "quit10" },
+      { id: "smokeless", label: "Не курю, но пользуюсь вейпом, снюсом, насваем или жевательным табаком", hr: 1.2, improveTo: "quit10" },
       { id: "light", label: "Курю до 10 сигарет в день или время от времени", hr: 1.9, improveTo: "quit10" },
       { id: "heavy", label: "Курю 10 сигарет в день и больше", hr: 2.8, hrBySex: { male: 2.8, female: 3 }, improveTo: "quit10" },
     ],
@@ -221,7 +224,7 @@ export const FACTORS: Factor[] = [
     group: "food",
     modifiable: true,
     question: "Как часто вы едите колбасу, сосиски и другое переработанное мясо?",
-    help: "Колбаса, сосиски, ветчина, бекон, копчёности, казы, чучук, мясные консервы.",
+    help: "Колбаса, сосиски, ветчина, бекон, салями, хот-доги, копчёности, мясные консервы.",
     kind: "choice",
     options: [
       { id: "rare", label: "Почти никогда", hr: 1 },
@@ -459,12 +462,14 @@ export const FACTORS: Factor[] = [
     title: "Возраст родителей",
     group: "family",
     modifiable: false,
-    question: "Сколько прожили ваши родители?",
+    question: "Сколько лет вашим родителям или сколько они прожили?",
     kind: "choice",
     options: [
-      { id: "long", label: "Хотя бы один дожил до 85 лет", hr: 0.88 },
+      { id: "alive85", label: "Хотя бы один жив, и ему уже 85 или больше", hr: 0.88 },
+      { id: "long", label: "Хотя бы один дожил до 85, но его уже нет", hr: 0.88 },
+      { id: "alive", label: "Живы, но 85 им ещё нет", hr: 1 },
       { id: "short", label: "Оба умерли от болезни раньше 70 лет", hr: 1.2 },
-      { id: "other", label: "Ни то, ни другое, или не знаю", hr: 1 },
+      { id: "other", label: "Другое или не знаю", hr: 1 },
     ],
     typical: "other",
     best: "other",
@@ -560,15 +565,15 @@ export const FACTORS: Factor[] = [
     group: "tests",
     modifiable: true,
     question: "Какой у вас ЛПНП, «плохой» холестерин?",
-    help: "Строка ЛПНП или LDL в липидном профиле, в ммоль/л. Если анализ в мг/дл, разделите число на 38,7.",
+    help: "Строка ЛПНП или LDL в липидном профиле, Первая цифра в ммоль/л, в скобках та же в мг/дл.",
     kind: "choice",
     options: [
-      { id: "lt18", label: "Ниже 1,8", hr: 1 },
-      { id: "18to25", label: "От 1,8 до 2,5", hr: 1 },
-      { id: "26to33", label: "От 2,6 до 3,3", hr: 1.04 },
-      { id: "34to40", label: "От 3,4 до 4,0", hr: 1.08, improveTo: "26to33" },
-      { id: "41to48", label: "От 4,1 до 4,8", hr: 1.15, improveTo: "34to40" },
-      { id: "ge49", label: "4,9 и выше", hr: 1.3, improveTo: "41to48" },
+      { id: "lt18", label: "Ниже 1,8 (70)", hr: 1 },
+      { id: "18to25", label: "От 1,8 до 2,5 (70 до 99)", hr: 1 },
+      { id: "26to33", label: "От 2,6 до 3,3 (100 до 129)", hr: 1.04 },
+      { id: "34to40", label: "От 3,4 до 4,0 (130 до 159)", hr: 1.08, improveTo: "26to33" },
+      { id: "41to48", label: "От 4,1 до 4,8 (160 до 189)", hr: 1.15, improveTo: "34to40" },
+      { id: "ge49", label: "4,9 и выше (190 и выше)", hr: 1.3, improveTo: "41to48" },
       { id: "unknown", label: "Не знаю", hr: 1.02, unknown: true },
     ],
     typical: "26to33",
@@ -584,9 +589,9 @@ export const FACTORS: Factor[] = [
     help: "Показывает средний сахар крови за последние три месяца, в процентах.",
     kind: "choice",
     options: [
-      { id: "lt57", label: "Ниже 5,7%", hr: 1 },
-      { id: "57to64", label: "От 5,7 до 6,4%", hr: 1.15, improveTo: "lt57" },
-      { id: "ge65", label: "6,5% и выше", hr: 1.7, improveTo: "57to64" },
+      { id: "lt57", label: "Ниже 5,7% (39 ммоль/моль)", hr: 1 },
+      { id: "57to64", label: "От 5,7 до 6,4% (39 до 47)", hr: 1.15, improveTo: "lt57" },
+      { id: "ge65", label: "6,5% и выше (48 и выше)", hr: 1.7, improveTo: "57to64" },
       { id: "unknown", label: "Не знаю", hr: 1, unknown: true },
     ],
     typical: "lt57",

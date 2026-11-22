@@ -4,7 +4,7 @@
 /* Hallmark · hero-review: folded into the finish review · finish-review: subagent · 7 findings · 6 resolved 1 partial (the forecast tile keeps some air above the figure) · gap: none */
 /* Hallmark · pre-emit critique: P4 H4 E4 S5 R4 V4 · weakest: P, a health test drifts into reassurance; the page argues that habits are years and sets them as numbers you can move */
 /* Hallmark · waive 23 · the ultramarine is the field token under the declared full-palette posture · the hero field carries the live steps question and the close carries question one */
-/* Hallmark · waive 39b · two 96px answer rows on the close, type at text-3xl over a hairline · the rows are the first test question, answered right on the home page */
+/* Hallmark · waive 39b · the 96px name field and its start row on the close, type at text-3xl over a hairline · they are the first test question, answered right on the home page */
 /* Hallmark · dismissed 25 · the probe line is a one-sentence caption under the years figure, set from 28ch */
 /* Hallmark · dismissed F4 · the selected tab fill is a state of the habit switcher; .btn is the only filled button recipe */
 /* Hallmark · waive 44c · the Stage field bleeds off the right edge of the page by design · the ultramarine runs from a column line to the bleed */
@@ -554,6 +554,58 @@ a.choice-big { text-decoration: none; }
 .bmi-live { display: flex; align-items: baseline; gap: var(--space-md); min-height: var(--figure-m); }
 .bmi-live .figure { font-size: var(--figure-m); }
 
+.sliders { display: grid; gap: var(--space-xl); max-width: 36rem; }
+.sliders__units { justify-self: start; }
+.slider { display: grid; gap: var(--space-sm); }
+.slider__top { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-md); }
+.slider__top label { font-size: var(--text-sm); font-weight: 500; color: var(--color-muted); }
+.slider__value { display: flex; align-items: baseline; gap: var(--space-sm); min-width: 0; }
+.slider__value input, .slider__output {
+  width: 5ch;
+  min-height: 56px;
+  padding: 0 var(--space-sm);
+  border: 0;
+  border-radius: 0;
+  background: var(--color-paper-2);
+  color: var(--color-ink);
+  font: 700 var(--text-3xl)/56px var(--font-display);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  appearance: textfield;
+}
+.slider__value input::-webkit-outer-spin-button, .slider__value input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.slider__value input:hover, .slider__value input:active { background: var(--color-rule); }
+.slider__value input:focus-visible { outline-color: var(--color-focus); }
+.slider__value input[aria-invalid="true"] { outline-color: var(--color-error); }
+.slider__value input:disabled { opacity: 0.55; cursor: not-allowed; }
+.slider__unit { font-size: var(--text-sm); color: var(--color-muted); }
+.slider__track { display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px; align-items: center; gap: var(--space-sm); color: var(--color-ink); }
+.slider__track .range--empty { color: var(--color-muted); }
+.slider__nudge {
+  min-height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: var(--color-paper-2);
+  color: var(--color-ink);
+  font: 400 var(--text-xl)/1 var(--font-display);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color var(--dur-short) var(--ease-out);
+}
+.slider__nudge:hover { background: var(--color-rule); }
+.slider__nudge:active { transform: translateY(1px); }
+.slider__nudge:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.slider__nudge:disabled { opacity: 0.55; cursor: not-allowed; }
+.field-note { min-height: 1lh; font-size: var(--text-sm); color: var(--color-muted); }
+.start-name { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: end; gap: var(--gap-columns); }
+.field .text-field label { color: var(--color-field-ink); }
+.field .text-field input { min-height: 96px; border-bottom-color: var(--color-field-ink); color: var(--color-field-ink); }
+.field .text-field input:focus-visible { outline-color: var(--color-field-ink); }
+
 .text-field { display: grid; gap: var(--space-xs); max-width: 32rem; }
 .text-field label { font-size: var(--text-sm); font-weight: 500; color: var(--color-muted); }
 .text-field input {
@@ -725,7 +777,7 @@ a.choice-big { text-decoration: none; }
   .tile--bio, .tile--start { grid-column: 1 / -1; }
   .tile { padding: var(--space-lg); }
   .index__links, .index__range { grid-column: 1 / -1; text-align: start; }
-  .close__options { grid-template-columns: minmax(0, 1fr); }
+  .close__options, .start-name { grid-template-columns: minmax(0, 1fr); }
   .choice-big { min-height: 72px; }
   .scenario__pair { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-lg); }
   .checks { grid-template-columns: minmax(0, 1fr); }
@@ -740,7 +792,7 @@ a.choice-big { text-decoration: none; }
   .bars__chart, .bars__years { width: auto; }
   .library__item { grid-template-columns: minmax(0, 1fr); }
   .library__item .range-note { grid-column: 1; grid-row: auto; text-align: start; }
-  .quiz__nav .btn { min-width: 0; flex: 1; }
+  .quiz__nav .btn { min-width: 0; flex: 1 0 auto; }
 }
 
 @media (prefers-reduced-motion: reduce) {

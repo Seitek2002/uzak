@@ -17,6 +17,9 @@ import { FACTORS } from "../src/entities/factor/model/factors.ts";
 import { CONTENT } from "../src/entities/factor/model/content.ts";
 import { LIFE_TABLES } from "../src/entities/result/model/life-tables.ts";
 import { SITE } from "../src/shared/config/site.ts";
+import { COUNTRIES } from "../src/shared/data/countries.ts";
+import { RISK_PROFILES } from "../src/entities/result/model/risk-profiles.ts";
+import { peerShares } from "../src/entities/result/model/peers.ts";
 
 let failed = 0;
 const r = (n: number) => Math.round(n * 10) / 10;
@@ -30,8 +33,11 @@ function truth(name: string, ok: boolean, detail = "") {
   console.log(`${ok ? "PASS" : "FAIL"}  ${name}${detail ? `: ${detail}` : ""}`);
 }
 
+// Checks 2 to 10 use the country with a full survey, as before the model went worldwide; 17 to 21 cover the rest.
+const HOME = { "country-before": "KGZ", "country-next": "KGZ" };
 const years = (sex: Sex, age: number, a: Answers, b: Answers) =>
-  assess({ sex, age }, { ...PEER_ANSWERS, ...a }).forecast - assess({ sex, age }, { ...PEER_ANSWERS, ...b }).forecast;
+  assess({ sex, age }, { ...PEER_ANSWERS, ...HOME, ...a }).forecast -
+  assess({ sex, age }, { ...PEER_ANSWERS, ...HOME, ...b }).forecast;
 const both = (age: number, a: Answers, b: Answers) => (years("male", age, a, b) + years("female", age, a, b)) / 2;
 
 // 1. The life table read by the model gives WHO's own life expectancy at 30 (WHO GHO 2023: men 74.4, women 79.7).
@@ -39,9 +45,9 @@ check("period life expectancy at 30, men, Kyrgyzstan", lifeExpectancyAt("KGZ", "
 check("period life expectancy at 30, women, Kyrgyzstan", lifeExpectancyAt("KGZ", "female", 30), 79.2, 80.6);
 
 // 2. An average answer sheet lands near the table plus the yearly progress (period + about 3-5 years at 30).
-const avgMale = averageForecast({ sex: "male", age: 30 });
+const avgMale = averageForecast({ sex: "male", age: 30 }, "KGZ");
 check("average man at 30, with progress", avgMale, 76, 81);
-check("average woman at 30, with progress", averageForecast({ sex: "female", age: 30 }), 81, 86);
+check("average woman at 30, with progress", averageForecast({ sex: "female", age: 30 }, "KGZ"), 81, 86);
 
 // 3. Smoking: smokers lose more than 10 years against never smokers (Jha 2013); at 40 with fading in old age, 7 to 11.
 check("heavy smoker vs never smoker at 40, years", both(40, { smoking: "never" }, { smoking: "heavy" }), 7, 11);
@@ -71,7 +77,7 @@ check("never belted vs always at 25, years", both(25, { "seat-belt": "always" },
 check("regular motorcycle vs none at 25, years", both(25, { motorcycle: "never" }, { motorcycle: "regular" }), 0.3, 2);
 
 // 10. "Do not know" equals the average peer.
-truth("unknown blood pressure is worth 0 years", Math.abs(assess({ sex: "male", age: 50 }, { ...PEER_ANSWERS, "blood-pressure": "unknown" }).factors.find((f) => f.slug === "blood-pressure")!.years) < 0.05);
+truth("unknown blood pressure is worth 0 years", Math.abs(assess({ sex: "male", age: 50 }, { ...PEER_ANSWERS, ...HOME, "blood-pressure": "unknown" }).factors.find((f) => f.slug === "blood-pressure")!.years) < 0.05);
 
 // 11. Every factor moves the forecast in the order of its ratios.
 for (const f of FACTORS) {
@@ -108,8 +114,59 @@ const thin = FACTORS.filter((f) => {
 });
 truth("every factor has texts and sources", thin.length === 0, thin.map((f) => f.slug).join(", "));
 
-// 15. The question count printed on the site matches the test: sex, age, every factor and the blood-test fork.
-truth("site says the right number of questions", SITE.questions === FACTORS.length + 3, `${SITE.questions} vs ${FACTORS.length + 3}`);
+// 15. The question count printed on the site matches the test: name, sex, age, every factor and the blood-test fork.
+truth("site says the right number of questions", SITE.questions === FACTORS.length + 4, `${SITE.questions} vs ${FACTORS.length + 4}`);
+
+// 17. Every country: the average person gets a sane forecast that stays near the table plus progress.
+const t0 = Date.now();
+const strange: string[] = [];
+for (const { code } of LIFE_TABLES) {
+  for (const sex of ["male", "female"] as Sex[]) {
+    const forecast = averageForecast({ sex, age: 30 }, code);
+    const period = lifeExpectancyAt(code, sex, 30);
+    if (!(forecast > period && forecast < period + 8)) strange.push(`${code} ${sex} ${r(forecast)} vs ${r(period)}`);
+  }
+}
+truth("every country: average forecast is the table plus progress", strange.length === 0, strange.join(", "));
+console.log(`      ${LIFE_TABLES.length} countries, both sexes, in ${Date.now() - t0} ms`);
+
+// 18. The country data is complete and matches the list of the test.
+truth("185 countries and the world", LIFE_TABLES.length === 186 && COUNTRIES.length === 186, `${LIFE_TABLES.length}, ${COUNTRIES.length}`);
+truth(
+  "every listed country has a table and a risk profile",
+  COUNTRIES.every((c) => LIFE_TABLES.some((t) => t.code === c.code) && RISK_PROFILES[c.code]?.length === 18 && c.ru && c.en && c.ky),
+);
+
+// 19. Peers are local: the country's own figures come back from the shares (weights as in peers.ts).
+const shareOf = (slug: string, ids: string[], sex: Sex, code: string) =>
+  [0.52, 0.4, 0.08].reduce((acc, w, band) => {
+    const shares = peerShares(FACTORS.find((f) => f.slug === slug)!, sex, band as 0 | 1 | 2, code);
+    return acc + w * ids.reduce((s, id) => s + (shares[id] ?? 0), 0);
+  }, 0);
+const off: string[] = [];
+for (const { code } of LIFE_TABLES) {
+  if (code === "KGZ") continue;
+  const p = RISK_PROFILES[code];
+  if (Math.abs(shareOf("smoking", ["light", "heavy"], "male", code) - p[0] / 100) > 0.01) off.push(`${code} smoking`);
+  if (Math.abs(shareOf("bmi", ["30to35", "35to40", "gt40"], "female", code) - p[5] / 100) > 0.01) off.push(`${code} obesity`);
+}
+truth("peers repeat the WHO prevalence of their country", off.length === 0, off.join(", "));
+
+// 20. Staying put costs and adds nothing, wherever it is.
+for (const code of ["DEU", "BRA", "NGA", "GLOBAL"]) {
+  const a = assess({ sex: "female", age: 35 }, { "country-before": code, "country-next": code });
+  const moved = a.factors.filter((f) => f.slug.startsWith("country-")).map((f) => f.years);
+  truth(`no move is worth 0 years in ${code}`, moved.every((v) => Math.abs(v) < 0.01), moved.map(r).join(" "));
+}
+
+// 21. An answer is weighed against local peers: never smoking adds more where more men smoke.
+const neverIn = (code: string) =>
+  assess({ sex: "male", age: 40 }, { ...PEER_ANSWERS, "country-before": code, "country-next": code, smoking: "never" })
+    .factors.find((f) => f.slug === "smoking")!.years;
+truth("never smoking adds more in Indonesia than in Sweden", neverIn("IDN") > neverIn("SWE"), `${r(neverIn("IDN"))} and ${r(neverIn("SWE"))}`);
+
+// 22. Living parents past 85 count as long-lived ones.
+truth("living parents past 85 are worth a long life", Math.abs(optionEffect("parents", "alive85") - optionEffect("parents", "long")) < 1e-9 && optionEffect("parents", "alive85") > 0.1);
 
 console.log(failed ?`\n${failed} check(s) failed` : "\nall checks passed");
 process.exit(failed ? 1 : 0);

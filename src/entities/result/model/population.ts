@@ -1,5 +1,6 @@
 /*
- * How common each answer is among adults in Kyrgyzstan, by sex and age band
+ * The template of peers.ts for every country: how common each answer is among
+ * adults in Kyrgyzstan, the survey the model started from, by sex and age band
  * (0: 18-39, 1: 40-69, 2: 70 and older; the bands of the WHO STEPS survey,
  * the oldest one extrapolated). The model uses these shares to build the
  * average person of your sex and age: the life table describes that person,
@@ -184,7 +185,7 @@ export const PREVALENCE: Record<string, Entry> = {
   // estimate.
   optimism: { bad: 15, mixed: 50, good: 35 },
   // estimate: fewer parents reach 85 in Kyrgyzstan than in the UK Biobank.
-  parents: { long: 18, short: 15, other: 67 },
+  parents: { alive85: 5, long: 13, alive: 30, short: 15, other: 37 },
   // estimate.
   "family-heart": { no: 85, yes: 15 },
   // estimate.
