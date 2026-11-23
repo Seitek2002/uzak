@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { FACTOR_BY_SLUG } from "@/entities/factor";
-import { contentOf } from "@/entities/factor/content";
 import { STEPS, TOTAL } from "@/features/quiz/model/steps";
 import { SITE } from "@/shared/config/site";
 import { assess, bmiOf, type Assessment } from "@/entities/result";
@@ -11,6 +10,9 @@ import { FactorBars } from "@/entities/result/ui/FactorBars";
 import { useHydrated, useQuiz, type Attempt } from "@/features/quiz/model/store";
 import { age, ageParts, decimal, delta, deltaParts, shortDate } from "@/shared/lib/format";
 import { Figure } from "@/shared/ui/Figure";
+import { Badges } from "@/features/quests/ui/Badges";
+import { QuestBoard } from "@/features/quests/ui/QuestBoard";
+import { useGame } from "@/features/quests/model/store";
 import { checksFor } from "../model/checks";
 
 export function ReportView() {
@@ -85,7 +87,7 @@ function Report({ attempt, history }: { attempt: Attempt; history: Attempt[] }) 
         </div>
       </section>
 
-      <Starts result={result} />
+      <QuestBoard attempt={attempt} result={result} />
 
       <section className="section" aria-labelledby="map-title">
         <div className="container">
@@ -109,6 +111,8 @@ function Report({ attempt, history }: { attempt: Attempt; history: Attempt[] }) 
 
       <Checks result={result} bmi={bmi} attempt={attempt} />
 
+      <Badges history={history} />
+
       <AnswerList attempt={attempt} />
 
       {history.length > 1 && <History history={history} />}
@@ -119,47 +123,6 @@ function Report({ attempt, history }: { attempt: Attempt; history: Attempt[] }) 
         </div>
       </section>
     </>
-  );
-}
-
-function Starts({ result }: { result: Assessment }) {
-  const top = result.factors
-    .filter((f) => f.gain >= 0.1 && f.improveTo)
-    .sort((a, b) => b.gain - a.gain)
-    .slice(0, 3);
-
-  return (
-    <section className="section" aria-labelledby="start-title">
-      <div className="container">
-        <div className="head">
-          <h2 id="start-title">С чего начать</h2>
-          <p className="lead">Три изменения, которые сильнее всего сдвинут прогноз.</p>
-        </div>
-        {top.length === 0 ? (
-          <p className="lead">По всем привычкам вы уже на лучших вариантах. Проходите тест раз в полгода, чтобы так и оставалось.</p>
-        ) : (
-          <ol className="starts">
-            {top.map((f) => {
-              const factor = FACTOR_BY_SLUG.get(f.slug)!;
-              const from = factor.options.find((o) => o.id === f.option)!;
-              const to = factor.options.find((o) => o.id === f.improveTo)!;
-              return (
-                <li key={f.slug}>
-                  <Figure parts={deltaParts(f.gain)} />
-                  <h3>
-                    <Link href={`/factors/${f.slug}`}>{factor.title}</Link>
-                  </h3>
-                  <p>
-                    Сейчас: {lower(from.label)}. Цель: {lower(to.goal ?? to.label)}.
-                  </p>
-                  <p>{contentOf(f.slug).advice[0]}</p>
-                </li>
-              );
-            })}
-          </ol>
-        )}
-      </div>
-    </section>
   );
 }
 
@@ -276,7 +239,10 @@ function History({ history }: { history: Attempt[] }) {
 
 function Wipe() {
   const [confirming, setConfirming] = useState(false);
-  const wipe = useQuiz((s) => s.wipe);
+  const wipe = () => {
+    useQuiz.getState().wipe();
+    useGame.getState().wipe();
+  };
   return (
     <div className="danger">
       <p className="note">

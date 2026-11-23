@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { FACTOR_BY_SLUG, groupById, type Factor } from "@/entities/factor";
+import { FACTOR_BY_SLUG, groupById, type Factor, type GroupId } from "@/entities/factor";
+import { BadgeCheck } from "lucide-react";
 import { nb } from "@/shared/lib/format";
 import { isEditLink, readStepFromUrl as readStep, writeStepToUrl } from "@/shared/lib/step-url";
 import { Options, Question, QuizTop, type HeadingRef } from "@/shared/ui/Quiz";
+import { Slider } from "@/shared/ui/Slider";
 import { LABS_STEP, STEPS, totalFor } from "../model/steps";
 import { validBody } from "../model/body";
 import { useHydrated, useQuiz } from "../model/store";
@@ -43,6 +45,17 @@ export function QuizApp() {
   /** How many questions this page pushed onto the browser history. */
   const depth = useRef(0);
   const [error, setError] = useState("");
+  const [milestone, setMilestone] = useState<{ title: string; n: number; of: number } | null>(null);
+  const milestoneTimer = useRef<number | undefined>(undefined);
+  useEffect(() => () => window.clearTimeout(milestoneTimer.current), []);
+
+  const celebrate = (group: GroupId) => {
+    const order = [...new Set(STEPS.flatMap((s) => FACTOR_BY_SLUG.get(s)?.group ?? []))];
+    const of = useQuiz.getState().labs === "skip" ? order.length - 1 : order.length;
+    setMilestone({ title: groupById(group).title, n: order.indexOf(group) + 1, of });
+    window.clearTimeout(milestoneTimer.current);
+    milestoneTimer.current = window.setTimeout(() => setMilestone(null), 2600);
+  };
 
   const id = STEPS[step];
   const factor = FACTOR_BY_SLUG.get(id);
@@ -122,6 +135,9 @@ export function QuizApp() {
       return;
     }
     const target = state.step + 1;
+    const doneGroup = FACTOR_BY_SLUG.get(current)?.group;
+    const nextGroup = FACTOR_BY_SLUG.get(STEPS[target])?.group;
+    if (doneGroup && doneGroup !== nextGroup && !state.editing) celebrate(doneGroup);
     goTo(target);
     depth.current += 1;
     writeStepToUrl(target, "push", state.editing);
@@ -160,6 +176,19 @@ export function QuizApp() {
   return (
     <>
       <QuizTop step={step} total={total} />
+      <div className="toast-slot" role="status">
+        {milestone && (
+          <p className="toast" key={milestone.title}>
+            <BadgeCheck size={28} strokeWidth={2} aria-hidden="true" />
+            <span>
+              <b>Блок «{milestone.title}» пройден</b>
+              <span>
+                Значок {milestone.n} из {milestone.of}
+              </span>
+            </span>
+          </p>
+        )}
+      </div>
       <main id="main" className="quiz">
         <div className="container cols">
           <form className="quiz__form" onSubmit={onSubmit} noValidate>
@@ -272,33 +301,20 @@ function SexStep({ headingRef, onPick, error }: { headingRef: HeadingRef; onPick
 function AgeStep({ headingRef, error }: { headingRef: HeadingRef; error: string }) {
   const age = useQuiz((s) => s.age);
   const setAge = useQuiz((s) => s.setAge);
-  const [raw, setRaw] = useState(age ? String(age) : "");
   return (
     <fieldset>
       <Question look={LOOKS.age} headingRef={headingRef} title="Сколько вам полных лет?" help="Тест для взрослых от 18 до 99 лет." helpId="help-age" />
-      <div className="numbers">
-        <div className="number">
-          <label htmlFor="age">Возраст</label>
-          <input
-            id="age"
-            name="age"
-            type="number"
-            inputMode="numeric"
-            autoComplete="off"
-            min={18}
-            max={99}
-            value={raw}
-            aria-invalid={error ? true : undefined}
-            aria-describedby={error ? "help-age age-error" : "help-age"}
-            onChange={(e) => {
-              setRaw(e.target.value);
-              const n = Number(e.target.value);
-              if (Number.isInteger(n) && n >= 18 && n <= 99) setAge(n);
-              else setAge(Number.NaN);
-            }}
-          />
-          <span className="number__unit">лет</span>
-        </div>
+      <div className="sliders">
+        <Slider
+          id="age"
+          label="Возраст"
+          scale={{ min: 18, max: 99, step: 1, rest: 40, unit: "лет" }}
+          base={age}
+          inputMode="numeric"
+          onBase={(n) => setAge(n !== undefined && Number.isInteger(n) && n >= 18 && n <= 99 ? n : Number.NaN)}
+          invalid={Boolean(error)}
+          describedBy="help-age age-error"
+        />
       </div>
       <p className="error" id="age-error" role="alert">
         {error}

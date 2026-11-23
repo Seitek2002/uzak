@@ -213,6 +213,7 @@
    "src/app/(site)/page.tsx",
    "src/app/(site)/pet/page.tsx",
    "src/app/not-found.tsx",
+   "src/features/quests/ui/Badges.tsx",
    "src/features/report/ui/ReportView.tsx",
    "src/features/share/ui/ResultScreen.tsx",
    "src/widgets/site-footer/SiteFooter.tsx",
@@ -1044,8 +1045,8 @@
   ]
  },
  {
-  "id": "87cec64e92",
-  "ru": "Там же хранятся ответы о питомцах (ключ uzak-pet-v1) и выбранный язык сайта (ключ uzak-lang).",
+  "id": "cf0c28be37",
+  "ru": "Там же хранятся ответы о питомцах (ключ uzak-pet-v1), квесты и отметки дней (ключ uzak-game-v1) и выбранный язык сайта (ключ uzak-lang).",
   "at": [
    "src/app/(site)/privacy/page.tsx"
   ]
@@ -5890,7 +5891,7 @@
   "ru": "С чего начать",
   "at": [
    "src/features/pet-report/ui/PetReportView.tsx",
-   "src/features/report/ui/ReportView.tsx",
+   "src/features/quests/ui/QuestBoard.tsx",
    "src/features/share/ui/ResultScreen.tsx"
   ]
  },
@@ -5913,7 +5914,7 @@
   "ru": "Сейчас: {0}. Цель: {1}.",
   "at": [
    "src/features/pet-report/ui/PetReportView.tsx",
-   "src/features/report/ui/ReportView.tsx"
+   "src/features/quests/ui/QuestBoard.tsx"
   ]
  },
  {
@@ -6054,6 +6055,265 @@
   ]
  },
  {
+  "id": "41bf27a781",
+  "ru": "Первый прогноз",
+  "at": [
+   "src/features/quests/ui/Badges.tsx"
+  ]
+ },
+ {
+  "id": "0b71f10266",
+  "ru": "Знаю свои цифры",
+  "at": [
+   "src/features/quests/ui/Badges.tsx"
+  ]
+ },
+ {
+  "id": "5e60ef8c4e",
+  "ru": "Ответить хотя бы на один вопрос об анализах",
+  "at": [
+   "src/features/quests/ui/Badges.tsx"
+  ]
+ },
+ {
+  "id": "4461542624",
+  "ru": "Питомец тоже",
+  "at": [
+   "src/features/quests/ui/Badges.tsx"
+  ]
+ },
+ {
+  "id": "bf5b26e0eb",
+  "ru": "Пройти тест для кошки или собаки",
+  "at": [
+   "src/features/quests/ui/Badges.tsx"
+  ]
+ },
+ {
+  "id": "f263ad05e3",
+  "ru": "Первый шаг",
+  "at": [
+   "src/features/quests/ui/Badges.tsx"
+  ]
+ },
+ {
+  "id": "3325b2e3a9",
+  "ru": "Начать квест",
+  "at": [
+   "src/features/quests/ui/Badges.tsx"
+  ]
+ },
+ {
+  "id": "eb6c616ad0",
+  "ru": "Неделя подряд",
+  "at": [
+   "src/features/quests/ui/Badges.tsx"
+  ]
+ },
+ {
+  "id": "02b1c84cc4",
+  "ru": "Отмечать квест 7 дней подряд",
+  "at": [
+   "src/features/quests/ui/Badges.tsx"
+  ]
+ },
+ {
+  "id": "e7c5738f12",
+  "ru": "Квест пройден",
+  "at": [
+   "src/features/quests/ui/Badges.tsx"
+  ]
+ },
+ {
+  "id": "87a3fe7a39",
+  "ru": "Пройти квест до конца",
+  "at": [
+   "src/features/quests/ui/Badges.tsx"
+  ]
+ },
+ {
+  "id": "2f7d61ac5b",
+  "ru": "Три из трёх",
+  "at": [
+   "src/features/quests/ui/Badges.tsx"
+  ]
+ },
+ {
+  "id": "9e1609d6d9",
+  "ru": "Пройти три квеста",
+  "at": [
+   "src/features/quests/ui/Badges.tsx"
+  ]
+ },
+ {
+  "id": "befbba91fb",
+  "ru": "Снова в деле",
+  "at": [
+   "src/features/quests/ui/Badges.tsx"
+  ]
+ },
+ {
+  "id": "bde6307e8b",
+  "ru": "Пройти тест ещё раз",
+  "at": [
+   "src/features/quests/ui/Badges.tsx"
+  ]
+ },
+ {
+  "id": "4f97c25633",
+  "ru": "Значки",
+  "at": [
+   "src/features/quests/ui/Badges.tsx"
+  ]
+ },
+ {
+  "id": "2e4e1f2987",
+  "ru": "Получено {0} из {1}.",
+  "at": [
+   "src/features/quests/ui/Badges.tsx"
+  ]
+ },
+ {
+  "id": "d655b1b57c",
+  "ru": "Получен",
+  "at": [
+   "src/features/quests/ui/Badges.tsx"
+  ]
+ },
+ {
+  "id": "e2d65893aa",
+  "ru": "день",
+  "at": [
+   "src/features/quests/ui/QuestBoard.tsx"
+  ]
+ },
+ {
+  "id": "aeda1270e5",
+  "ru": "дня",
+  "at": [
+   "src/features/quests/ui/QuestBoard.tsx"
+  ]
+ },
+ {
+  "id": "6784ba01e6",
+  "ru": "дней",
+  "at": [
+   "src/features/quests/ui/QuestBoard.tsx"
+  ]
+ },
+ {
+  "id": "df6492722d",
+  "ru": "Три изменения, которые сильнее всего сдвинут прогноз. Каждое можно пройти как квест на {0} день и открыть бонусные годы.",
+  "at": [
+   "src/features/quests/ui/QuestBoard.tsx"
+  ]
+ },
+ {
+  "id": "5cfcc83a24",
+  "ru": "Бонусные годы в банке",
+  "at": [
+   "src/features/quests/ui/QuestBoard.tsx"
+  ]
+ },
+ {
+  "id": "0a7395e3ac",
+  "ru": "Ещё ждут в квестах ниже",
+  "at": [
+   "src/features/quests/ui/QuestBoard.tsx"
+  ]
+ },
+ {
+  "id": "2905ef8745",
+  "ru": "Квест пройден: {0} в банке.",
+  "at": [
+   "src/features/quests/ui/QuestBoard.tsx"
+  ]
+ },
+ {
+  "id": "cde87c5884",
+  "ru": "По всем привычкам вы уже на лучших вариантах. Проходите тест раз в полгода, чтобы так и оставалось.",
+  "at": [
+   "src/features/quests/ui/QuestBoard.tsx"
+  ]
+ },
+ {
+  "id": "f16d9e991a",
+  "ru": "Пройденные квесты",
+  "at": [
+   "src/features/quests/ui/QuestBoard.tsx"
+  ]
+ },
+ {
+  "id": "c0ad1536e6",
+  "ru": "Обновить показатель<0>: {1}</0>",
+  "at": [
+   "src/features/quests/ui/QuestBoard.tsx"
+  ]
+ },
+ {
+  "id": "d53addee03",
+  "ru": "Бонусные годы считает модель по новому ответу. Это оценка, а не обещание.",
+  "at": [
+   "src/features/quests/ui/QuestBoard.tsx"
+  ]
+ },
+ {
+  "id": "be34a631fa",
+  "ru": "Начать квест на {0} день<1>: {2}</1>",
+  "at": [
+   "src/features/quests/ui/QuestBoard.tsx"
+  ]
+ },
+ {
+  "id": "8b329a57cf",
+  "ru": "Квест: {0}",
+  "at": [
+   "src/features/quests/ui/QuestBoard.tsx"
+  ]
+ },
+ {
+  "id": "9c81ad5643",
+  "ru": "Отмечено {0} из {1}",
+  "at": [
+   "src/features/quests/ui/QuestBoard.tsx"
+  ]
+ },
+ {
+  "id": "9d29e6784f",
+  "ru": "Отмечено {0} из {1}. Серия: {2} {3}.",
+  "at": [
+   "src/features/quests/ui/QuestBoard.tsx"
+  ]
+ },
+ {
+  "id": "dd885f5433",
+  "ru": "Открыть бонусные годы",
+  "at": [
+   "src/features/quests/ui/QuestBoard.tsx"
+  ]
+ },
+ {
+  "id": "2e19569599",
+  "ru": "Сегодня отмечено. <0>Отменить</0>",
+  "at": [
+   "src/features/quests/ui/QuestBoard.tsx"
+  ]
+ },
+ {
+  "id": "3b281fa2f1",
+  "ru": "Сегодня получилось",
+  "at": [
+   "src/features/quests/ui/QuestBoard.tsx"
+  ]
+ },
+ {
+  "id": "44392ed3cb",
+  "ru": "Отказаться от квеста",
+  "at": [
+   "src/features/quests/ui/QuestBoard.tsx"
+  ]
+ },
+ {
   "id": "df5763ef79",
   "ru": "см",
   "at": [
@@ -6112,27 +6372,6 @@
  {
   "id": "f953ae342a",
   "ru": "индекс массы тела, {0}",
-  "at": [
-   "src/features/quiz/ui/BodyStep.tsx"
-  ]
- },
- {
-  "id": "ef89f7060f",
-  "ru": "{0}: меньше",
-  "at": [
-   "src/features/quiz/ui/BodyStep.tsx"
-  ]
- },
- {
-  "id": "3b3c4f1578",
-  "ru": "Не указан",
-  "at": [
-   "src/features/quiz/ui/BodyStep.tsx"
-  ]
- },
- {
-  "id": "f1b58fb65d",
-  "ru": "{0}: больше",
   "at": [
    "src/features/quiz/ui/BodyStep.tsx"
   ]
@@ -6231,6 +6470,20 @@
  {
   "id": "64bd2adfab",
   "ru": "Пол и возраст задают исходную кривую риска, от которой модель считает всё остальное.",
+  "at": [
+   "src/features/quiz/ui/QuizApp.tsx"
+  ]
+ },
+ {
+  "id": "ae2fa133e6",
+  "ru": "Блок «{0}» пройден",
+  "at": [
+   "src/features/quiz/ui/QuizApp.tsx"
+  ]
+ },
+ {
+  "id": "b4a75dd077",
+  "ru": "Значок {0} из {1}",
   "at": [
    "src/features/quiz/ui/QuizApp.tsx"
   ]
@@ -6789,20 +7042,6 @@
   ]
  },
  {
-  "id": "1f65f83f9c",
-  "ru": "Три изменения, которые сильнее всего сдвинут прогноз.",
-  "at": [
-   "src/features/report/ui/ReportView.tsx"
-  ]
- },
- {
-  "id": "cde87c5884",
-  "ru": "По всем привычкам вы уже на лучших вариантах. Проходите тест раз в полгода, чтобы так и оставалось.",
-  "at": [
-   "src/features/report/ui/ReportView.tsx"
-  ]
- },
- {
   "id": "8e3f00f955",
   "ru": "Что обсудить с врачом",
   "at": [
@@ -7300,6 +7539,27 @@
   "ru": "Подсказка",
   "at": [
    "src/shared/ui/Quiz.tsx"
+  ]
+ },
+ {
+  "id": "ef89f7060f",
+  "ru": "{0}: меньше",
+  "at": [
+   "src/shared/ui/Slider.tsx"
+  ]
+ },
+ {
+  "id": "3b3c4f1578",
+  "ru": "Не указан",
+  "at": [
+   "src/shared/ui/Slider.tsx"
+  ]
+ },
+ {
+  "id": "f1b58fb65d",
+  "ru": "{0}: больше",
+  "at": [
+   "src/shared/ui/Slider.tsx"
   ]
  },
  {

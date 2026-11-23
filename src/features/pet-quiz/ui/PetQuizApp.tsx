@@ -7,6 +7,7 @@ import { PET_FACTOR_BY_SLUG, petHelp, petOptions, petQuestion, type PetFactor, t
 import { nb } from "@/shared/lib/format";
 import { isEditLink, readStepFromUrl, writeStepToUrl } from "@/shared/lib/step-url";
 import { Options, Question, QuizTop, type HeadingRef } from "@/shared/ui/Quiz";
+import { Slider } from "@/shared/ui/Slider";
 import { PET_QUESTIONS, stepsFor } from "../model/steps";
 import { ageOf, usePetHydrated, usePetQuiz } from "../model/store";
 import { FALLBACK_PET_LOOK, PET_LOOKS } from "./visuals";
@@ -271,56 +272,33 @@ function AgeStep({ headingRef, error }: { headingRef: HeadingRef; error: string 
   const years = usePetQuiz((s) => s.years);
   const months = usePetQuiz((s) => s.months);
   const setAge = usePetQuiz((s) => s.setAge);
-  const [y, setY] = useState(years !== undefined ? String(years) : "");
-  const [m, setM] = useState(months ? String(months) : "");
-  const update = (ny: string, nm: string) => {
-    const a = ny === "" ? undefined : Number(ny);
-    const b = nm === "" ? undefined : Number(nm);
-    const okY = a === undefined || (Number.isInteger(a) && a >= 0 && a <= 30);
-    const okM = b === undefined || (Number.isInteger(b) && b >= 0 && b <= 11);
-    setAge(okY ? a : undefined, okM ? b : undefined);
-  };
+  const valid = (n: number | undefined, top: number) => n === undefined || (Number.isInteger(n) && n >= 0 && n <= top);
+  const update = (ny: number | undefined, nm: number | undefined) =>
+    setAge(valid(ny, 30) ? ny : undefined, valid(nm, 11) ? nm : undefined);
   return (
     <fieldset>
       <Question look={PET_LOOKS.age} headingRef={headingRef} title="Сколько питомцу лет?" help="Если точно не знаете, укажите примерно." helpId="help-pet-age" />
-      <div className="numbers">
-        <div className="number">
-          <label htmlFor="pet-years">Лет</label>
-          <input
-            id="pet-years"
-            type="number"
-            inputMode="numeric"
-            autoComplete="off"
-            min={0}
-            max={30}
-            value={y}
-            aria-invalid={error ? true : undefined}
-            aria-describedby="help-pet-age pet-age-error"
-            onChange={(e) => {
-              setY(e.target.value);
-              update(e.target.value, m);
-            }}
-          />
-          <span className="number__unit">полных лет</span>
-        </div>
-        <div className="number">
-          <label htmlFor="pet-months">Месяцев</label>
-          <input
-            id="pet-months"
-            type="number"
-            inputMode="numeric"
-            autoComplete="off"
-            min={0}
-            max={11}
-            value={m}
-            aria-describedby="help-pet-age pet-age-error"
-            onChange={(e) => {
-              setM(e.target.value);
-              update(y, e.target.value);
-            }}
-          />
-          <span className="number__unit">сверх лет</span>
-        </div>
+      <div className="sliders">
+        <Slider
+          id="pet-years"
+          label="Лет"
+          scale={{ min: 0, max: 25, step: 1, rest: 5, unit: "полных лет" }}
+          base={years}
+          inputMode="numeric"
+          onBase={(n) => update(n, months)}
+          invalid={Boolean(error)}
+          describedBy="help-pet-age pet-age-error"
+        />
+        <Slider
+          id="pet-months"
+          label="Месяцев"
+          scale={{ min: 0, max: 11, step: 1, rest: 0, unit: "сверх лет" }}
+          base={months || undefined}
+          inputMode="numeric"
+          onBase={(n) => update(years, n)}
+          invalid={false}
+          describedBy="help-pet-age pet-age-error"
+        />
       </div>
       <p className="error" id="pet-age-error" role="alert">
         {error}

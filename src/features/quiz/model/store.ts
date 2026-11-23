@@ -45,6 +45,8 @@ interface QuizState {
   cancelEdit: () => void;
   /** Saves the changed answers over the last attempt. */
   amend: () => Attempt | null;
+  /** A new attempt like the last one, with one answer changed: a quest kept. */
+  adopt: (slug: string, option: string) => Attempt | null;
   restart: () => void;
   wipe: () => void;
 }
@@ -173,6 +175,13 @@ export const useQuiz = create<QuizState>()(
         const attempt = attemptOf(state, last.date);
         if (!attempt) return null;
         set({ history: [...state.history.slice(0, -1), attempt], completed: true, editing: false });
+        return attempt;
+      },
+      adopt: (slug, option) => {
+        const last = get().history.at(-1);
+        if (!last) return null;
+        const attempt: Attempt = { ...last, date: new Date().toISOString(), answers: { ...last.answers, [slug]: option } };
+        set((s) => ({ history: [...s.history, attempt].slice(-12) }));
         return attempt;
       },
       restart: () => set({ step: 0, completed: false, editing: false }),

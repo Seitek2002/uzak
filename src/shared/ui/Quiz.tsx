@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode, type RefObject } from "react";
+import { Check } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { nb } from "@/shared/lib/format";
 import { HintRow, OptionVisual, type QuestionLook } from "./Visual";
 import { Wordmark } from "./Wordmark";
@@ -9,7 +10,7 @@ import { Wordmark } from "./Wordmark";
 const SHORT_HELP = 48;
 
 /** Pause between a tap on an answer and the next question: long enough to see the pick land. */
-export const AUTO_ADVANCE_MS = 280;
+export const AUTO_ADVANCE_MS = 420;
 
 export type HeadingRef = RefObject<HTMLHeadingElement | null>;
 
@@ -100,6 +101,24 @@ export function usePointerAdvance(onPick: () => void) {
   };
 }
 
+/** A short buzz on phones that have it, unless the person asked for less motion. */
+function cheer() {
+  if (typeof navigator === "undefined" || !("vibrate" in navigator)) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  navigator.vibrate(12);
+}
+
+/** Sparks that fly out of the tile of the picked answer. */
+function Burst() {
+  return (
+    <span className="burst" aria-hidden="true">
+      {Array.from({ length: 10 }, (_, i) => (
+        <i key={i} style={{ "--turn": `${i * 36 + 18}deg` } as React.CSSProperties} />
+      ))}
+    </span>
+  );
+}
+
 /** Radio answers as full-width rows; a tap picks and moves on. */
 export function Options({
   name,
@@ -121,6 +140,8 @@ export function Options({
   look: QuestionLook;
 }) {
   const { onPointerDown, afterChange } = usePointerAdvance(onPick);
+  // Each pick replays the burst, even on the same answer.
+  const [picks, setPicks] = useState(0);
   return (
     <>
       <ul className="options" onPointerDown={onPointerDown}>
@@ -135,12 +156,18 @@ export function Options({
               aria-describedby={describedBy}
               onChange={() => {
                 onChange(o.id);
+                setPicks((n) => n + 1);
+                cheer();
                 afterChange();
               }}
             />
             <label htmlFor={`${name}-${o.id}`}>
+              {look.options?.[o.id] ? <OptionVisual visual={look.options[o.id]} /> : <span className="option__blank" aria-hidden="true" />}
               <span>{o.label}</span>
-              {look.options?.[o.id] && <OptionVisual visual={look.options[o.id]} />}
+              <span className="option__check" aria-hidden="true">
+                <Check size={16} strokeWidth={3} />
+              </span>
+              {value === o.id && picks > 0 && <Burst key={picks} />}
             </label>
           </li>
         ))}

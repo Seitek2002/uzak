@@ -38,13 +38,14 @@ export function falling(ids: string[], to = 1): Record<string, Visual> {
 
 const HEIGHTS = [0.35, 1];
 
+/** The picture of an answer, in a tile at the start of its row. */
 export function OptionVisual({ visual }: { visual: Visual }) {
   if (visual.kind === "icon") {
     const Glyph = visual.icon;
     return (
       <span className="option__visual" aria-hidden="true">
         {Array.from({ length: visual.times ?? 1 }, (_, i) => (
-          <Glyph key={i} size={24} strokeWidth={2} />
+          <Glyph key={i} size={visual.times && visual.times > 1 ? 18 : 24} strokeWidth={2} />
         ))}
       </span>
     );

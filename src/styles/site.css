@@ -22,6 +22,8 @@
   --nav-banner: 40px;
   --nav-bar: 72px;
   --figure-xl: clamp(4.5rem, 10.2vw, 10rem);
+  /* Overshoots a little and settles: the answer tile when it is picked. */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --figure-l: clamp(3.5rem, 6.4vw, 6.5rem);
   --figure-m: clamp(2.5rem, 3.6vw, 3.5rem);
   --col: calc((var(--container) - 2 * var(--gutter) - 11 * var(--gap-columns)) / 12);
@@ -505,10 +507,20 @@ a.choice-big { text-decoration: none; }
 .hints { display: flex; flex-wrap: wrap; gap: var(--space-sm) var(--space-lg); margin: 0; padding: 0; list-style: none; font-size: var(--text-sm); color: var(--color-ink-2); }
 .hints li { display: inline-flex; align-items: center; gap: var(--space-xs); }
 .hints svg { color: var(--color-field-text); }
-.option__visual { display: flex; justify-content: flex-end; align-items: center; gap: var(--space-3xs); min-width: 48px; color: var(--color-field-text); }
-.meter { height: 28px; align-items: flex-end; }
-.meter__bar { width: 6px; height: 28px; background: var(--color-paper-3); transform-origin: bottom; }
-.meter__bar.is-on { background: var(--color-field); }
+.option__visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  width: 48px;
+  height: 48px;
+  background: var(--color-paper-2);
+  color: var(--color-field-text);
+  transition: background-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out);
+}
+.meter { align-items: flex-end; gap: 3px; padding-block: 10px; }
+.meter__bar { width: 5px; height: 28px; background: var(--color-paper-3); transform-origin: bottom; }
+.meter__bar.is-on { background: currentColor; }
 .bmi-scale { position: relative; max-width: 36rem; height: 12px; margin-block: var(--space-sm); background: var(--color-paper-3); }
 .bmi-scale__norm { position: absolute; inset-block: 0; background: var(--color-field); }
 .bmi-scale__you { position: absolute; inset-block: -8px; width: 6px; margin-inline-start: -3px; background: var(--color-mark); }
@@ -518,8 +530,9 @@ a.choice-big { text-decoration: none; }
 .option:last-child { border-bottom: 1px solid var(--color-rule); }
 .option input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
 .option label {
+  position: relative;
   display: grid;
-  grid-template-columns: 24px minmax(0, 1fr) auto;
+  grid-template-columns: 48px minmax(0, 1fr) 28px;
   align-items: center;
   gap: var(--space-md);
   min-height: 64px;
@@ -529,10 +542,44 @@ a.choice-big { text-decoration: none; }
   cursor: pointer;
   transition: background-color var(--dur-short) var(--ease-out);
 }
-.option label::before { content: ""; width: 24px; height: 24px; box-shadow: inset 0 0 0 2px var(--color-ink); background: var(--color-paper); }
+.option__blank { width: 48px; height: 48px; }
+.option__check {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  box-shadow: inset 0 0 0 2px var(--color-muted);
+  color: var(--color-mark-ink);
+}
+.option__check svg { opacity: 0; transform: scale(0.4); transition: opacity var(--dur-micro) var(--ease-out), transform var(--dur-short) var(--ease-spring); }
 .option label:hover { background: var(--color-paper-2); }
+.option label:hover .option__visual { background: var(--color-field); color: var(--color-field-ink); }
 .option input:checked + label { background: var(--color-paper-2); }
-.option input:checked + label::before { background: var(--color-mark); box-shadow: inset 0 0 0 2px var(--color-mark); }
+.option input:checked + label .option__visual { background: var(--color-mark); color: var(--color-mark-ink); animation: tile-pop var(--dur-long) var(--ease-spring); }
+.option input:checked + label .option__visual svg { animation: glyph-wiggle var(--dur-long) var(--ease-out); }
+.option input:checked + label .option__check { background: var(--color-mark); box-shadow: none; }
+.option input:checked + label .option__check svg { opacity: 1; transform: none; }
+@keyframes tile-pop { 0% { transform: scale(1); } 35% { transform: scale(1.22); } 100% { transform: scale(1); } }
+@keyframes glyph-wiggle { 0% { transform: rotate(0); } 30% { transform: rotate(-14deg); } 60% { transform: rotate(10deg); } 100% { transform: rotate(0); } }
+
+/* Sparks out of the picked tile: they fly from its centre and fade. */
+.burst { position: absolute; inset-block: 0; inset-inline-start: var(--space-md); width: 48px; pointer-events: none; }
+.burst i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  margin: -4px;
+  background: var(--color-mark);
+  opacity: 0;
+  animation: spark 600ms var(--ease-out) forwards;
+}
+.burst i:nth-child(even) { background: var(--color-field); width: 6px; height: 6px; margin: -3px; }
+@keyframes spark {
+  0% { opacity: 1; transform: rotate(var(--turn)) translateX(10px) scale(1); }
+  100% { opacity: 0; transform: rotate(var(--turn)) translateX(58px) scale(0.4); }
+}
 .option input:focus-visible + label { outline: 2px solid var(--color-focus); outline-offset: -2px; }
 .option input:disabled + label { opacity: 0.55; cursor: not-allowed; }
 .option label:active { transform: translateY(1px); }
@@ -749,6 +796,48 @@ a.choice-big { text-decoration: none; }
 .starts h3 a:hover { color: var(--color-mark-text); text-decoration: underline; }
 .starts p { color: var(--color-ink-2); }
 
+/* Bonus years: the bank, the quests under way and what they unlocked. */
+.bank { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-lg) var(--gap-columns); margin-bottom: var(--space-2xl); padding: var(--space-xl); background: var(--color-field); color: var(--color-field-ink); }
+.bank .figure { font-size: var(--figure-m); }
+.bank p:not(.figure) { font-size: var(--text-sm); font-weight: 500; }
+.bank .bank__news { grid-column: 1 / -1; font-size: var(--text-lg); }
+.starts > li.quest.is-on { box-shadow: inset 0 4px 0 var(--color-mark); }
+.quest__box { position: relative; display: grid; gap: var(--space-sm); padding-top: var(--space-md); border-top: 1px solid var(--color-rule); }
+.quest__box .btn { justify-self: start; }
+.quest__title { font-weight: 500; color: var(--color-ink); }
+.quest__days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin: 0; padding: 0; list-style: none; }
+.quest__days li { aspect-ratio: 1; background: var(--color-paper-3); }
+.quest__days li.is-on { background: var(--color-mark); animation: tile-pop var(--dur-long) var(--ease-spring); }
+.quest__count, .quest__today { font-size: var(--text-sm); font-variant-numeric: tabular-nums; }
+.quest__drop { justify-self: start; font-size: var(--text-sm); }
+.quest__go { justify-self: start; }
+.burst--big { inset: 0; width: auto; }
+.burst--big i { animation: spark-big 900ms var(--ease-out) forwards; }
+@keyframes spark-big {
+  0% { opacity: 1; transform: rotate(var(--turn)) translateX(12px) scale(1.2); }
+  100% { opacity: 0; transform: rotate(var(--turn)) translateX(140px) scale(0.4); }
+}
+.quests-done { display: grid; gap: var(--space-md); margin-top: var(--space-2xl); }
+.quests-done h3 { font-size: var(--text-title); }
+.quests-done ul { display: grid; margin: 0; padding: 0; list-style: none; }
+.quests-done li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: baseline; gap: var(--space-md); padding-block: var(--space-sm); border-top: 1px solid var(--color-rule); }
+.quests-done b { color: var(--color-mark-text); font-variant-numeric: tabular-nums; }
+
+.badges { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gap-columns); margin: 0; padding: 0; list-style: none; }
+.badge { display: grid; gap: var(--space-xs); justify-items: start; align-content: start; padding: var(--space-lg); background: var(--color-paper-2); }
+.badge__icon { display: grid; place-items: center; width: 56px; height: 56px; margin-bottom: var(--space-xs); background: var(--color-paper-3); color: var(--color-ink-2); }
+.badge.is-on .badge__icon { background: var(--color-mark); color: var(--color-mark-ink); }
+.badge b { font-family: var(--font-display); font-size: var(--text-lg); letter-spacing: -0.02em; line-height: 1.2; }
+.badge__how { font-size: var(--text-sm); color: var(--color-ink-2); }
+
+/* The badge for a finished block of the test: it slides up and goes by itself. */
+.toast-slot { position: fixed; inset-inline: 0; top: calc(var(--nav-bar) + var(--space-sm)); z-index: 30; display: flex; justify-content: center; padding-inline: var(--gutter); pointer-events: none; }
+.toast { display: flex; align-items: center; gap: var(--space-md); max-width: 28rem; padding: var(--space-md) var(--space-lg); background: var(--color-ink); color: var(--color-paper); animation: toast-in var(--dur-long) var(--ease-spring); }
+.toast b { display: block; }
+.toast span span { font-size: var(--text-sm); }
+.toast svg { flex: none; color: var(--color-mark-ink); }
+@keyframes toast-in { from { opacity: 0; transform: translateY(-24px); } to { opacity: 1; transform: none; } }
+
 .checks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-lg) var(--gap-columns); margin: 0; padding: 0; list-style: none; }
 .checks li { display: grid; gap: var(--space-xs); padding-top: var(--space-md); border-top: 1px solid var(--color-rule); }
 .checks b { font-family: var(--font-display); font-size: var(--text-title); letter-spacing: -0.02em; line-height: 1.2; }
@@ -804,6 +893,8 @@ a.choice-big { text-decoration: none; }
   .close__head, .close__choice, .faq__head, .faq__list { grid-column: 1 / -1; }
   .faq { row-gap: var(--space-xl); }
   .starts { grid-template-columns: minmax(0, 1fr); }
+  .badges { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bank { padding: var(--space-lg); }
   .split-page__main, .split-page__aside { grid-column: 1 / -1; }
   .split-page__aside { position: static; }
   .library__group > h2, .library__group > ul { grid-column: 1 / -1; }
@@ -846,6 +937,10 @@ a.choice-big { text-decoration: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .toast, .quest__days li.is-on { animation: none; }
+  .burst--big { display: none; }
+  .option input:checked + label .option__visual, .option input:checked + label .option__visual svg { animation: none; }
+  .burst { display: none; }
   .bar, .bar.is-tucked { transform: none; transition: none; }
   .progress span, .life span { transition: none; }
   .faq summary::after { transition: none; }
@@ -888,6 +983,7 @@ a.choice-big { text-decoration: none; }
 }
 
 @media print {
+  .toast-slot, .quest__box .btn, .quest__drop { display: none; }
   .banner, .bar, .mast, .no-print { display: none !important; }
   .field, .field--mark { background: none; color: var(--color-ink); }
   .report-hero__field { padding: 0; }
