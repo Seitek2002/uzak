@@ -17,17 +17,10 @@ export function PetReportView() {
   const hydrated = usePetHydrated();
   const history = usePetQuiz((s) => s.history);
 
-  if (!hydrated) {
+  if (!hydrated || history.length === 0) {
     return (
-      <div className="container empty">
-        <p className="muted">Открываем отчёт…</p>
-      </div>
-    );
-  }
-
-  if (history.length === 0) {
-    return (
-      <div className="container empty">
+      <div className={hydrated ? "container empty" : "container empty empty--pet"}>
+        {hydrated ? null : <p className="muted empty__wait">Открываем отчёт…</p>}
         <h1>Отчёта для питомца пока нет</h1>
         <p className="lead">Он появится после теста о кошке или собаке. Ответы останутся на этом устройстве.</p>
         <div className="actions">

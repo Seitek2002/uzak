@@ -764,6 +764,9 @@ a.choice-big { text-decoration: none; }
 
 .empty { display: grid; gap: var(--space-lg); align-content: start; min-height: calc(100svh - var(--nav-bar)); padding-block: var(--section-gap-s); }
 .empty h1 { font-size: var(--text-display-s); max-width: 18ch; }
+.empty__wait { display: none; }
+.saved-human .empty--human > :not(.empty__wait), .saved-pet .empty--pet > :not(.empty__wait) { display: none; }
+.saved-human .empty--human > .empty__wait, .saved-pet .empty--pet > .empty__wait { display: block; }
 
 /* ---------- Responsive ---------- */
 
@@ -846,6 +849,42 @@ a.choice-big { text-decoration: none; }
   .bar, .bar.is-tucked { transform: none; transition: none; }
   .progress span, .life span { transition: none; }
   .faq summary::after { transition: none; }
+}
+
+/*
+ * What is below the first screen is laid out as it comes near the screen, so
+ * the first layout shapes a screen of text and not the whole page. Find in
+ * page and screen readers still see all of it. Only where the clip margin
+ * exists: without it the containment would cut focus rings at the edges.
+ * The sizes are the measured heights and only stand in until a block renders.
+ * A script in the layout lifts it block by block after the load ([data-laid]),
+ * then for the whole page (.laid-out).
+ */
+@media screen {
+  @supports (content-visibility: auto) and (overflow-clip-margin: 8px) {
+    :root:not(.laid-out) :is(
+      #main > .section:not(:first-child),
+      .library__group:not(:first-child),
+      .prose > section,
+      .prose > :is(p, ul, ol, div):nth-child(n+4),
+      .mast
+    ):not([data-laid]) { content-visibility: auto; overflow-clip-margin: 8px; }
+    #main > .section:not(:first-child) { contain-intrinsic-block-size: auto 720px; }
+    .library__group:not(:first-child) { contain-intrinsic-block-size: auto 520px; }
+    .prose > section { contain-intrinsic-block-size: auto 840px; }
+    .prose > :is(p, ul, ol, div):nth-child(n+4) { contain-intrinsic-block-size: auto 130px; }
+    .mast { contain-intrinsic-block-size: auto 534px; }
+    /* Below 60rem the side list stands under the article. */
+    @media (max-width: 60rem) {
+      :root:not(.laid-out) .split-page__aside:not([data-laid]) { content-visibility: auto; overflow-clip-margin: 8px; contain-intrinsic-block-size: auto 420px; }
+    }
+    @media (max-width: 40rem) {
+      .library__group:not(:first-child) { contain-intrinsic-block-size: auto 780px; }
+      .prose > section { contain-intrinsic-block-size: auto 1050px; }
+      .prose > :is(p, ul, ol, div):nth-child(n+4) { contain-intrinsic-block-size: auto 190px; }
+      .mast { contain-intrinsic-block-size: auto 618px; }
+    }
+  }
 }
 
 @media print {

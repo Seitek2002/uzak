@@ -17,17 +17,10 @@ export function ReportView() {
   const hydrated = useHydrated();
   const history = useQuiz((s) => s.history);
 
-  if (!hydrated) {
+  if (!hydrated || history.length === 0) {
     return (
-      <div className="container empty">
-        <p className="muted">Открываем отчёт…</p>
-      </div>
-    );
-  }
-
-  if (history.length === 0) {
-    return (
-      <div className="container empty">
+      <div className={hydrated ? "container empty" : "container empty empty--human"}>
+        {hydrated ? null : <p className="muted empty__wait">Открываем отчёт…</p>}
         <h1>Отчёта пока нет</h1>
         <p className="lead">
           Он появится после теста: {TOTAL} вопросов, около {SITE.minutes} минут. Ответы останутся на этом устройстве.

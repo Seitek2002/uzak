@@ -49,6 +49,10 @@ async function context(browser, locale, viewport = { width: 375, height: 812 }) 
 
 /** What a reader of this language must never meet on a page, and what sticks out of it. */
 function inspect({ code }) {
+  // Blocks below the screen are laid out late: measure them laid out.
+  const all = document.createElement("style");
+  all.textContent = "*{content-visibility:visible!important}";
+  document.head.append(all);
   const seen = [document.title, document.querySelector('meta[name="description"]')?.content ?? ""];
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   while (walker.nextNode()) {
@@ -89,6 +93,7 @@ function inspect({ code }) {
       fallback.push(`${el.tagName.toLowerCase()} "${own.trim().slice(0, 40)}"`);
     }
   }
+  all.remove();
   return { lang: document.documentElement.lang, broken, foreign, outside, fallback };
 }
 

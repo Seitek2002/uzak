@@ -24,16 +24,10 @@ export function ResultScreen() {
   const hydrated = useHydrated();
   const last = useQuiz((s) => s.history.at(-1));
 
-  if (!hydrated) {
+  if (!hydrated || !last) {
     return (
-      <main id="main" className="container empty">
-        <p className="muted">Считаем результат…</p>
-      </main>
-    );
-  }
-  if (!last) {
-    return (
-      <main id="main" className="container empty">
+      <main id="main" className={hydrated ? "container empty" : "container empty empty--human"}>
+        {hydrated ? null : <p className="muted empty__wait">Считаем результат…</p>}
         <h1>Результата пока нет</h1>
         <p className="lead">Он появится сразу после теста.</p>
         <div className="actions">

@@ -74,5 +74,7 @@ for (const lang of LANGUAGES) {
   cpSync(path.join(copy, "out"), path.join(ROOT, "out", lang), { recursive: true });
 }
 
-execFileSync(process.execPath, [path.join(ROOT, "scripts", "flatten-segments.mjs"), path.join(ROOT, "out")], { stdio: "inherit" });
+for (const step of ["flatten-segments.mjs", "compile-hints.mjs"]) {
+  execFileSync(process.execPath, [path.join(ROOT, "scripts", step), path.join(ROOT, "out")], { stdio: "inherit" });
+}
 console.log(`built ru, ${LANGUAGES.join(", ")}${pseudo ? " (pseudo)" : ""}`);

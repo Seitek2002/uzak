@@ -39,7 +39,7 @@ export const LOCALE_KEY = "uzak-lang";
  */
 export const LOCALE_REDIRECT = `(function () {
   try {
-    if (/bot|crawl|spider|lighthouse/i.test(navigator.userAgent)) return;
+    if (/bot|crawl|spider/i.test(navigator.userAgent)) return;
     var saved = localStorage.getItem(${JSON.stringify(LOCALE_KEY)});
     var asked = (navigator.language || "ru").slice(0, 2).toLowerCase();
     var to = saved || (asked === "ky" ? "ky" : /^(ru|be|kk|tg|uz)$/.test(asked) ? "ru" : "en");
