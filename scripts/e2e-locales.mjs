@@ -37,6 +37,15 @@ const check = (name, ok, detail = "") => {
   results.push({ name, ok });
   console.log(`${ok ? "PASS" : "FAIL"}  ${name}${ok || !detail ? "" : `: ${detail}`}`);
 };
+
+/** The test opens on the choice of style; these checks walk through the plain form. */
+async function plainForm(page) {
+  const plain = page.locator(".pick__plain");
+  if (await plain.count()) {
+    await plain.click();
+    await page.waitForSelector("#quiz-progress");
+  }
+}
 const some = (list) => `${list.length}: ${[...new Set(list)].slice(0, 12).join(" | ")}`;
 
 async function context(browser, locale, viewport = { width: 375, height: 812 }) {
@@ -202,6 +211,7 @@ try {
     // 4. The whole test, question by question, then the screen and the report.
     await page.setViewportSize({ width: 320, height: 640 });
     await page.goto(`${home}/test/`, { waitUntil: "networkidle" });
+    await plainForm(page);
     let asked = 0;
     while (!/\/(report|result)\/?$/.test(new URL(page.url()).pathname) && asked < 60) {
       await look(page, `question ${asked + 1}`);
@@ -260,6 +270,7 @@ try {
     const ctx = await context(browser, "ru-RU");
     const page = await ctx.newPage();
     await page.goto(`${BASE}/test/`, { waitUntil: "networkidle" });
+    await plainForm(page);
     await answer(page);
     await page.locator(".option label").first().click();
     await page.waitForSelector("#age");

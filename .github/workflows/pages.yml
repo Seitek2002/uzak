@@ -28,7 +28,7 @@ jobs:
       - run: npm ci
 
       - name: Check the models
-        run: npm run test:model && npm run test:pet && npm run test:game
+        run: npm run test:model && npm run test:pet && npm run test:game && npm run test:journey
 
       - name: Check the translations
         run: npm run i18n:check

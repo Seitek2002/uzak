@@ -29,6 +29,15 @@ const check = (name, ok, detail = "") => {
   console.log(`${ok ? "PASS" : "FAIL"}  ${name}${ok || !detail ? "" : `: ${detail}`}`);
 };
 
+/** The test opens on the choice of style; these checks walk through the plain form. */
+async function plainForm(page) {
+  const plain = page.locator(".pick__plain");
+  if (await plain.count()) {
+    await plain.click();
+    await page.waitForSelector("#quiz-progress");
+  }
+}
+
 const heading = async (page) => (await page.locator(".quiz h1").innerText()).replace(/ /g, " ");
 const progress = async (page) => (await page.locator("#quiz-progress").innerText()).trim();
 const store = (page) => page.evaluate(() => JSON.parse(localStorage.getItem("uzak-v1") ?? "{}").state ?? {});
@@ -87,6 +96,7 @@ try {
   {
     const { ctx, page, errors } = await freshPage(browser, { width: 375, height: 812 });
     await page.goto(`${BASE}/test`, { waitUntil: "networkidle" });
+    await plainForm(page);
     check("test opens on question 1", (await progress(page)).startsWith("Вопрос 1 из"));
     let guard = 0;
     const bare = [];
@@ -152,6 +162,7 @@ try {
   {
     const { ctx, page } = await freshPage(browser, { width: 375, height: 812 });
     await page.goto(`${BASE}/test`, { waitUntil: "networkidle" });
+    await plainForm(page);
     await answer(page, 0);
     await answer(page);
     await answer(page);
@@ -180,6 +191,7 @@ try {
   {
     const { ctx, page } = await freshPage(browser, { width: 1280, height: 800 });
     await page.goto(`${BASE}/test`, { waitUntil: "networkidle" });
+    await plainForm(page);
     await answer(page);
     await page.focus("#sex-female");
     await page.keyboard.press("Space");
@@ -209,6 +221,7 @@ try {
   {
     const { ctx, page } = await freshPage(browser, { width: 375, height: 812 });
     await page.goto(`${BASE}/test`, { waitUntil: "networkidle" });
+    await plainForm(page);
     let guard = 0;
     while (!(await heading(page)).startsWith("Есть ли у вас свежие анализы") && guard < 60) {
       await answer(page, 0);
@@ -382,6 +395,7 @@ try {
       await ctx.addInitScript((s) => localStorage.getItem("uzak-v1") ?? localStorage.setItem("uzak-v1", JSON.stringify({ state: s, version: 2 })), state);
       const page = await ctx.newPage();
       await page.goto(`${BASE}/test?q=${q}`, { waitUntil: "networkidle" });
+      await plainForm(page);
       await page.waitForTimeout(400);
       return { ctx, page, asked };
     };

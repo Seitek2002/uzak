@@ -27,6 +27,15 @@ const check = (name, ok, detail = "") => {
   console.log(`${ok ? "PASS" : "FAIL"}  ${name}${ok || !detail ? "" : `: ${detail}`}`);
 };
 
+/** The test opens on the choice of style; these checks walk through the plain form. */
+async function plainForm(page) {
+  const plain = page.locator(".pick__plain");
+  if (await plain.count()) {
+    await plain.click();
+    await page.waitForSelector("#quiz-progress");
+  }
+}
+
 const answers = { "country-before": "KGZ", "country-next": "KGZ", smoking: "light", steps: "lt4", activity: "none", bmi: "30to35" };
 const human = { state: { name: "", answers: {}, step: 0, completed: true, editing: false, history: [{ date: "2026-11-01T10:00:00.000Z", profile: { sex: "male", age: 40 }, answers, body: { height: 178, weight: 100 } }] }, version: 2 };
 const pad = (n) => String(n).padStart(2, "0");
@@ -129,6 +138,7 @@ try {
     await ctx.addInitScript((h) => sessionStorage.getItem("seeded") || (localStorage.setItem("uzak-v1", JSON.stringify(h)), sessionStorage.setItem("seeded", "1")), fresh);
     const page = await ctx.newPage();
     await page.goto(`${BASE}/test/`, { waitUntil: "networkidle" });
+    await plainForm(page);
     const submit = () => page.click(".quiz__form button.btn[type=submit]");
     await submit();
     await page.locator(".option label").first().click();

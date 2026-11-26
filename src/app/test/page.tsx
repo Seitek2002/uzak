@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { QuizApp } from "@/features/quiz/ui/QuizApp";
+import { TestApp } from "@/features/quiz/ui/TestApp";
 import { SITE } from "@/shared/config/site";
 
 export const metadata: Metadata = {
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function TestPage() {
-  return <QuizApp />;
+  return <TestApp />;
 }

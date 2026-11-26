@@ -13,10 +13,12 @@
     "test:model": "node --experimental-strip-types --no-warnings scripts/validate-model.ts",
     "test:pet": "node --experimental-strip-types --no-warnings scripts/validate-pet.ts",
     "test:game": "node --experimental-strip-types --no-warnings scripts/validate-game.ts",
+    "test:journey": "node --experimental-strip-types --no-warnings scripts/validate-journey.ts",
     "model:print": "node --experimental-strip-types --no-warnings scripts/check-model.ts",
     "test:e2e": "node scripts/e2e.mjs",
     "test:e2e:locales": "node scripts/e2e-locales.mjs",
     "test:e2e:game": "node scripts/e2e-game.mjs",
+    "test:e2e:styles": "node scripts/e2e-styles.mjs",
     "life-tables": "node scripts/life-tables.mjs"
   },
   "dependencies": {

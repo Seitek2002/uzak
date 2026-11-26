@@ -1038,8 +1038,8 @@
   ]
  },
  {
-  "id": "8f997f2bb7",
-  "ru": "Имя, пол, возраст, страны, рост, вес, ответы на вопросы и даты прохождения. Всё это лежит в локальном хранилище браузера (localStorage) на этом устройстве под ключом uzak-v1.",
+  "id": "a286134cf8",
+  "ru": "Имя, пол, возраст, страны, рост, вес, ответы на вопросы, даты прохождения, выбранный стиль теста и включён ли в нём звук. Всё это лежит в локальном хранилище браузера (localStorage) на этом устройстве под ключом uzak-v1.",
   "at": [
    "src/app/(site)/privacy/page.tsx"
   ]
@@ -2726,7 +2726,8 @@
   "ru": "Анализы",
   "at": [
    "src/entities/factor/model/factors.ts",
-   "src/features/quiz/ui/QuizApp.tsx"
+   "src/features/quiz/ui/QuizApp.tsx",
+   "src/features/touch-quiz/ui/TouchApp.tsx"
   ]
  },
  {
@@ -5388,6 +5389,759 @@
   ]
  },
  {
+  "id": "605cea2eac",
+  "ru": "год",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx",
+   "src/features/journey/ui/JourneyApp.tsx",
+   "src/features/touch-quiz/ui/TouchApp.tsx",
+   "src/shared/lib/format.ts"
+  ]
+ },
+ {
+  "id": "ddf5d311dd",
+  "ru": "года",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx",
+   "src/features/journey/ui/JourneyApp.tsx",
+   "src/features/touch-quiz/ui/TouchApp.tsx",
+   "src/shared/lib/format.ts"
+  ]
+ },
+ {
+  "id": "5041b6f2d6",
+  "ru": "лет",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx",
+   "src/features/journey/ui/JourneyApp.tsx",
+   "src/features/quiz/ui/QuizApp.tsx",
+   "src/features/touch-quiz/ui/TouchApp.tsx",
+   "src/shared/lib/format.ts",
+   "src/widgets/home/HabitLab.tsx"
+  ]
+ },
+ {
+  "id": "2e07e00a22",
+  "ru": "Отлично!",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "97d5d28eba",
+  "ru": "Здорово, так держать.",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "e03cafa39e",
+  "ru": "Вот это да!",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "8beefd1f30",
+  "ru": "Прекрасно.",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "2aa5b12ce1",
+  "ru": "Красота.",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "8806667fb3",
+  "ru": "Записала.",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "34331b11ba",
+  "ru": "Понятно, идём дальше.",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "c4de05a09e",
+  "ru": "Принято.",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "276d537574",
+  "ru": "Хорошо.",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "6b21788ad6",
+  "ru": "Записала. В отчёте подскажу, что с этим делать.",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "2f8c6ac566",
+  "ru": "Ничего, это можно поменять.",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "93d7d553d0",
+  "ru": "Понимаю. Это поправимо.",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "e0ea58f309",
+  "ru": "Спасибо, что рассказали.",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "17f4d18f78",
+  "ru": "Записала, это важно учесть.",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "5187a779cf",
+  "ru": "Понимаю. Записала.",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "696586f496",
+  "ru": "Как вас зовут?",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx",
+   "src/features/quiz/ui/QuizApp.tsx",
+   "src/widgets/home/StartName.tsx"
+  ]
+ },
+ {
+  "id": "645d46adc0",
+  "ru": "Ваш пол",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx",
+   "src/features/quiz/ui/QuizApp.tsx",
+   "src/features/touch-quiz/ui/TouchApp.tsx"
+  ]
+ },
+ {
+  "id": "046a7746aa",
+  "ru": "Сколько вам полных лет?",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx",
+   "src/features/quiz/ui/QuizApp.tsx"
+  ]
+ },
+ {
+  "id": "64aaf724a5",
+  "ru": "Есть ли у вас свежие анализы крови?",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx",
+   "src/features/quiz/ui/QuizApp.tsx",
+   "src/features/touch-quiz/ui/TouchApp.tsx"
+  ]
+ },
+ {
+  "id": "b312c07213",
+  "ru": "Женский",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx",
+   "src/features/quiz/ui/QuizApp.tsx",
+   "src/features/report/ui/ReportView.tsx",
+   "src/features/touch-quiz/ui/TouchApp.tsx"
+  ]
+ },
+ {
+  "id": "082e5f4ebb",
+  "ru": "Мужской",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx",
+   "src/features/quiz/ui/QuizApp.tsx",
+   "src/features/report/ui/ReportView.tsx",
+   "src/features/touch-quiz/ui/TouchApp.tsx"
+  ]
+ },
+ {
+  "id": "b2757a935d",
+  "ru": "Да, посмотрю цифры",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx",
+   "src/features/quiz/ui/QuizApp.tsx",
+   "src/features/touch-quiz/ui/TouchApp.tsx"
+  ]
+ },
+ {
+  "id": "874227c45e",
+  "ru": "Нет, пропустить и посчитать результат",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx",
+   "src/features/quiz/ui/QuizApp.tsx",
+   "src/features/touch-quiz/ui/TouchApp.tsx"
+  ]
+ },
+ {
+  "id": "cdf641f250",
+  "ru": "Без имени",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "4d8406990e",
+  "ru": "{0} см, {1} кг",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx",
+   "src/features/report/ui/ReportView.tsx"
+  ]
+ },
+ {
+  "id": "15127086a5",
+  "ru": "Приятно познакомиться, {0}!",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "983c8ae988",
+  "ru": "У мужчин и женщин разная исходная продолжительность жизни.",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx",
+   "src/features/journey/ui/JourneyApp.tsx",
+   "src/features/quiz/ui/QuizApp.tsx",
+   "src/features/touch-quiz/ui/TouchApp.tsx"
+  ]
+ },
+ {
+  "id": "885b9baf41",
+  "ru": "Холестерин, сахар, СРБ и омега-3 за год.",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx",
+   "src/features/journey/ui/JourneyApp.tsx",
+   "src/features/quiz/ui/QuizApp.tsx",
+   "src/features/touch-quiz/ui/TouchApp.tsx"
+  ]
+ },
+ {
+  "id": "54cf327bed",
+  "ru": "Ала",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "1324ac006f",
+  "ru": "печатает…",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "547e035301",
+  "ru": "в сети",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "877040cd90",
+  "ru": "Прогноз",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx",
+   "src/features/pet-report/ui/PetReportView.tsx",
+   "src/features/report/ui/ReportView.tsx"
+  ]
+ },
+ {
+  "id": "309ce71808",
+  "ru": "К обычной анкете",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx",
+   "src/features/journey/ui/JourneyApp.tsx",
+   "src/features/touch-quiz/ui/TouchApp.tsx"
+  ]
+ },
+ {
+  "id": "b0e6ecc2e6",
+  "ru": "Переписка",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx",
+   "src/features/quiz/ui/StylePicker.tsx"
+  ]
+ },
+ {
+  "id": "1e1d1a7315",
+  "ru": "Привет! Я Ала, черепаха. Мы живём долго, и я знаю, от чего это зависит.",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "e0aa5cf774",
+  "ru": "Задам вопросы по очереди, а модель посчитает ваш прогноз. Отвечайте как есть: так он точнее.",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "2127c975af",
+  "ru": "Прогноз не изменился",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "daf45f974c",
+  "ru": "{0} к прогнозу",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "cca815c39e",
+  "ru": "Старт такой: {0}. Это средний прогноз для вашего пола, возраста и страны. Посмотрим, куда его сдвинут ответы.",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "ae2fa133e6",
+  "ru": "Блок «{0}» пройден",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx",
+   "src/features/journey/ui/JourneyApp.tsx",
+   "src/features/quiz/ui/QuizApp.tsx"
+  ]
+ },
+ {
+  "id": "c1abefb395",
+  "ru": "Ала печатает",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "418476e9b0",
+  "ru": "Готово! Ваш прогноз: {0}.",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "5f7d54ad6e",
+  "ru": "За разговор он сдвинулся на {0}.",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "70a99006de",
+  "ru": "Ещё {0} можно вернуть: в отчёте покажу, с чего начать.",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "fb1735278e",
+  "ru": "Посмотреть результат",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx",
+   "src/features/journey/ui/JourneyApp.tsx",
+   "src/features/touch-quiz/ui/TouchApp.tsx"
+  ]
+ },
+ {
+  "id": "75bd4cc1b0",
+  "ru": "{0}Отправить",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "a69adc2eb8",
+  "ru": "{0}Изменить прошлый ответ",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "72e222c609",
+  "ru": "Ала:",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "7c3bcf36a1",
+  "ru": "Вы:",
+  "at": [
+   "src/features/chat-quiz/ui/ChatApp.tsx"
+  ]
+ },
+ {
+  "id": "7e9c33dd47",
+  "ru": "Можно вернуть {0} {1}",
+  "at": [
+   "src/features/journey/ui/Cards.tsx"
+  ]
+ },
+ {
+  "id": "da742a745e",
+  "ru": "В копилку героя",
+  "at": [
+   "src/features/journey/ui/Cards.tsx"
+  ]
+ },
+ {
+  "id": "52eaede9cb",
+  "ru": "Учтено в прогнозе",
+  "at": [
+   "src/features/journey/ui/Cards.tsx"
+  ]
+ },
+ {
+  "id": "351d962823",
+  "ru": "Как у ровесников",
+  "at": [
+   "src/features/journey/ui/Cards.tsx"
+  ]
+ },
+ {
+  "id": "08ae0afe71",
+  "ru": "Создание героя",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "269d9611d1",
+  "ru": "Создание героя, шаг {0} из {1}",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "c3bbac7328",
+  "ru": "Путь {0}%",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "3bcc51963d",
+  "ru": "Звук",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "d3caef9ffc",
+  "ru": "Реликвии: {0} из {1}",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "36e99e48f8",
+  "ru": ", получена",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "c83c595b4f",
+  "ru": "Состояние героя",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "e9f08580d9",
+  "ru": "Герой",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "eb1dd31e95",
+  "ru": "Резерв <0>{1}</0>",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx",
+   "src/features/touch-quiz/ui/TouchApp.tsx"
+  ]
+ },
+ {
+  "id": "0b6bff05ca",
+  "ru": "Кто отправляется в путь?",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "81df436efe",
+  "ru": "Свернуть в лабораторию?",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "90037f2a9e",
+  "ru": "Женщина",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx",
+   "src/features/report/ui/ReportView.tsx"
+  ]
+ },
+ {
+  "id": "43ba94a001",
+  "ru": "Мужчина",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx",
+   "src/features/report/ui/ReportView.tsx"
+  ]
+ },
+ {
+  "id": "c2aef3af56",
+  "ru": "Да, у меня есть цифры",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "af91dd8f73",
+  "ru": "Нет, сразу к вершине",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "27451b132e",
+  "ru": "Сыграть карту",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "07ceefebbd",
+  "ru": "Отправиться в путь",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "e3b9331301",
+  "ru": "Дальше",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx",
+   "src/features/pet-quiz/ui/PetQuizApp.tsx",
+   "src/features/quiz/ui/QuizApp.tsx",
+   "src/features/touch-quiz/ui/TouchApp.tsx"
+  ]
+ },
+ {
+  "id": "293b838e45",
+  "ru": "{0}Назад",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx",
+   "src/features/touch-quiz/ui/TouchApp.tsx"
+  ]
+ },
+ {
+  "id": "0c6864019f",
+  "ru": "Почему спрашиваем",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx",
+   "src/features/pet-quiz/ui/PetQuizApp.tsx",
+   "src/features/quiz/ui/QuizApp.tsx"
+  ]
+ },
+ {
+  "id": "de6a810ada",
+  "ru": "Начало пути",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "10bc439349",
+  "ru": "Герой готов",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "b1d96d065c",
+  "ru": "Это стартовое HP: столько в среднем проживёт ваш ровесник в этой стране. Каждая сыгранная карта сдвинет его.",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "e182368f54",
+  "ru": "В путь",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "43763cd7e1",
+  "ru": "Привал",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "5d816f5f5b",
+  "ru": "{0} за блок",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "4faa8b79a3",
+  "ru": "Реликвия",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "13221d2000",
+  "ru": "{0} из {1}",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "23592c3486",
+  "ru": "Вершина",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "c8e2a8fb3f",
+  "ru": "Герой дошёл до конца пути",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "c70ec86b64",
+  "ru": "Старт",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "2646caa17a",
+  "ru": "За путь",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "4deafccab6",
+  "ru": "Реликвии",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "a3e60859e1",
+  "ru": "В резерве ещё {0}: их можно вернуть квестами в отчёте.",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "484d6a3081",
+  "ru": "Ключ от дома",
+  "at": [
+   "src/features/journey/ui/world.ts"
+  ]
+ },
+ {
+  "id": "0546d803b6",
+  "ru": "Песочные часы",
+  "at": [
+   "src/features/journey/ui/world.ts"
+  ]
+ },
+ {
+  "id": "309d48b88f",
+  "ru": "Сапоги-скороходы",
+  "at": [
+   "src/features/journey/ui/world.ts"
+  ]
+ },
+ {
+  "id": "01f7164462",
+  "ru": "Яблоко молодости",
+  "at": [
+   "src/features/journey/ui/world.ts"
+  ]
+ },
+ {
+  "id": "9f536e231d",
+  "ru": "Щит здоровья",
+  "at": [
+   "src/features/journey/ui/world.ts"
+  ]
+ },
+ {
+  "id": "f4d4c4194c",
+  "ru": "Компас путника",
+  "at": [
+   "src/features/journey/ui/world.ts"
+  ]
+ },
+ {
+  "id": "9d51914b95",
+  "ru": "Нить дружбы",
+  "at": [
+   "src/features/journey/ui/world.ts"
+  ]
+ },
+ {
+  "id": "c3ed7d5ba8",
+  "ru": "Родовое древо",
+  "at": [
+   "src/features/journey/ui/world.ts"
+  ]
+ },
+ {
+  "id": "095992cb82",
+  "ru": "Походная аптечка",
+  "at": [
+   "src/features/journey/ui/world.ts"
+  ]
+ },
+ {
+  "id": "855bed4b49",
+  "ru": "Колба знаний",
+  "at": [
+   "src/features/journey/ui/world.ts"
+  ]
+ },
+ {
   "id": "6b495cd683",
   "ru": "Для отчёта не хватает ответа на этот вопрос.",
   "at": [
@@ -5419,14 +6173,6 @@
   ]
  },
  {
-  "id": "e3b9331301",
-  "ru": "Дальше",
-  "at": [
-   "src/features/pet-quiz/ui/PetQuizApp.tsx",
-   "src/features/quiz/ui/QuizApp.tsx"
-  ]
- },
- {
   "id": "12a9997081",
   "ru": "Назад к вопросу {0}",
   "at": [
@@ -5447,14 +6193,6 @@
   "ru": "О питомце",
   "at": [
    "src/features/pet-quiz/ui/PetQuizApp.tsx"
-  ]
- },
- {
-  "id": "0c6864019f",
-  "ru": "Почему спрашиваем",
-  "at": [
-   "src/features/pet-quiz/ui/PetQuizApp.tsx",
-   "src/features/quiz/ui/QuizApp.tsx"
   ]
  },
  {
@@ -5592,7 +6330,7 @@
   "ru": "Выберите один из вариантов.",
   "at": [
    "src/features/pet-quiz/ui/PetQuizApp.tsx",
-   "src/features/quiz/ui/QuizApp.tsx"
+   "src/features/quiz/model/flow.ts"
   ]
  },
  {
@@ -6017,14 +6755,6 @@
   ]
  },
  {
-  "id": "877040cd90",
-  "ru": "Прогноз",
-  "at": [
-   "src/features/pet-report/ui/PetReportView.tsx",
-   "src/features/report/ui/ReportView.tsx"
-  ]
- },
- {
   "id": "eaf9cd4415",
   "ru": "Потенциал",
   "at": [
@@ -6314,6 +7044,27 @@
   ]
  },
  {
+  "id": "7dc75e3f87",
+  "ru": "Введите возраст числом от 18 до 99.",
+  "at": [
+   "src/features/quiz/model/flow.ts"
+  ]
+ },
+ {
+  "id": "081eb3dc44",
+  "ru": "Укажите рост от 120 до 230 см (от 3′11″ до 7′7″) и вес от 30 до 300 кг (от 66 до 661 фунта).",
+  "at": [
+   "src/features/quiz/model/flow.ts"
+  ]
+ },
+ {
+  "id": "97c5732767",
+  "ru": "Выберите страну из списка.",
+  "at": [
+   "src/features/quiz/model/flow.ts"
+  ]
+ },
+ {
   "id": "df5763ef79",
   "ru": "см",
   "at": [
@@ -6450,7 +7201,8 @@
   "id": "5af2ec8bd3",
   "ru": "О вас",
   "at": [
-   "src/features/quiz/ui/QuizApp.tsx"
+   "src/features/quiz/ui/QuizApp.tsx",
+   "src/features/touch-quiz/ui/TouchApp.tsx"
   ]
  },
  {
@@ -6475,25 +7227,10 @@
   ]
  },
  {
-  "id": "ae2fa133e6",
-  "ru": "Блок «{0}» пройден",
-  "at": [
-   "src/features/quiz/ui/QuizApp.tsx"
-  ]
- },
- {
   "id": "b4a75dd077",
   "ru": "Значок {0} из {1}",
   "at": [
    "src/features/quiz/ui/QuizApp.tsx"
-  ]
- },
- {
-  "id": "696586f496",
-  "ru": "Как вас зовут?",
-  "at": [
-   "src/features/quiz/ui/QuizApp.tsx",
-   "src/widgets/home/StartName.tsx"
   ]
  },
  {
@@ -6513,43 +7250,6 @@
   ]
  },
  {
-  "id": "645d46adc0",
-  "ru": "Ваш пол",
-  "at": [
-   "src/features/quiz/ui/QuizApp.tsx"
-  ]
- },
- {
-  "id": "983c8ae988",
-  "ru": "У мужчин и женщин разная исходная продолжительность жизни.",
-  "at": [
-   "src/features/quiz/ui/QuizApp.tsx"
-  ]
- },
- {
-  "id": "b312c07213",
-  "ru": "Женский",
-  "at": [
-   "src/features/quiz/ui/QuizApp.tsx",
-   "src/features/report/ui/ReportView.tsx"
-  ]
- },
- {
-  "id": "082e5f4ebb",
-  "ru": "Мужской",
-  "at": [
-   "src/features/quiz/ui/QuizApp.tsx",
-   "src/features/report/ui/ReportView.tsx"
-  ]
- },
- {
-  "id": "046a7746aa",
-  "ru": "Сколько вам полных лет?",
-  "at": [
-   "src/features/quiz/ui/QuizApp.tsx"
-  ]
- },
- {
   "id": "cc0ca309c7",
   "ru": "Тест для взрослых от 18 до 99 лет.",
   "at": [
@@ -6557,61 +7257,74 @@
   ]
  },
  {
-  "id": "5041b6f2d6",
-  "ru": "лет",
+  "id": "d889951036",
+  "ru": "Стиль 1",
   "at": [
-   "src/features/quiz/ui/QuizApp.tsx",
-   "src/shared/lib/format.ts",
-   "src/widgets/home/HabitLab.tsx"
+   "src/features/quiz/ui/StylePicker.tsx"
   ]
  },
  {
-  "id": "64aaf724a5",
-  "ru": "Есть ли у вас свежие анализы крови?",
+  "id": "a4b2abe972",
+  "ru": "Путь героя",
   "at": [
-   "src/features/quiz/ui/QuizApp.tsx"
+   "src/features/quiz/ui/StylePicker.tsx"
   ]
  },
  {
-  "id": "885b9baf41",
-  "ru": "Холестерин, сахар, СРБ и омега-3 за год.",
+  "id": "9ddccc9780",
+  "ru": "Стиль 2",
   "at": [
-   "src/features/quiz/ui/QuizApp.tsx"
+   "src/features/quiz/ui/StylePicker.tsx"
   ]
  },
  {
-  "id": "b2757a935d",
-  "ru": "Да, посмотрю цифры",
+  "id": "e363ec3140",
+  "ru": "Стиль 3",
   "at": [
-   "src/features/quiz/ui/QuizApp.tsx"
+   "src/features/quiz/ui/StylePicker.tsx"
   ]
  },
  {
-  "id": "874227c45e",
-  "ru": "Нет, пропустить и посчитать результат",
+  "id": "46f90a9f78",
+  "ru": "Копилка лет",
   "at": [
-   "src/features/quiz/ui/QuizApp.tsx"
+   "src/features/quiz/ui/StylePicker.tsx",
+   "src/features/touch-quiz/ui/TouchApp.tsx"
   ]
  },
  {
-  "id": "7dc75e3f87",
-  "ru": "Введите возраст числом от 18 до 99.",
+  "id": "86442535a0",
+  "ru": "Как будете проходить тест?",
   "at": [
-   "src/features/quiz/ui/QuizApp.tsx"
+   "src/features/quiz/ui/StylePicker.tsx"
   ]
  },
  {
-  "id": "081eb3dc44",
-  "ru": "Укажите рост от 120 до 230 см (от 3′11″ до 7′7″) и вес от 30 до 300 кг (от 66 до 661 фунта).",
+  "id": "3c7c56578e",
+  "ru": "Вопросы и результат везде одни и те же. Что за стилями, узнаете после выбора.",
   "at": [
-   "src/features/quiz/ui/QuizApp.tsx"
+   "src/features/quiz/ui/StylePicker.tsx"
   ]
  },
  {
-  "id": "97c5732767",
-  "ru": "Выберите страну из списка.",
+  "id": "26dc46c83d",
+  "ru": "Обычная анкета без сюрпризов",
   "at": [
-   "src/features/quiz/ui/QuizApp.tsx"
+   "src/features/quiz/ui/StylePicker.tsx"
+  ]
+ },
+ {
+  "id": "3048f7535e",
+  "ru": "{0}: {1}. Открываем…",
+  "at": [
+   "src/features/quiz/ui/StylePicker.tsx"
+  ]
+ },
+ {
+  "id": "e8dbcbf265",
+  "ru": "Загружаем стиль…",
+  "at": [
+   "src/features/quiz/ui/TestApp.tsx"
   ]
  },
  {
@@ -6944,20 +7657,6 @@
   ]
  },
  {
-  "id": "90037f2a9e",
-  "ru": "Женщина",
-  "at": [
-   "src/features/report/ui/ReportView.tsx"
-  ]
- },
- {
-  "id": "43ba94a001",
-  "ru": "Мужчина",
-  "at": [
-   "src/features/report/ui/ReportView.tsx"
-  ]
- },
- {
   "id": "a9cf80dd80",
   "ru": "У сверстников в тех же странах в среднем",
   "at": [
@@ -7065,13 +7764,6 @@
  {
   "id": "c1e25262cb",
   "ru": "Рост и вес",
-  "at": [
-   "src/features/report/ui/ReportView.tsx"
-  ]
- },
- {
-  "id": "4d8406990e",
-  "ru": "{0} см, {1} кг",
   "at": [
    "src/features/report/ui/ReportView.tsx"
   ]
@@ -7451,6 +8143,247 @@
   ]
  },
  {
+  "id": "a6ec1ab4d8",
+  "ru": "{0}. В копилке {1}.",
+  "at": [
+   "src/features/touch-quiz/ui/TouchApp.tsx"
+  ]
+ },
+ {
+  "id": "398c7d4f7b",
+  "ru": "Готово",
+  "at": [
+   "src/features/touch-quiz/ui/TouchApp.tsx"
+  ]
+ },
+ {
+  "id": "a1b274e404",
+  "ru": "Вопрос {0} из {1}",
+  "at": [
+   "src/features/touch-quiz/ui/TouchApp.tsx"
+  ]
+ },
+ {
+  "id": "312e204fc7",
+  "ru": "Копилка откроется после вопросов о вас",
+  "at": [
+   "src/features/touch-quiz/ui/TouchApp.tsx"
+  ]
+ },
+ {
+  "id": "39a0b9f8c6",
+  "ru": "В копилке",
+  "at": [
+   "src/features/touch-quiz/ui/TouchApp.tsx"
+  ]
+ },
+ {
+  "id": "ea4aab51f4",
+  "ru": "Копилка собрана",
+  "at": [
+   "src/features/touch-quiz/ui/TouchApp.tsx"
+  ]
+ },
+ {
+  "id": "6c051ccaf2",
+  "ru": "Со старта {0} копилка изменилась на {1}.",
+  "at": [
+   "src/features/touch-quiz/ui/TouchApp.tsx"
+  ]
+ },
+ {
+  "id": "79585df3b5",
+  "ru": "В резерве ещё {0}: в отчёте есть квесты, чтобы их добрать.",
+  "at": [
+   "src/features/touch-quiz/ui/TouchApp.tsx"
+  ]
+ },
+ {
+  "id": "b49e5c7be7",
+  "ru": "Ответ для теста: <0>{1}</0>",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx"
+  ]
+ },
+ {
+  "id": "5857b4794b",
+  "ru": "Ответ появится, когда начнёте",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx"
+  ]
+ },
+ {
+  "id": "ef89f7060f",
+  "ru": "{0}: меньше",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx",
+   "src/shared/ui/Slider.tsx"
+  ]
+ },
+ {
+  "id": "f1b58fb65d",
+  "ru": "{0}: больше",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx",
+   "src/shared/ui/Slider.tsx"
+  ]
+ },
+ {
+  "id": "dd4c590914",
+  "ru": "порция",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx"
+  ]
+ },
+ {
+  "id": "d22701cfa6",
+  "ru": "порции",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx"
+  ]
+ },
+ {
+  "id": "0859988e7c",
+  "ru": "порций",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx"
+  ]
+ },
+ {
+  "id": "1526c02015",
+  "ru": "Пусто",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx"
+  ]
+ },
+ {
+  "id": "6aa4227487",
+  "ru": "Порции за день",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx"
+  ]
+ },
+ {
+  "id": "e978f04573",
+  "ru": "Ни одной за неделю",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx"
+  ]
+ },
+ {
+  "id": "6e9e530c1c",
+  "ru": "Порции за неделю",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx"
+  ]
+ },
+ {
+  "id": "f4f5135231",
+  "ru": "Не пью",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx"
+  ]
+ },
+ {
+  "id": "ec56751d01",
+  "ru": "Ещё 5",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx"
+  ]
+ },
+ {
+  "id": "b3c2187f09",
+  "ru": "Часов сна за ночь",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx"
+  ]
+ },
+ {
+  "id": "285cc40014",
+  "ru": "ч",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx"
+  ]
+ },
+ {
+  "id": "bf80ccdb7c",
+  "ru": "Шагов в день",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx"
+  ]
+ },
+ {
+  "id": "03548f2280",
+  "ru": "шагов",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx"
+  ]
+ },
+ {
+  "id": "7356f9759f",
+  "ru": "Сядьте и посидите минуту. Положите два пальца на запястье или шею, нажмите «Начать» и касайтесь сердца на каждый удар.",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx"
+  ]
+ },
+ {
+  "id": "26dd19749c",
+  "ru": "Удар. Осталось {0} с",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx"
+  ]
+ },
+ {
+  "id": "3bcb04d50d",
+  "ru": "Начать замер пульса",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx"
+  ]
+ },
+ {
+  "id": "14eaa871df",
+  "ru": "Начать",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx",
+   "src/widgets/home/StartName.tsx"
+  ]
+ },
+ {
+  "id": "605dd68f42",
+  "ru": "Осталось {0} с",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx"
+  ]
+ },
+ {
+  "id": "6baaf8d828",
+  "ru": "{0} ударов в минуту",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx"
+  ]
+ },
+ {
+  "id": "018d518b15",
+  "ru": "Ударов слишком мало, попробуйте ещё раз",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx"
+  ]
+ },
+ {
+  "id": "03dbfbbf9b",
+  "ru": "Замерить ещё раз",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx"
+  ]
+ },
+ {
+  "id": "70e35c6b8d",
+  "ru": "Выбрать из вариантов",
+  "at": [
+   "src/features/touch-quiz/ui/Widgets.tsx"
+  ]
+ },
+ {
   "id": "a804d4f8a9",
   "ru": "Узак Өмүр",
   "at": [
@@ -7483,20 +8416,6 @@
   "ru": "Факторы",
   "at": [
    "src/shared/config/site.ts"
-  ]
- },
- {
-  "id": "605cea2eac",
-  "ru": "год",
-  "at": [
-   "src/shared/lib/format.ts"
-  ]
- },
- {
-  "id": "ddf5d311dd",
-  "ru": "года",
-  "at": [
-   "src/shared/lib/format.ts"
   ]
  },
  {
@@ -7542,22 +8461,8 @@
   ]
  },
  {
-  "id": "ef89f7060f",
-  "ru": "{0}: меньше",
-  "at": [
-   "src/shared/ui/Slider.tsx"
-  ]
- },
- {
   "id": "3b3c4f1578",
   "ru": "Не указан",
-  "at": [
-   "src/shared/ui/Slider.tsx"
-  ]
- },
- {
-  "id": "f1b58fb65d",
-  "ru": "{0}: больше",
   "at": [
    "src/shared/ui/Slider.tsx"
   ]
@@ -7581,13 +8486,6 @@
   "ru": "Прогноз {0}, с изменениями {1}",
   "at": [
    "src/widgets/home/HabitLab.tsx"
-  ]
- },
- {
-  "id": "14eaa871df",
-  "ru": "Начать",
-  "at": [
-   "src/widgets/home/StartName.tsx"
   ]
  },
  {

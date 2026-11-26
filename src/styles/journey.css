@@ -1,0 +1,546 @@
+/*
+ * "Путь героя", the game style of the test. Loaded with its chunk only.
+ * A night palette of its own: the site's tokens are redefined inside
+ * .journey, so the reused fields (name, age, country, height and weight)
+ * follow it without their own rules. The sky and the land take the biome
+ * tokens below; registered properties let them blend from block to block.
+ */
+
+@property --sky-top { syntax: "<color>"; inherits: true; initial-value: transparent; }
+@property --sky-mid { syntax: "<color>"; inherits: true; initial-value: transparent; }
+@property --sky-low { syntax: "<color>"; inherits: true; initial-value: transparent; }
+@property --sun { syntax: "<color>"; inherits: true; initial-value: transparent; }
+@property --back { syntax: "<color>"; inherits: true; initial-value: transparent; }
+@property --far { syntax: "<color>"; inherits: true; initial-value: transparent; }
+@property --snow { syntax: "<color>"; inherits: true; initial-value: transparent; }
+@property --mist { syntax: "<color>"; inherits: true; initial-value: transparent; }
+@property --mid { syntax: "<color>"; inherits: true; initial-value: transparent; }
+@property --mid-tree { syntax: "<color>"; inherits: true; initial-value: transparent; }
+@property --near { syntax: "<color>"; inherits: true; initial-value: transparent; }
+@property --near-tree { syntax: "<color>"; inherits: true; initial-value: transparent; }
+@property --ground { syntax: "<color>"; inherits: true; initial-value: transparent; }
+@property --trail { syntax: "<color>"; inherits: true; initial-value: transparent; }
+@property --stone { syntax: "<color>"; inherits: true; initial-value: transparent; }
+@property --tuft { syntax: "<color>"; inherits: true; initial-value: transparent; }
+@property --sun-y { syntax: "<length>"; inherits: true; initial-value: 0px; }
+@property --stars { syntax: "<number>"; inherits: true; initial-value: 0; }
+
+:root {
+  --j-night: oklch(15.5% 0.03 262);
+  --j-night-2: oklch(20% 0.034 262);
+  --j-night-3: oklch(26% 0.034 262);
+  --j-line: oklch(34% 0.03 262);
+  --j-ivory: oklch(95.5% 0.014 85);
+  --j-ivory-2: oklch(86% 0.018 85);
+  --j-muted: oklch(74% 0.022 262);
+  --j-gold: oklch(83% 0.12 84);
+  --j-gold-hi: oklch(92% 0.08 90);
+  --j-gold-deep: oklch(60% 0.1 72);
+  --j-gold-glow: oklch(83% 0.12 84 / 0.32);
+  --j-heal: oklch(82% 0.16 152);
+  --j-heal-deep: oklch(64% 0.15 155);
+  --j-heal-glow: oklch(82% 0.16 152 / 0.4);
+  --j-hurt: oklch(73% 0.16 27);
+  --j-hurt-glow: oklch(73% 0.16 27 / 0.4);
+  --j-crystal: oklch(84% 0.1 200);
+  --j-card: oklch(21% 0.036 262);
+  --j-card-hi: oklch(30% 0.045 262);
+  --j-card-line: oklch(44% 0.06 75);
+  --j-back-hi: oklch(32% 0.06 262);
+  --j-sheen: oklch(98% 0.03 90 / 0.16);
+  --j-medal-in: oklch(32% 0.05 262);
+  --j-medal-out: oklch(22% 0.035 262);
+  --j-medal-glow: oklch(83% 0.12 84 / 0.12);
+  --j-plate: oklch(15.5% 0.03 262 / 0.86);
+  --j-plate-line: oklch(60% 0.1 72 / 0.7);
+  --j-bar-bg: oklch(30% 0.03 262);
+  --j-shadow: oklch(8% 0.02 262 / 0.45);
+  --j-star: oklch(96% 0.02 90);
+  --j-wood: oklch(48% 0.07 60);
+  --j-fire: oklch(80% 0.16 60);
+  --j-fire-core: oklch(94% 0.1 95);
+  --hero-coat: oklch(44% 0.085 200);
+  --hero-coat-deep: oklch(34% 0.07 205);
+  --hero-trousers: oklch(28% 0.03 262);
+  --hero-trousers-deep: oklch(22% 0.03 262);
+  --hero-boot: oklch(30% 0.04 50);
+  --hero-leather: oklch(46% 0.07 58);
+  --hero-roll: oklch(66% 0.06 75);
+  --hero-skin: oklch(78% 0.06 60);
+  --hero-hair: oklch(24% 0.025 45);
+  --hero-ink: oklch(20% 0.02 262);
+  --hero-felt: oklch(95% 0.012 90);
+  --hero-felt-band: oklch(21% 0.02 262);
+  --hero-cap: oklch(52% 0.17 25);
+}
+
+body:has(.journey) { background-color: var(--j-night); }
+
+.journey {
+  color-scheme: dark;
+  --color-paper: var(--j-night);
+  --color-paper-2: var(--j-night-2);
+  --color-paper-3: var(--j-night-3);
+  --color-ink: var(--j-ivory);
+  --color-ink-2: var(--j-ivory-2);
+  --color-muted: var(--j-muted);
+  --color-rule: var(--j-line);
+  --color-accent: var(--j-gold);
+  --color-accent-ink: var(--j-night);
+  --color-focus: var(--j-gold-hi);
+  --color-field: var(--j-gold);
+  --color-field-ink: var(--j-night);
+  --color-field-text: var(--j-gold);
+  --color-mark: var(--j-hurt);
+  --color-mark-ink: var(--j-night);
+  --color-mark-text: var(--j-hurt);
+  --color-error: var(--j-hurt);
+  --radius-card: 16px;
+  --radius-pill: 999px;
+  --walk: 1100ms;
+  --blend: 1400ms;
+  min-height: 100dvh;
+  background: var(--j-night);
+  color: var(--j-ivory);
+  transition:
+    --sky-top var(--blend) ease, --sky-mid var(--blend) ease, --sky-low var(--blend) ease, --sun var(--blend) ease,
+    --sun-y var(--blend) ease, --stars var(--blend) ease, --back var(--blend) ease, --far var(--blend) ease,
+    --snow var(--blend) ease, --mist var(--blend) ease, --mid var(--blend) ease, --mid-tree var(--blend) ease,
+    --near var(--blend) ease, --near-tree var(--blend) ease, --ground var(--blend) ease, --trail var(--blend) ease,
+    --stone var(--blend) ease, --tuft var(--blend) ease;
+}
+
+/* ---------- Biomes: the time of day of each block ---------- */
+
+.journey, .journey[data-biome="create"] {
+  --sky-top: oklch(18% 0.04 255); --sky-mid: oklch(28% 0.05 245); --sky-low: oklch(46% 0.07 55);
+  --sun: oklch(90% 0.04 95); --sun-y: 520px; --stars: 0.9;
+  --back: oklch(36% 0.04 245); --far: oklch(30% 0.04 250); --snow: oklch(70% 0.03 240); --mist: oklch(40% 0.05 60);
+  --mid: oklch(24% 0.035 240); --mid-tree: oklch(20% 0.03 240); --near: oklch(19% 0.03 220); --near-tree: oklch(15% 0.03 220);
+  --ground: oklch(16% 0.025 200); --trail: oklch(28% 0.035 60); --stone: oklch(23% 0.02 240); --tuft: oklch(30% 0.05 150);
+}
+.journey[data-biome="place"] {
+  --sky-top: oklch(36% 0.07 250); --sky-mid: oklch(62% 0.09 45); --sky-low: oklch(80% 0.1 70);
+  --sun: oklch(89% 0.12 75); --sun-y: 330px; --stars: 0.2;
+  --back: oklch(55% 0.05 240); --far: oklch(45% 0.05 250); --snow: oklch(92% 0.03 70); --mist: oklch(78% 0.07 60);
+  --mid: oklch(36% 0.05 200); --mid-tree: oklch(30% 0.05 190); --near: oklch(30% 0.06 160); --near-tree: oklch(24% 0.06 160);
+  --ground: oklch(27% 0.05 120); --trail: oklch(52% 0.06 70); --stone: oklch(40% 0.03 80); --tuft: oklch(45% 0.1 140);
+}
+.journey[data-biome="habits"] {
+  --sky-top: oklch(58% 0.1 240); --sky-mid: oklch(76% 0.07 220); --sky-low: oklch(88% 0.06 90);
+  --sun: oklch(95% 0.08 95); --sun-y: 220px; --stars: 0;
+  --back: oklch(68% 0.05 230); --far: oklch(58% 0.06 235); --snow: oklch(96% 0.015 230); --mist: oklch(88% 0.04 220);
+  --mid: oklch(48% 0.08 170); --mid-tree: oklch(38% 0.08 165); --near: oklch(42% 0.1 145); --near-tree: oklch(32% 0.09 150);
+  --ground: oklch(38% 0.08 130); --trail: oklch(66% 0.07 80); --stone: oklch(55% 0.03 90); --tuft: oklch(55% 0.13 140);
+}
+.journey[data-biome="movement"] {
+  --sky-top: oklch(60% 0.13 240); --sky-mid: oklch(78% 0.09 225); --sky-low: oklch(90% 0.05 200);
+  --sun: oklch(97% 0.06 100); --sun-y: 120px; --stars: 0;
+  --back: oklch(72% 0.05 235); --far: oklch(60% 0.07 240); --snow: oklch(97% 0.01 240); --mist: oklch(90% 0.04 220);
+  --mid: oklch(52% 0.11 150); --mid-tree: oklch(40% 0.1 150); --near: oklch(50% 0.13 140); --near-tree: oklch(36% 0.1 150);
+  --ground: oklch(44% 0.1 130); --trail: oklch(72% 0.07 85); --stone: oklch(60% 0.03 90); --tuft: oklch(62% 0.15 135);
+}
+.journey[data-biome="food"] {
+  --sky-top: oklch(62% 0.11 230); --sky-mid: oklch(80% 0.07 200); --sky-low: oklch(90% 0.07 120);
+  --sun: oklch(97% 0.07 100); --sun-y: 110px; --stars: 0;
+  --back: oklch(72% 0.05 210); --far: oklch(62% 0.06 220); --snow: oklch(96% 0.01 220); --mist: oklch(90% 0.05 150);
+  --mid: oklch(56% 0.13 135); --mid-tree: oklch(44% 0.13 140); --near: oklch(52% 0.15 128); --near-tree: oklch(38% 0.12 140);
+  --ground: oklch(46% 0.12 120); --trail: oklch(74% 0.08 80); --stone: oklch(62% 0.03 90); --tuft: oklch(66% 0.16 130);
+}
+.journey[data-biome="body"] {
+  --sky-top: oklch(64% 0.12 235); --sky-mid: oklch(82% 0.08 210); --sky-low: oklch(92% 0.05 90);
+  --sun: oklch(98% 0.05 100); --sun-y: 90px; --stars: 0;
+  --back: oklch(74% 0.04 220); --far: oklch(64% 0.05 225); --snow: oklch(97% 0.01 220); --mist: oklch(92% 0.03 90);
+  --mid: oklch(60% 0.1 110); --mid-tree: oklch(46% 0.1 120); --near: oklch(58% 0.11 100); --near-tree: oklch(42% 0.1 120);
+  --ground: oklch(52% 0.09 95); --trail: oklch(78% 0.07 85); --stone: oklch(64% 0.03 85); --tuft: oklch(68% 0.13 115);
+}
+.journey[data-biome="road"] {
+  --sky-top: oklch(56% 0.11 240); --sky-mid: oklch(78% 0.08 80); --sky-low: oklch(88% 0.1 75);
+  --sun: oklch(94% 0.12 85); --sun-y: 180px; --stars: 0;
+  --back: oklch(62% 0.05 235); --far: oklch(52% 0.06 240); --snow: oklch(94% 0.04 80); --mist: oklch(84% 0.07 75);
+  --mid: oklch(48% 0.09 120); --mid-tree: oklch(38% 0.08 130); --near: oklch(46% 0.1 100); --near-tree: oklch(34% 0.08 120);
+  --ground: oklch(42% 0.08 90); --trail: oklch(70% 0.08 75); --stone: oklch(54% 0.03 80); --tuft: oklch(58% 0.12 110);
+}
+.journey[data-biome="mind"] {
+  --sky-top: oklch(46% 0.1 245); --sky-mid: oklch(72% 0.12 65); --sky-low: oklch(84% 0.13 70);
+  --sun: oklch(90% 0.15 75); --sun-y: 270px; --stars: 0;
+  --back: oklch(54% 0.07 30); --far: oklch(44% 0.07 250); --snow: oklch(90% 0.07 60); --mist: oklch(76% 0.1 60);
+  --mid: oklch(40% 0.08 60); --mid-tree: oklch(32% 0.07 50); --near: oklch(36% 0.08 50); --near-tree: oklch(27% 0.07 40);
+  --ground: oklch(33% 0.06 50); --trail: oklch(62% 0.1 65); --stone: oklch(44% 0.04 50); --tuft: oklch(50% 0.1 90);
+}
+.journey[data-biome="family"] {
+  --sky-top: oklch(34% 0.08 255); --sky-mid: oklch(58% 0.14 35); --sky-low: oklch(74% 0.15 50);
+  --sun: oklch(80% 0.17 45); --sun-y: 350px; --stars: 0.15;
+  --back: oklch(46% 0.08 20); --far: oklch(36% 0.06 250); --snow: oklch(78% 0.09 40); --mist: oklch(62% 0.12 35);
+  --mid: oklch(32% 0.07 30); --mid-tree: oklch(26% 0.06 30); --near: oklch(28% 0.06 25); --near-tree: oklch(21% 0.05 25);
+  --ground: oklch(25% 0.05 30); --trail: oklch(52% 0.1 45); --stone: oklch(34% 0.04 30); --tuft: oklch(40% 0.08 60);
+}
+.journey[data-biome="diagnoses"] {
+  --sky-top: oklch(22% 0.05 255); --sky-mid: oklch(36% 0.07 240); --sky-low: oklch(58% 0.1 40);
+  --sun: oklch(70% 0.13 40); --sun-y: 420px; --stars: 0.55;
+  --back: oklch(34% 0.05 245); --far: oklch(28% 0.05 250); --snow: oklch(60% 0.05 240); --mist: oklch(44% 0.07 40);
+  --mid: oklch(22% 0.04 240); --mid-tree: oklch(18% 0.035 240); --near: oklch(19% 0.035 230); --near-tree: oklch(15% 0.03 230);
+  --ground: oklch(17% 0.03 230); --trail: oklch(32% 0.05 50); --stone: oklch(24% 0.03 240); --tuft: oklch(30% 0.05 160);
+}
+.journey[data-biome="tests"] {
+  --sky-top: oklch(14% 0.035 255); --sky-mid: oklch(20% 0.045 250); --sky-low: oklch(30% 0.05 240);
+  --sun: oklch(92% 0.03 90); --sun-y: 150px; --stars: 1;
+  --back: oklch(28% 0.04 248); --far: oklch(24% 0.04 250); --snow: oklch(64% 0.03 240); --mist: oklch(30% 0.05 245);
+  --mid: oklch(18% 0.035 245); --mid-tree: oklch(14% 0.03 245); --near: oklch(15% 0.03 240); --near-tree: oklch(12% 0.025 240);
+  --ground: oklch(13% 0.025 240); --trail: oklch(24% 0.035 240); --stone: oklch(20% 0.03 240); --tuft: oklch(24% 0.04 200);
+}
+.journey[data-biome="summit"] {
+  --sky-top: oklch(50% 0.1 240); --sky-mid: oklch(78% 0.12 70); --sky-low: oklch(90% 0.1 85);
+  --sun: oklch(96% 0.12 88); --sun-y: 250px; --stars: 0;
+  --back: oklch(62% 0.07 60); --far: oklch(50% 0.07 245); --snow: oklch(96% 0.05 80); --mist: oklch(88% 0.08 75);
+  --mid: oklch(42% 0.08 150); --mid-tree: oklch(34% 0.08 150); --near: oklch(38% 0.09 140); --near-tree: oklch(28% 0.08 150);
+  --ground: oklch(34% 0.07 130); --trail: oklch(70% 0.1 80); --stone: oklch(50% 0.04 80); --tuft: oklch(52% 0.12 130);
+}
+
+/* ---------- Top bar and the map of relics ---------- */
+
+.j-top { position: relative; z-index: 2; background: var(--j-night); border-bottom: 1px solid var(--j-line); }
+.j-top__inner { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); max-width: var(--container); margin: 0 auto; padding: var(--space-sm) var(--gutter) var(--space-xs); min-height: 60px; }
+.j-top .wordmark { font-size: var(--text-md); }
+.j-top__progress { font-weight: 600; font-variant-numeric: tabular-nums; color: var(--j-ivory-2); text-align: center; }
+.j-top__tools { display: flex; gap: var(--space-xs); }
+.j-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 var(--space-sm);
+  border: 1px solid var(--j-line);
+  border-radius: 12px;
+  background: var(--j-night-2);
+  color: var(--j-ivory);
+  font: inherit;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: background-color var(--dur-short) var(--ease-out), border-color var(--dur-short) var(--ease-out);
+}
+.j-tool:hover { background: var(--j-night-3); border-color: var(--j-gold-deep); }
+.j-tool:active { transform: translateY(1px); }
+.j-tool:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.j-tool:disabled { opacity: 0.55; cursor: not-allowed; }
+.j-tool[aria-pressed="true"] { border-color: var(--j-gold); color: var(--j-gold); }
+.j-map { position: relative; display: flex; justify-content: center; gap: var(--space-sm); max-width: var(--container); margin: 0 auto; padding: 0 var(--gutter) var(--space-sm); list-style: none; }
+.j-map li { position: relative; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--j-line); background: var(--j-night-2); color: var(--j-muted); transition: background-color var(--dur-long) var(--ease-out), color var(--dur-long) var(--ease-out); }
+.j-map li + li::before { content: ""; position: absolute; right: 100%; top: 50%; width: var(--space-sm); height: 1px; background: var(--j-line); }
+.j-map li.is-earned { background: var(--j-gold); border-color: var(--j-gold); color: var(--j-night); animation: j-earn 700ms var(--ease-spring); }
+.j-map li.is-here { border-color: var(--j-gold); color: var(--j-gold); box-shadow: 0 0 0 3px var(--j-gold-glow); }
+@keyframes j-earn { 0% { transform: scale(0.6); } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
+
+/* ---------- The world ---------- */
+
+.j-world {
+  position: relative;
+  height: clamp(190px, min(24vw, 32vh), 320px);
+  overflow: hidden;
+  container-type: size;
+  background: linear-gradient(to bottom, var(--sky-top), var(--sky-mid) 58%, var(--sky-low));
+}
+.j-world.is-shaken { animation: j-shake 360ms var(--ease-out); }
+@keyframes j-shake { 20% { transform: translateX(-6px); } 45% { transform: translateX(5px); } 70% { transform: translateX(-3px); } 100% { transform: none; } }
+.j-scene { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.j-layer { transition: transform var(--walk) cubic-bezier(0.45, 0.05, 0.35, 1); }
+.j-stars { fill: var(--j-star); opacity: var(--stars); }
+.j-sun { transform: translateY(var(--sun-y)); }
+.j-sun__disc { fill: var(--sun); }
+.j-sun__glow-in { stop-color: var(--sun); stop-opacity: 0.5; }
+.j-sun__glow-out { stop-color: var(--sun); stop-opacity: 0; }
+.j-back { fill: var(--back); }
+.j-far { fill: var(--far); }
+.j-snow { fill: var(--snow); }
+.j-mist__top { stop-color: var(--mist); stop-opacity: 0; }
+.j-mist__bottom { stop-color: var(--mist); stop-opacity: 0.75; }
+.j-mid { fill: var(--mid); }
+.j-mid-trees { fill: var(--mid-tree); }
+.j-near { fill: var(--near); }
+.j-near-trees { fill: var(--near-tree); }
+.j-ground { fill: var(--ground); }
+.j-trail { stroke: var(--trail); stroke-width: 12; opacity: 0.55; }
+.j-stone { fill: var(--stone); }
+.j-tuft { stroke: var(--tuft); stroke-width: 2.4; stroke-linecap: round; fill: none; }
+.j-yurt__felt { fill: color-mix(in oklch, var(--snow) 78%, var(--near)); }
+.j-yurt__band { fill: color-mix(in oklch, var(--j-hurt) 70%, var(--near)); }
+.j-yurt__door { fill: color-mix(in oklch, var(--j-gold) 65%, var(--near)); }
+.j-marker__cairn { fill: var(--stone); }
+.j-summit__rock { fill: color-mix(in oklch, var(--stone) 70%, var(--near)); }
+.j-summit__cap { fill: var(--snow); }
+.j-summit__ledge { fill: none; stroke: var(--stone); stroke-width: 4; stroke-linecap: round; }
+.j-lift { transition: transform var(--walk) cubic-bezier(0.45, 0.05, 0.35, 1); }
+.journey[data-biome="summit"] .j-lift { transform: translateY(-64px); }
+.j-marker__pole { stroke: var(--trail); stroke-width: 3; stroke-linecap: round; }
+.j-marker__flag { fill: var(--j-gold); }
+
+/* The hero. */
+.j-hero__shadow { fill: var(--j-shadow); }
+.j-hero__trousers { fill: var(--hero-trousers); }
+.j-hero__trousers-deep { fill: var(--hero-trousers-deep); }
+.j-hero__boot { fill: var(--hero-boot); }
+.j-hero__leather { fill: var(--hero-leather); }
+.j-hero__roll { fill: var(--hero-roll); }
+.j-hero__strap { stroke: var(--hero-boot); stroke-width: 3; }
+.j-hero__coat { fill: var(--hero-coat); }
+.j-hero__sleeve { fill: var(--hero-coat-deep); }
+.j-hero__trim { stroke: var(--j-gold); stroke-width: 2.4; fill: none; stroke-linecap: round; }
+.j-hero__belt { fill: var(--hero-felt-band); }
+.j-hero__buckle { fill: var(--j-gold); }
+.j-hero__skin { fill: var(--hero-skin); }
+.j-hero__eye { fill: var(--hero-ink); }
+.j-hero__smile { stroke: var(--hero-ink); stroke-width: 1.4; fill: none; stroke-linecap: round; }
+.j-hero__hair { fill: var(--hero-hair); }
+.j-hero__felt { fill: var(--hero-felt); }
+.j-hero__felt-band { fill: var(--hero-felt-band); }
+.j-hero__felt-line { stroke: var(--hero-felt-band); stroke-width: 1.6; fill: none; stroke-linecap: round; }
+.j-hero__cap-cloth { fill: var(--hero-cap); }
+.j-hero__cap-line { stroke: var(--j-gold); stroke-width: 2; }
+.j-hero__cap-dot { fill: var(--j-gold); }
+.j-hero__hood { fill: var(--hero-coat-deep); }
+.j-hero__staff { stroke: var(--j-wood); stroke-width: 4.5; stroke-linecap: round; }
+.j-hero__glow { fill: var(--j-crystal); opacity: 0.3; animation: j-pulse 2.4s ease-in-out infinite; }
+.j-hero__crystal { fill: var(--j-crystal); }
+.j-hero__flagpole { stroke: var(--j-wood); stroke-width: 4; stroke-linecap: round; }
+.j-hero__flagcloth { fill: var(--j-gold); transform-box: fill-box; transform-origin: 0 50%; animation: j-wave 1.6s ease-in-out infinite alternate; }
+.j-fire__log { stroke: var(--j-wood); stroke-width: 6; stroke-linecap: round; }
+.j-fire__flame { fill: var(--j-fire); transform-box: fill-box; transform-origin: 50% 100%; animation: j-flicker 280ms ease-in-out infinite alternate; }
+.j-fire__core { fill: var(--j-fire-core); transform-box: fill-box; transform-origin: 50% 100%; animation: j-flicker 200ms ease-in-out infinite alternate-reverse; }
+
+.j-hero__leg { transform-box: fill-box; transform-origin: 50% 0; }
+.j-hero__arm { transform-box: fill-box; transform-origin: 12% 32%; transition: transform var(--dur-long) var(--ease-spring); }
+.j-hero.is-stand .j-hero__body { animation: j-breathe 3.2s ease-in-out infinite; }
+.j-hero.is-walk .j-hero__body { animation: j-bob 275ms ease-in-out infinite alternate; }
+.j-hero.is-walk .j-hero__leg--front { animation: j-stride 550ms ease-in-out infinite alternate; }
+.j-hero.is-walk .j-hero__leg--back { animation: j-stride 550ms ease-in-out infinite alternate-reverse; }
+.j-hero.is-walk .j-hero__arm { animation: j-swing 550ms ease-in-out infinite alternate; }
+.j-hero.is-hurt .j-hero__body { animation: j-flinch 460ms var(--ease-out); }
+.j-hero.is-hurt .j-hero__crystal, .j-hero.is-hurt .j-hero__glow { fill: var(--j-hurt); }
+.j-hero.is-cheer .j-hero__body { animation: j-hop 560ms var(--ease-spring); }
+.j-hero.is-cheer .j-hero__crystal, .j-hero.is-cheer .j-hero__glow { fill: var(--j-heal); }
+.j-hero.is-cheer .j-hero__glow { opacity: 0.6; }
+.j-hero.is-rest .j-hero__body { transform: translateY(5px); }
+.j-hero.is-summit .j-hero__arm { transform: translateY(-16px); }
+.j-hero.is-summit .j-hero__glow { fill: var(--j-gold); opacity: 0.6; }
+@keyframes j-stride { from { transform: rotate(-22deg); } to { transform: rotate(22deg); } }
+@keyframes j-bob { to { transform: translateY(-3px); } }
+@keyframes j-swing { from { transform: rotate(-7deg); } to { transform: rotate(7deg); } }
+@keyframes j-breathe { 50% { transform: translateY(-1.5px); } }
+@keyframes j-flinch { 0% { transform: none; } 25% { transform: translateX(-7px) rotate(-5deg); } 60% { transform: translateX(3px); } 100% { transform: none; } }
+@keyframes j-hop { 0% { transform: none; } 40% { transform: translateY(-16px); } 100% { transform: none; } }
+@keyframes j-pulse { 50% { opacity: 0.12; } }
+@keyframes j-flicker { to { transform: scale(0.9, 1.1) skewX(4deg); } }
+@keyframes j-wave { to { transform: scaleX(0.82) skewY(4deg); } }
+
+/* A number rises from the hero when a card is played. */
+.j-float {
+  --scale: max(100cqw / 1600, 100cqh / 500);
+  position: absolute;
+  left: calc(760 * var(--scale));
+  top: calc(100cqh - 270 * var(--scale));
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--j-plate);
+  font: 800 clamp(1.25rem, 2vw, 1.75rem)/1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: j-rise 1500ms var(--ease-out) forwards;
+}
+.j-float.is-heal { color: var(--j-heal); box-shadow: 0 0 24px var(--j-heal-glow); }
+.j-float.is-hurt { color: var(--j-hurt); box-shadow: 0 0 24px var(--j-hurt-glow); }
+.j-float.is-even { color: var(--j-ivory); }
+@keyframes j-rise { 0% { opacity: 0; transform: translate(-50%, 12px) scale(0.7); } 18% { opacity: 1; transform: translate(-50%, 0) scale(1.08); } 70% { opacity: 1; transform: translate(-50%, -18px) scale(1); } 100% { opacity: 0; transform: translate(-50%, -34px) scale(1); } }
+
+/* The health plate and the reserve, over the land. */
+.j-hud { position: absolute; left: var(--gutter); top: var(--space-md); display: grid; justify-items: start; gap: var(--space-xs); }
+.j-hp {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: var(--space-sm);
+  row-gap: 6px;
+  align-items: center;
+  min-width: 13rem;
+  padding: var(--space-xs) var(--space-md) var(--space-sm);
+  border: 1px solid var(--j-plate-line);
+  border-radius: 14px;
+  background: var(--j-plate);
+  box-shadow: 0 8px 24px var(--j-shadow);
+  transition: box-shadow var(--dur-long) var(--ease-out);
+}
+.j-hp__heart { grid-row: span 2; color: var(--j-hurt); fill: var(--j-hurt); }
+.j-hp p { display: flex; align-items: baseline; gap: 6px; margin: 0; min-width: 0; }
+.j-hp__who { overflow: hidden; max-width: 9ch; margin-right: 2px; font-size: var(--text-sm); color: var(--j-muted); text-overflow: ellipsis; white-space: nowrap; }
+.j-hp b { font: 800 1.625rem/1 var(--font-display); font-variant-numeric: tabular-nums; color: var(--j-ivory); }
+.j-hp p > span:last-child { font-size: var(--text-sm); color: var(--j-ivory-2); }
+.j-hp__bar { position: relative; overflow: hidden; height: 8px; border-radius: 4px; background: var(--j-bar-bg); }
+.j-hp__bar i { position: absolute; inset: 0; border-radius: inherit; transform-origin: left center; transform: scaleX(var(--fill)); }
+.j-hp__ghost { background: var(--j-hurt); transition: transform 700ms var(--ease-out) 500ms; }
+.j-hp__fill { background: linear-gradient(90deg, var(--j-heal-deep), var(--j-heal)); transition: transform 520ms var(--ease-out); }
+.j-hp.is-heal { box-shadow: 0 0 0 2px var(--j-heal), 0 0 32px var(--j-heal-glow); }
+.j-hp.is-hurt { box-shadow: 0 0 0 2px var(--j-hurt), 0 0 32px var(--j-hurt-glow); }
+.j-reserve { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border: 1px solid var(--j-line); border-radius: 999px; background: var(--j-plate); color: var(--j-crystal); font-size: var(--text-sm); }
+.j-reserve span { color: var(--j-ivory-2); }
+.j-reserve b { color: var(--j-crystal); font-variant-numeric: tabular-nums; }
+
+/* ---------- The stage: question, cards and camps ---------- */
+
+.journey .j-stage { padding-block: var(--space-xl) var(--space-3xl); }
+.j-form, .j-camp { display: grid; gap: var(--space-lg); max-width: 76rem; margin: 0 auto; padding-inline: var(--gutter); }
+.j-form fieldset { display: grid; gap: var(--space-lg); margin: 0; padding: 0; border: 0; min-width: 0; }
+.j-block { font-size: var(--text-sm); font-weight: 600; color: var(--j-gold); }
+.journey .quiz h1 { font-size: clamp(1.625rem, 2vw + 1rem, 2.75rem); line-height: 1.08; max-width: 28ch; }
+.journey .quiz__icon { display: none; width: 48px; height: 48px; margin-bottom: var(--space-sm); border-radius: 50%; background: var(--j-night-2); color: var(--j-gold); box-shadow: inset 0 0 0 1px var(--j-gold-deep); }
+.journey .quiz__icon svg { width: 24px; height: 24px; }
+.journey .hints svg { color: var(--j-gold); }
+.journey .text-field input, .journey .number input { color: var(--j-ivory); }
+
+.j-hand { display: flex; flex-wrap: wrap; gap: var(--space-md); margin: 0; padding: 0; list-style: none; }
+.j-slot { position: relative; flex: 0 1 12.5rem; min-width: 9.5rem; animation: j-deal 520ms var(--ease-out) calc(var(--i) * 70ms) backwards; transition: opacity var(--dur-long) var(--ease-out), transform var(--dur-long) var(--ease-out); }
+.j-slot input { position: absolute; width: 1px; height: 1px; margin: 0; opacity: 0; }
+.j-card { display: block; height: 100%; cursor: pointer; perspective: 900px; -webkit-tap-highlight-color: transparent; }
+.j-card__inner {
+  display: grid;
+  height: 100%;
+  min-height: 15rem;
+  transform-style: preserve-3d;
+  transform: translateY(var(--lift, 0px)) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 180ms var(--ease-out);
+}
+.j-card__face, .j-card__back { grid-area: 1 / 1; border-radius: 16px; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.j-card__face {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  justify-items: center;
+  gap: var(--space-sm);
+  overflow: hidden;
+  padding: var(--space-sm) var(--space-sm) var(--space-md);
+  border: 1px solid var(--j-gold-deep);
+  background: radial-gradient(120% 80% at var(--mx, 50%) var(--my, 0%), var(--j-card-hi), var(--j-card) 62%);
+  box-shadow: inset 0 0 0 4px var(--j-card), inset 0 0 0 5px var(--j-card-line), 0 12px 30px var(--j-shadow);
+  color: var(--j-ivory);
+  text-align: center;
+  transition: border-color var(--dur-short) var(--ease-out), box-shadow var(--dur-short) var(--ease-out);
+}
+.j-card__face::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at var(--mx, 50%) var(--my, 30%), var(--j-sheen), transparent 48%); opacity: 0; pointer-events: none; transition: opacity var(--dur-short) var(--ease-out); }
+.j-card__corner { justify-self: start; font: 700 var(--text-xs)/1 var(--font-display); color: var(--j-gold); }
+.j-card__art { display: flex; align-items: center; justify-content: center; align-self: center; gap: 2px; width: 5rem; height: 5rem; border-radius: 50%; background: radial-gradient(circle, var(--j-medal-in), var(--j-medal-out) 72%); box-shadow: inset 0 0 0 1px var(--j-gold-deep), 0 0 28px var(--j-medal-glow); color: var(--j-gold); }
+.j-card__art--meter { align-items: flex-end; gap: 4px; padding-bottom: 1.4rem; }
+.j-card__art--meter i { width: 7px; height: 2.25rem; border-radius: 2px; background: var(--j-line); transform-origin: bottom; }
+.j-card__art--meter i.is-on { background: var(--j-gold); }
+.j-card__title { display: grid; align-items: center; min-height: 2.5em; font-size: var(--text-md); font-weight: 600; line-height: 1.25; overflow-wrap: anywhere; }
+.j-card__gem { width: 9px; height: 9px; background: var(--j-gold-deep); transform: rotate(45deg); }
+.j-card__back {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--space-2xs);
+  padding: var(--space-md);
+  border: 1px solid var(--j-gold);
+  background: radial-gradient(circle at 50% 35%, var(--j-back-hi), var(--j-card) 70%);
+  color: var(--j-ivory);
+  text-align: center;
+  transform: rotateY(180deg);
+}
+.j-card__back b { font: 800 clamp(2.25rem, 3vw, 2.75rem)/1 var(--font-display); font-variant-numeric: tabular-nums; }
+.j-card__back span { font-weight: 600; }
+.j-card__back small { margin-top: var(--space-xs); font-size: var(--text-sm); color: var(--j-ivory-2); }
+.j-card:hover { --lift: -8px; }
+.j-card:hover .j-card__face { border-color: var(--j-gold); }
+.j-card:hover .j-card__face::after { opacity: 1; }
+.j-card:active { --lift: -3px; }
+.j-slot input:checked + .j-card { --lift: -10px; }
+.j-slot input:checked + .j-card .j-card__face { border-color: var(--j-gold); box-shadow: inset 0 0 0 4px var(--j-card), inset 0 0 0 5px var(--j-gold-deep), 0 0 0 2px var(--j-gold), 0 0 36px var(--j-gold-glow); }
+.j-slot input:focus-visible + .j-card .j-card__face { outline: 3px solid var(--color-focus); outline-offset: 3px; }
+.j-slot input:disabled + .j-card { cursor: default; }
+.j-slot.is-played .j-card__inner { transform: translateY(-14px) rotateY(180deg) scale(1.04); transition: transform 560ms var(--ease-spring); }
+.j-slot.is-heal .j-card__back { box-shadow: 0 0 0 2px var(--j-heal), 0 0 44px var(--j-heal-glow); }
+.j-slot.is-heal .j-card__back b { color: var(--j-heal); }
+.j-slot.is-hurt .j-card__back { box-shadow: 0 0 0 2px var(--j-hurt), 0 0 44px var(--j-hurt-glow); }
+.j-slot.is-hurt .j-card__back b { color: var(--j-hurt); }
+.j-slot.is-dim { opacity: 0.3; transform: translateY(18px) scale(0.95); }
+@keyframes j-deal { from { opacity: 0; transform: translateY(44px) rotate(calc((var(--i) - 2) * 3deg)) scale(0.92); } }
+
+.j-nav { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-md) var(--space-lg); }
+.journey .btn.j-play {
+  min-height: 52px;
+  min-width: 12rem;
+  padding: 0 var(--space-lg);
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--j-gold-hi), var(--j-gold) 45%, var(--j-gold-deep));
+  color: var(--j-night);
+  font-weight: 700;
+  box-shadow: 0 6px 20px var(--j-gold-glow), inset 0 1px 0 var(--j-gold-hi);
+  transition: transform var(--dur-short) var(--ease-out), box-shadow var(--dur-short) var(--ease-out);
+}
+.journey .btn.j-play:hover { transform: translateY(-1px); box-shadow: 0 10px 28px var(--j-gold-glow), inset 0 1px 0 var(--j-gold-hi); }
+.journey .btn.j-play:active { transform: translateY(1px); }
+.journey .btn.j-play:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+.journey .btn.j-play:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+.j-back { display: inline-flex; align-items: center; gap: var(--space-xs); min-height: 44px; padding: 0 var(--space-xs); border: 0; border-radius: 10px; background: none; color: var(--j-ivory-2); font: inherit; cursor: pointer; transition: color var(--dur-short) var(--ease-out); }
+.j-back:hover { color: var(--j-gold); }
+.j-back:active { transform: translateY(1px); }
+.j-back:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.j-back:disabled { opacity: 0.55; cursor: not-allowed; }
+.j-why { max-width: 60ch; color: var(--j-ivory-2); }
+
+.j-camp { justify-items: start; animation: j-come 600ms var(--ease-out); }
+.j-camp h1 { font-size: clamp(1.75rem, 2.4vw + 1rem, 3rem); line-height: 1.05; max-width: 22ch; outline: none; }
+.j-camp__kicker { font-weight: 600; color: var(--j-gold); }
+.j-camp__big { display: flex; align-items: baseline; gap: var(--space-sm); }
+.j-camp__big svg { align-self: center; color: var(--j-hurt); fill: var(--j-hurt); }
+.j-camp__big b { font: 800 clamp(3rem, 6vw, 5rem)/1 var(--font-display); font-variant-numeric: tabular-nums; }
+.j-camp__big span { color: var(--j-ivory-2); }
+.j-camp__text { max-width: 52ch; color: var(--j-ivory-2); }
+.j-camp__delta { font: 700 var(--text-xl)/1.1 var(--font-display); font-variant-numeric: tabular-nums; }
+.j-camp__delta.is-heal { color: var(--j-heal); }
+.j-camp__delta.is-hurt { color: var(--j-hurt); }
+.j-relic { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-md) var(--space-lg) var(--space-md) var(--space-md); border: 1px solid var(--j-gold-deep); border-radius: 16px; background: var(--j-night-2); animation: j-relic 820ms var(--ease-spring) 180ms backwards; }
+.j-relic__icon { display: grid; place-items: center; width: 4rem; height: 4rem; border-radius: 50%; background: radial-gradient(circle at 40% 30%, var(--j-gold-hi), var(--j-gold) 55%, var(--j-gold-deep)); color: var(--j-night); box-shadow: 0 0 32px var(--j-gold-glow); }
+.j-relic p { display: grid; gap: 2px; }
+.j-relic p span { font-size: var(--text-sm); color: var(--j-muted); }
+.j-relic b { font: 700 var(--text-lg)/1.2 var(--font-display); }
+.j-finale .j-camp__big b { color: var(--j-gold); }
+.j-stats { display: grid; grid-template-columns: repeat(3, auto); gap: var(--space-sm) var(--space-xl); margin: 0; }
+.j-stats dt { font-size: var(--text-sm); color: var(--j-muted); }
+.j-stats dd { margin: 0; font: 700 var(--text-lg)/1.2 var(--font-display); font-variant-numeric: tabular-nums; }
+@keyframes j-come { from { opacity: 0; transform: translateY(16px); } }
+@keyframes j-relic { from { opacity: 0; transform: scale(0.6) rotate(-8deg); } }
+
+@media (max-width: 40rem) {
+  .j-top__inner { flex-wrap: wrap; row-gap: var(--space-2xs); }
+  .j-top__progress { order: 3; width: 100%; text-align: start; font-size: var(--text-sm); }
+  .j-tool--text { font-size: var(--text-xs); }
+  .j-tool span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .j-map { justify-content: space-between; gap: 0; }
+  .j-map li { width: 26px; height: 26px; }
+  .j-map li + li::before { width: calc((100vw - 2 * var(--gutter) - 260px) / 9); }
+  .j-hud { left: var(--space-sm); top: var(--space-sm); }
+  .journey .j-stage { padding-top: var(--space-lg); }
+  .j-form { gap: var(--space-md); }
+  .j-hp { min-width: 11rem; padding: 6px var(--space-sm) var(--space-xs); }
+  .j-hp b { font-size: 1.375rem; }
+  .j-slot { flex: 1 1 calc(50% - var(--space-md)); min-width: 0; }
+  .j-hand { gap: var(--space-sm); }
+  .j-card__inner { min-height: 12.5rem; }
+  .j-card__art { width: 4rem; height: 4rem; }
+  .j-card__art svg { width: 32px; height: 32px; }
+  .j-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-sm); }
+  .journey .btn.j-play { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey { --walk: 0ms; --blend: 0ms; }
+  .j-layer, .j-lift, .j-hp__fill, .j-hp__ghost { transition: none; }
+  .j-world.is-shaken, .j-slot, .j-camp, .j-relic, .j-map li.is-earned, .j-float { animation: none; }
+  .j-float { transform: translate(-50%, 0); }
+  .j-hero *, .j-hero__glow { animation: none !important; }
+  .j-card__inner { transform: none; transition: none; }
+  .j-card:hover, .j-card:active, .j-slot input:checked + .j-card { --lift: 0px; }
+  .j-slot.is-played .j-card__inner { transform: none; transition: none; }
+  .j-slot.is-played .j-card__face { opacity: 0; }
+  .j-slot.is-played .j-card__back { transform: none; }
+  .j-slot.is-dim { transform: none; }
+}

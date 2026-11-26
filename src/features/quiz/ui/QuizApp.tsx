@@ -1,50 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { FACTOR_BY_SLUG, groupById, type Factor, type GroupId } from "@/entities/factor";
 import { BadgeCheck } from "lucide-react";
 import { nb } from "@/shared/lib/format";
-import { isEditLink, readStepFromUrl as readStep, writeStepToUrl } from "@/shared/lib/step-url";
 import { Options, Question, QuizTop, type HeadingRef } from "@/shared/ui/Quiz";
 import { Slider } from "@/shared/ui/Slider";
-import { LABS_STEP, STEPS, totalFor } from "../model/steps";
-import { validBody } from "../model/body";
-import { useHydrated, useQuiz } from "../model/store";
+import { useQuizFlow } from "../model/flow";
+import { STEPS } from "../model/steps";
+import { useQuiz } from "../model/store";
 import { BodyStep } from "./BodyStep";
 import { CountryStep } from "./CountryStep";
 import { FALLBACK_LOOK, LOOKS } from "./visuals";
 
-const readStepFromUrl = () => readStep(STEPS.length);
-
-/** First question without an answer: the furthest a link or the forward button may lead. */
-function firstOpenStep(): number {
-  const s = useQuiz.getState();
-  const open = STEPS.findIndex((id, i) => {
-    if (i > LABS_STEP && s.labs === "skip") return false;
-    if (id === "sex") return !s.sex;
-    if (id === "age") return !s.age;
-    if (id === "labs") return !s.labs;
-    if (id === "bmi") return !(s.height && s.weight);
-    if (id === "name" || id === "country-next") return false;
-    return !s.answers[id];
-  });
-  return open === -1 ? totalFor(s.labs) - 1 : open;
-}
-
+/** The plain form: one question a screen, rows of answers. */
 export function QuizApp() {
-  const hydrated = useHydrated();
-  const router = useRouter();
-  const step = useQuiz((s) => s.step);
-  const labs = useQuiz((s) => s.labs);
-  const editing = useQuiz((s) => s.editing);
-  const goTo = useQuiz((s) => s.goTo);
-  const headingRef = useRef<HTMLHeadingElement>(null);
-  const firstRender = useRef(true);
-  /** How many questions this page pushed onto the browser history. */
-  const depth = useRef(0);
-  const [error, setError] = useState("");
   const [milestone, setMilestone] = useState<{ title: string; n: number; of: number } | null>(null);
   const milestoneTimer = useRef<number | undefined>(undefined);
   useEffect(() => () => window.clearTimeout(milestoneTimer.current), []);
@@ -57,111 +28,14 @@ export function QuizApp() {
     milestoneTimer.current = window.setTimeout(() => setMilestone(null), 2600);
   };
 
-  const id = STEPS[step];
-  const factor = FACTOR_BY_SLUG.get(id);
-  const total = totalFor(labs);
-  const isLast = step >= total - 1;
-
-  // Arriving: a link from the report edits one answer, the back button from the report edits too, a plain visit starts over.
-  useEffect(() => {
-    if (!hydrated) return;
-    const state = useQuiz.getState();
-    const fromUrl = readStepFromUrl();
-    const editLink = isEditLink();
-    if (editLink && state.history.length > 0 && fromUrl !== null) {
-      // Already editing means a reload or a click in the report: the draft stays.
-      if (state.editing) state.goTo(fromUrl);
-      else state.startEdit(fromUrl);
-    } else if (state.completed && fromUrl !== null && state.history.length > 0) state.startEdit(fromUrl);
-    else if (state.editing) state.cancelEdit();
-    else if (state.completed) state.restart();
-    else if (fromUrl !== null) state.goTo(Math.min(fromUrl, firstOpenStep()));
-    const arrived = useQuiz.getState();
-    writeStepToUrl(arrived.step, "replace", arrived.editing);
-  }, [hydrated]);
-
-  useEffect(() => {
-    const onPop = () => {
-      const fromUrl = readStepFromUrl();
-      if (fromUrl === null) return;
-      const current = useQuiz.getState().step;
-      depth.current = Math.max(depth.current + (fromUrl < current ? -1 : 1), 0);
-      setError("");
-      useQuiz.getState().goTo(Math.min(fromUrl, firstOpenStep()));
-      const now = useQuiz.getState();
-      writeStepToUrl(now.step, "replace", now.editing);
-    };
-    window.addEventListener("popstate", onPop);
-    return () => window.removeEventListener("popstate", onPop);
-  }, []);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    if (firstRender.current) {
-      firstRender.current = false;
-      return;
-    }
-    // Number steps take the cursor straight into the first field; choice steps announce the question first.
-    const field = document.querySelector<HTMLInputElement>(".quiz input[type='number'], .quiz input[type='text']");
-    (field ?? headingRef.current)?.focus();
-  }, [step, hydrated]);
-
-  const showProblem = (problem: string) => {
-    setError(problem);
-    if (problem) {
-      window.setTimeout(
-        () => document.querySelector<HTMLElement>("[aria-invalid='true'], .option input, .quiz select")?.focus(),
-        0,
-      );
-    }
-    return Boolean(problem);
-  };
-
-  const finish = () => {
-    const state = useQuiz.getState();
-    const { editing: wasEditing } = state;
-    const saved = wasEditing ? state.amend() : state.complete();
-    // A new attempt opens on the one-screen result; a correction returns to the report it came from.
-    if (saved) router.push(wasEditing ? "/report" : "/result");
-  };
-
-  const next = () => {
-    const state = useQuiz.getState();
-    const current = STEPS[state.step];
-    commitDefaults(current);
-    if (showProblem(validate(current))) return;
-    if (state.step >= totalFor(useQuiz.getState().labs) - 1) {
-      finish();
-      return;
-    }
-    const target = state.step + 1;
-    const doneGroup = FACTOR_BY_SLUG.get(current)?.group;
-    const nextGroup = FACTOR_BY_SLUG.get(STEPS[target])?.group;
-    if (doneGroup && doneGroup !== nextGroup && !state.editing) celebrate(doneGroup);
-    goTo(target);
-    depth.current += 1;
-    writeStepToUrl(target, "push", state.editing);
+  const { step, id, factor, total, isLast, editing, error, headingRef, next, back, saveNow } = useQuizFlow({ onGroupDone: celebrate });
+  const advance = () => {
+    next();
   };
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     next();
-  };
-
-  const back = () => {
-    setError("");
-    if (depth.current > 0) {
-      window.history.back();
-      return;
-    }
-    goTo(step - 1);
-    writeStepToUrl(step - 1, "replace", editing);
-  };
-
-  const saveNow = () => {
-    commitDefaults(id);
-    if (showProblem(validate(id))) return;
-    finish();
   };
 
   const groupTitle = factor ? groupById(factor.group).title : id === "labs" ? "Анализы" : "О вас";
@@ -193,9 +67,9 @@ export function QuizApp() {
         <div className="container cols">
           <form className="quiz__form" onSubmit={onSubmit} noValidate>
             {id === "name" && <NameStep headingRef={headingRef} />}
-            {id === "sex" && <SexStep headingRef={headingRef} onPick={editing ? noop : next} error={error} />}
+            {id === "sex" && <SexStep headingRef={headingRef} onPick={editing ? noop : advance} error={error} />}
             {id === "age" && <AgeStep key={`age-${editing}`} headingRef={headingRef} error={error} />}
-            {id === "labs" && <LabsStep headingRef={headingRef} onPick={editing ? noop : next} error={error} />}
+            {id === "labs" && <LabsStep headingRef={headingRef} onPick={editing ? noop : advance} error={error} />}
             {factor?.kind === "country" && <CountryStep key={factor.slug} factor={factor} headingRef={headingRef} error={error} />}
             {factor?.kind === "bmi" && <BodyStep key={`body-${editing}`} headingRef={headingRef} error={error} />}
             {factor?.kind === "choice" && (
@@ -203,7 +77,7 @@ export function QuizApp() {
                 key={factor.slug}
                 factor={factor}
                 headingRef={headingRef}
-                onPick={editing ? noop : next}
+                onPick={editing ? noop : advance}
                 error={error}
               />
             )}
@@ -252,7 +126,7 @@ export function QuizApp() {
 
 const noop = () => {};
 
-function NameStep({ headingRef }: { headingRef: HeadingRef }) {
+export function NameStep({ headingRef }: { headingRef: HeadingRef }) {
   const name = useQuiz((s) => s.name);
   const setName = useQuiz((s) => s.setName);
   return (
@@ -298,7 +172,7 @@ function SexStep({ headingRef, onPick, error }: { headingRef: HeadingRef; onPick
   );
 }
 
-function AgeStep({ headingRef, error }: { headingRef: HeadingRef; error: string }) {
+export function AgeStep({ headingRef, error }: { headingRef: HeadingRef; error: string }) {
   const age = useQuiz((s) => s.age);
   const setAge = useQuiz((s) => s.setAge);
   return (
@@ -382,27 +256,4 @@ function ChoiceStep({
       />
     </fieldset>
   );
-}
-
-/** The future country repeats the past one unless the person changes it. */
-function commitDefaults(id: string) {
-  if (id !== "country-next") return;
-  const s = useQuiz.getState();
-  const past = s.answers["country-before"];
-  if (!s.answers[id] && past) s.answer(id, past);
-}
-
-function validate(id: string): string {
-  const s = useQuiz.getState();
-  if (id === "name") return "";
-  if (id === "sex") return s.sex ? "" : "Выберите один из вариантов.";
-  if (id === "age") return s.age && Number.isInteger(s.age) ? "" : "Введите возраст числом от 18 до 99.";
-  if (id === "labs") return s.labs ? "" : "Выберите один из вариантов.";
-  if (id === "bmi") {
-    return s.height && s.weight && validBody(s.height, s.weight)
-      ? ""
-      : "Укажите рост от 120 до 230 см (от 3′11″ до 7′7″) и вес от 30 до 300 кг (от 66 до 661 фунта).";
-  }
-  if (FACTOR_BY_SLUG.get(id)?.kind === "country") return s.answers[id] ? "" : "Выберите страну из списка.";
-  return s.answers[id] ? "" : "Выберите один из вариантов.";
 }

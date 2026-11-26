@@ -15,8 +15,15 @@ export interface Attempt {
   body?: { height: number; weight: number };
 }
 
+/** How the test is taken: the plain form or one of the game styles. */
+export type QuizStyle = "classic" | "journey" | "chat" | "touch";
+
 interface QuizState {
   name: string;
+  /** Chosen before the first question of a new attempt; unset shows the choice. */
+  style?: QuizStyle;
+  /** Sounds of the game styles, off until the person turns them on. */
+  sound: boolean;
   sex?: Sex;
   age?: number;
   height?: number;
@@ -31,6 +38,8 @@ interface QuizState {
   editing: boolean;
   history: Attempt[];
   setName: (name: string) => void;
+  setStyle: (style: QuizStyle | undefined) => void;
+  setSound: (sound: boolean) => void;
   setSex: (sex: Sex) => void;
   setAge: (age: number) => void;
   /** Height, weight and the BMI band the quiz computed from them. */
@@ -78,6 +87,7 @@ const safeStorage: StateStorage = {
 
 const blank = {
   name: "",
+  style: undefined,
   sex: undefined,
   age: undefined,
   height: undefined,
@@ -125,8 +135,11 @@ export const useQuiz = create<QuizState>()(
   persist(
     (set, get) => ({
       ...blank,
+      sound: false,
       history: [],
       setName: (name) => set({ name: name.slice(0, 40) }),
+      setStyle: (style) => set({ style }),
+      setSound: (sound) => set({ sound }),
       setSex: (sex) => set({ sex }),
       setAge: (age) => set({ age }),
       setBody: (height, weight, band) => set((s) => ({ height, weight, answers: { ...s.answers, bmi: band } })),
@@ -184,7 +197,8 @@ export const useQuiz = create<QuizState>()(
         set((s) => ({ history: [...s.history, attempt].slice(-12) }));
         return attempt;
       },
-      restart: () => set({ step: 0, completed: false, editing: false }),
+      // A new attempt asks again how to take the test.
+      restart: () => set({ step: 0, completed: false, editing: false, style: undefined }),
       wipe: () => set({ ...blank, history: [] }),
     }),
     {
@@ -194,8 +208,10 @@ export const useQuiz = create<QuizState>()(
       // The server renders the blank state; saved answers are read after mount so the markup always matches.
       skipHydration: true,
       storage: createJSONStorage(() => safeStorage),
-      partialize: ({ name, sex, age, height, weight, answers, labs, step, completed, editing, history }) => ({
+      partialize: ({ name, style, sound, sex, age, height, weight, answers, labs, step, completed, editing, history }) => ({
         name,
+        style,
+        sound,
         sex,
         age,
         height,

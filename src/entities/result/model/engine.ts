@@ -457,6 +457,11 @@ export function assess(profile: Profile, answers: Answers, date = new Date().toI
   };
 }
 
+/** Expected age for these answers: the forecast alone, without the breakdown of assess(). */
+export function forecast(profile: Profile, answers: Answers): number {
+  return forecastOf(profile, answers);
+}
+
 /** Every answer as the average peer of the world: the reference person of the factor pages. */
 export const PEER_ANSWERS: Answers = Object.fromEntries(
   FACTORS.map((f) => [f.slug, f.kind === "country" ? WORLD : PEERS]),
