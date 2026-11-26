@@ -1,0 +1,6 @@
+User-Agent: *
+Allow: /
+
+Sitemap: https://seitek2002.github.io/uzak/en/sitemap.xml
+Sitemap: https://seitek2002.github.io/uzak/en/en/sitemap.xml
+Sitemap: https://seitek2002.github.io/uzak/en/ky/sitemap.xml

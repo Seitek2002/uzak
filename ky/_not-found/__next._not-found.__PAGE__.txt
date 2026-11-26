@@ -1,0 +1,29 @@
+2:"$Sreact.fragment"
+3:"/uzak/ky/_next/static/chunks/3qfy96eoyh-ek.js"
+4:I[39756,["$3"],"default"]
+5:I[37457,["$3"],"default"]
+a:"/uzak/ky/_next/static/chunks/3ievt_9zml42y.js"
+b:I[93107,["$3","$a"],"SiteHeader"]
+c:I[22016,["$3","$a"],""]
+d:I[64406,["$3","$a"],"LanguageSwitch"]
+e:I[97367,["$3"],"OutletBoundary"]
+f:"$Sreact.suspense"
+12:"ViewportBoundary"
+13:I[97367,["$3"],"$12"]
+14:"MetadataBoundary"
+15:I[97367,["$3"],"$14"]
+16:I[27201,["$3"],"IconMark"]
+7:X
+7:C
+8:X
+9:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$2","c",{"children":[[["$","$Lb",null,{}],["$","main",null,{"id":"main","className":"container empty","children":[["$","h1",null,{"children":"Мындай бет жок"}],["$","p",null,{"className":"lead","children":"Шилтеме эскирип калышы мүмкүн. Башкы беттен же дароо тесттен баштаңыз."}],["$","div",null,{"className":"actions","children":[["$","$Lc",null,{"href":"/start","className":"btn","children":"Тесттен өтүү"}],["$","$Lc",null,{"href":"/","className":"link","children":"Башкы бетке"}]]}]]}],["$","footer",null,{"className":"mast","children":["$","div",null,{"className":"container","children":[["$","p",null,{"className":"mast__name","aria-hidden":"true","children":[["$","b",null,{"children":"Узак"}]," ",["$","span",null,{"children":"өмүр"}]]}],["$","nav",null,{"aria-label":"Сайттын бөлүмдөрү","children":["$","ul",null,{"className":"mast__links","children":[["$","li","/start",{"children":["$","$Lc",null,{"href":"/start","children":"Тесттен өтүү"}]}],["$","li","/pet",{"children":["$","$Lc",null,{"href":"/pet","children":"Жаныбарлар үчүн"}]}],["$","li","/report",{"children":["$","$Lc",null,{"href":"/report","children":"Менин отчётум"}]}],["$","li","/factors",{"children":["$","$Lc",null,{"href":"/factors","children":"Бардык факторлор"}]}],["$","li","/method",{"children":["$","$Lc",null,{"href":"/method","children":"Эсептөө усулу"}]}],["$","li","/privacy",{"children":["$","$Lc",null,{"href":"/privacy","children":"Купуялык"}]}],["$","li","/disclaimer",{"children":["$","$Lc",null,{"href":"/disclaimer","children":"Бул диагноз эмес"}]}]]}]}],["$","$Ld",null,{"full":true}],["$","p",null,{"className":"mast__review","children":"Кыргызча котормону эне тили кыргыз тили болгон адам азырынча текшере элек."}],["$","div",null,{"className":"mast__legal","children":[["$","p",null,{"children":"Тест коркунучтарды жарыяланган изилдөөлөрдүн орточо маалыматтары боюнча баалайт. Ал диагноз койбойт жана дарыгердин ордун баспайт."}],["$","p",null,{"children":["© 2026 ",["$","span",null,{"className":"brand-name","children":"Узак Өмүр"}]]}]]}]]}]}]],[["$","script","script-0",{"src":"/uzak/ky/_next/static/chunks/3ievt_9zml42y.js","async":true}]],["$","$Le",null,{"children":["$","$f",null,{"name":"Next.MetadataOutlet","children":"$@10"}]}]]}],"p":"$@11","v":null,"s":"$8"}}]]
+1:[["children",{"s":"/_not-found","h":64,"d":{"r":["$","$2","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","template":["$","$L5",null,{}]}]]}],"p":"$@6","v":"$7","s":"$8"},"c":"$Q9"}]]
+0:{"t":{"t":{"s":"","h":16,"c":"$Q1"},"h":{"r":["$","$2","h",{"children":[["$","meta",null,{"name":"robots","content":"noindex"}],["$","$L13",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","meta","2",{"name":"color-scheme","content":"light"}]]}],["$","$L15",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$f",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Узак Өмүр: өмүр узактыгы тести"}],["$","meta","1",{"name":"description","content":"38 суроодон турган акысыз тест: өмүр узактыгынын божомолу, биологиялык жаш жана биринчи кезекте өзгөртүүгө татыктуу адаттар."}],["$","meta","2",{"name":"application-name","content":"Узак Өмүр"}],["$","meta","3",{"property":"og:title","content":"Узак Өмүр: өмүр узактыгы тести"}],["$","meta","4",{"property":"og:description","content":"38 суроодон турган акысыз тест: өмүр узактыгынын божомолу, биологиялык жаш жана биринчи кезекте өзгөртүүгө татыктуу адаттар."}],["$","meta","5",{"property":"og:site_name","content":"Узак Өмүр"}],["$","meta","6",{"property":"og:locale","content":"ky_KG"}],["$","meta","7",{"property":"og:type","content":"website"}],["$","meta","8",{"name":"twitter:card","content":"summary"}],["$","meta","9",{"name":"twitter:title","content":"Узак Өмүр: өмүр узактыгы тести"}],["$","meta","10",{"name":"twitter:description","content":"38 суроодон турган акысыз тест: өмүр узактыгынын божомолу, биологиялык жаш жана биринчи кезекте өзгөртүүгө татыктуу адаттар."}],["$","link","11",{"rel":"icon","href":"/uzak/ky/icon.svg?icon.1jf-zteppdhhf.svg","sizes":"any","type":"image/svg+xml"}],["$","$L16","12",{}]]}]}],null]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"p":"$@17","v":null,"s":"$8"}},"a":"$@18","u":"$@19","b":"KtemFgFnJ2JeqihaI9wDo"}
+10:null
+19:true
+8:300
+8:C
+18:0
+6:"$undefined"
+17:"$undefined"
+11:"$undefined"

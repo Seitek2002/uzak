@@ -1,0 +1,36 @@
+2:"$Sreact.fragment"
+3:"/uzak/_next/static/chunks/3qfy96eoyh-ek.js"
+4:"/uzak/_next/static/chunks/1qevnh_4s-c60.js"
+5:I[23734,["$3","$4"],"SiteHeader"]
+6:I[39756,["$3"],"default"]
+7:I[37457,["$3"],"default"]
+8:I[22016,["$3","$4"],""]
+9:I[21509,["$3","$4"],"LanguageSwitch"]
+10:"/uzak/_next/static/chunks/02wkdso7mqu0x.js"
+11:"/uzak/_next/static/chunks/0kxblbypj25ml.js"
+12:"/uzak/_next/static/chunks/1mitpscvebqs4.js"
+13:"/uzak/_next/static/chunks/1f6-ne5q780gz.js"
+14:I[37417,["$3","$4","$10","$11","$12","$13"],"ReportView"]
+15:I[97367,["$3"],"OutletBoundary"]
+16:"$Sreact.suspense"
+19:"ViewportBoundary"
+1a:I[97367,["$3"],"$19"]
+1b:"MetadataBoundary"
+1c:I[97367,["$3"],"$1b"]
+1d:I[27201,["$3"],"IconMark"]
+b:X
+e:X
+e:C
+f:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$2","c",{"children":[["$","$L14",null,{}],[["$","script","script-0",{"src":"/uzak/_next/static/chunks/02wkdso7mqu0x.js","async":true}],["$","script","script-1",{"src":"/uzak/_next/static/chunks/0kxblbypj25ml.js","async":true}],["$","script","script-2",{"src":"/uzak/_next/static/chunks/1mitpscvebqs4.js","async":true}],["$","script","script-3",{"src":"/uzak/_next/static/chunks/1f6-ne5q780gz.js","async":true}]],["$","$L15",null,{"children":["$","$16",null,{"name":"Next.MetadataOutlet","children":"$@17"}]}]]}],"p":"$@18","v":null,"s":"$b"}}]]
+c:[["children",{"s":"report","h":96,"d":{"r":["$","$2","c",{"children":[null,["$","$L6",null,{"parallelRouterKey":"children","template":["$","$L7",null,{}]}]]}],"p":"$@d","v":"$e","s":"$b"},"c":"$Qf"}]]
+1:[["children",{"s":"(site)","h":64,"d":{"r":["$","$2","c",{"children":[[["$","script","script-0",{"src":"/uzak/_next/static/chunks/1qevnh_4s-c60.js","async":true}]],[["$","$L5",null,{}],["$","main",null,{"id":"main","children":["$","$L6",null,{"parallelRouterKey":"children","template":["$","$L7",null,{}],"notFound":[["$","div",null,{"className":"container empty","children":[["$","h1",null,{"children":"Такой страницы нет"}],["$","p",null,{"className":"lead","children":"Возможно, ссылка устарела. Начните с главной или сразу с теста."}],["$","div",null,{"className":"actions","children":[["$","$L8",null,{"href":"/start","className":"btn","children":"Пройти тест"}],["$","$L8",null,{"href":"/","className":"link","children":"На главную"}]]}]]}],[]]}]}],["$","footer",null,{"className":"mast","children":["$","div",null,{"className":"container","children":[["$","p",null,{"className":"mast__name","aria-hidden":"true","children":[["$","b",null,{"children":"Узак"}]," ",["$","span",null,{"children":"өмүр"}]]}],["$","nav",null,{"aria-label":"Разделы сайта","children":["$","ul",null,{"className":"mast__links","children":[["$","li","/start",{"children":["$","$L8",null,{"href":"/start","children":"Пройти тест"}]}],["$","li","/pet",{"children":["$","$L8",null,{"href":"/pet","children":"Для питомцев"}]}],["$","li","/report",{"children":["$","$L8",null,{"href":"/report","children":"Мой отчёт"}]}],["$","li","/factors",{"children":["$","$L8",null,{"href":"/factors","children":"Все факторы"}]}],["$","li","/method",{"children":["$","$L8",null,{"href":"/method","children":"Как считаем"}]}],["$","li","/privacy",{"children":["$","$L8",null,{"href":"/privacy","children":"Конфиденциальность"}]}],["$","li","/disclaimer",{"children":["$","$L8",null,{"href":"/disclaimer","children":"Это не диагноз"}]}]]}]}],["$","$L9",null,{"full":true}],false,["$","div",null,{"className":"mast__legal","children":[["$","p",null,{"children":"Тест оценивает риски по средним данным опубликованных исследований. Он не ставит диагнозов и не заменяет врача."}],["$","p",null,{"children":["© 2026 ",["$","span",null,{"className":"brand-name","children":"Узак Өмүр"}]]}]]}]]}]}]]]}],"p":"$@a","v":null,"s":"$b"},"c":"$Qc"}]]
+0:{"t":{"t":{"s":"","h":16,"c":"$Q1"},"h":{"r":["$","$2","h",{"children":[null,["$","$L1a",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","meta","2",{"name":"color-scheme","content":"light"}]]}],["$","$L1c",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$16",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Мой отчёт | Узак Өмүр"}],["$","meta","1",{"name":"description","content":"Прогноз, потенциал, биологический возраст и карта факторов по вашим ответам."}],["$","meta","2",{"name":"application-name","content":"Узак Өмүр"}],["$","meta","3",{"property":"og:title","content":"Узак Өмүр: тест долголетия"}],["$","meta","4",{"property":"og:description","content":"Бесплатный тест на 38 вопросов: прогноз продолжительности жизни, биологический возраст и привычки, которые стоит изменить первыми."}],["$","meta","5",{"property":"og:site_name","content":"Узак Өмүр"}],["$","meta","6",{"property":"og:locale","content":"ru_RU"}],["$","meta","7",{"property":"og:type","content":"website"}],["$","meta","8",{"name":"twitter:card","content":"summary"}],["$","meta","9",{"name":"twitter:title","content":"Узак Өмүр: тест долголетия"}],["$","meta","10",{"name":"twitter:description","content":"Бесплатный тест на 38 вопросов: прогноз продолжительности жизни, биологический возраст и привычки, которые стоит изменить первыми."}],["$","link","11",{"rel":"icon","href":"/uzak/icon.svg?icon.1jf-zteppdhhf.svg","sizes":"any","type":"image/svg+xml"}],["$","$L1d","12",{}]]}]}],null]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"p":"$@1e","v":null,"s":"$b"}},"a":"$@1f","u":"$@20","b":"g5e1pjT1GK3lB8Q7uT0Hm"}
+17:null
+20:true
+b:300
+b:C
+1f:0
+d:"$undefined"
+a:"$undefined"
+1e:"$undefined"
+18:"$undefined"
