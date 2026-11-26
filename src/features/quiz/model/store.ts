@@ -24,6 +24,8 @@ interface QuizState {
   style?: QuizStyle;
   /** Sounds of the game styles, off until the person turns them on. */
   sound: boolean;
+  /** Styles taken to the end at least once: the choice shows them open. */
+  played: QuizStyle[];
   sex?: Sex;
   age?: number;
   height?: number;
@@ -136,6 +138,7 @@ export const useQuiz = create<QuizState>()(
     (set, get) => ({
       ...blank,
       sound: false,
+      played: [],
       history: [],
       setName: (name) => set({ name: name.slice(0, 40) }),
       setStyle: (style) => set({ style }),
@@ -157,7 +160,8 @@ export const useQuiz = create<QuizState>()(
         const state = get();
         const attempt = attemptOf(state, new Date().toISOString());
         if (!attempt) return null;
-        set({ history: [...state.history, attempt].slice(-12), completed: true, editing: false });
+        const played = state.style && !state.played.includes(state.style) ? [...state.played, state.style] : state.played;
+        set({ history: [...state.history, attempt].slice(-12), completed: true, editing: false, played });
         return attempt;
       },
       startEdit: (step) => {
@@ -199,7 +203,7 @@ export const useQuiz = create<QuizState>()(
       },
       // A new attempt asks again how to take the test.
       restart: () => set({ step: 0, completed: false, editing: false, style: undefined }),
-      wipe: () => set({ ...blank, history: [] }),
+      wipe: () => set({ ...blank, history: [], played: [] }),
     }),
     {
       name: "uzak-v1",
@@ -208,10 +212,11 @@ export const useQuiz = create<QuizState>()(
       // The server renders the blank state; saved answers are read after mount so the markup always matches.
       skipHydration: true,
       storage: createJSONStorage(() => safeStorage),
-      partialize: ({ name, style, sound, sex, age, height, weight, answers, labs, step, completed, editing, history }) => ({
+      partialize: ({ name, style, sound, played, sex, age, height, weight, answers, labs, step, completed, editing, history }) => ({
         name,
         style,
         sound,
+        played,
         sex,
         age,
         height,

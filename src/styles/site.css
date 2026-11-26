@@ -510,6 +510,12 @@ a.choice-big { text-decoration: none; }
 .deck[aria-disabled="true"] { opacity: 0.55; cursor: not-allowed; }
 .deck[aria-disabled="true"] .deck__card { transform: none; }
 .pick__plain { min-height: 44px; }
+.pick__resume { font-weight: 500; color: var(--color-field-text); }
+.deck__name { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs); }
+.deck__done { padding: 2px var(--space-xs); background: var(--color-paper-3); font-size: var(--text-xs); font-weight: 500; color: var(--color-ink-2); }
+.deck.is-known .deck__front { background: var(--color-ink); color: var(--color-paper); }
+.deck.is-known .deck__face { transition: none; }
+.deck.is-known .deck__front .deck__numeral { box-shadow: 0 0 0 1px var(--color-ink-2); }
 @media (max-width: 40rem) {
   .decks { gap: var(--space-sm); }
   .deck__numeral { width: 3rem; height: 3rem; font-size: var(--text-xl); }

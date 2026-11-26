@@ -49,7 +49,9 @@ const STOPS = BLOCKS.slice(1).map((b) => (b.from - PATH_FROM) / PATH_LEN);
 const calm = () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const years = (n: number) => `${decimal(n)} ${plural(n, YEARS)}`;
 
-type Camp = { kind: "start"; hp: number } | { kind: "block"; group: GroupId; delta: number; n: number; of: number };
+/** What the hero achieves on the way: shown as a notice over the world, the questions go on underneath. */
+type Notice = { kind: "start"; hp: number } | { kind: "block"; group: GroupId; delta: number; n: number; of: number };
+const NOTICE_MS = 4200;
 interface Finale {
   hp: number;
   start: number;
@@ -73,7 +75,7 @@ export function JourneyApp() {
   const setSex = useQuiz((s) => s.setSex);
   const setLabs = useQuiz((s) => s.setLabs);
 
-  const [camp, setCamp] = useState<Camp | null>(null);
+  const [notice, setNotice] = useState<(Notice & { key: number }) | null>(null);
   const [finale, setFinale] = useState<Finale | null>(null);
   const [reveal, setReveal] = useState<Reveal | null>(null);
   const [pose, setPose] = useState<Pose>("stand");
@@ -81,10 +83,18 @@ export function JourneyApp() {
   const [said, setSaid] = useState("");
   const [shake, setShake] = useState(0);
   const timers = useRef<number[]>([]);
-  const campRef = useRef<Camp | null>(null);
-  const campHeading = useRef<HTMLHeadingElement>(null);
-  campRef.current = camp;
-  useEffect(() => () => timers.current.forEach((t) => window.clearTimeout(t)), []);
+  const noticeRef = useRef<Notice | null>(null);
+  const noticeTimer = useRef<number | undefined>(undefined);
+  const finaleHeading = useRef<HTMLHeadingElement>(null);
+  const wide = useWide();
+  noticeRef.current = notice;
+  useEffect(
+    () => () => {
+      timers.current.forEach((t) => window.clearTimeout(t));
+      window.clearTimeout(noticeTimer.current);
+    },
+    [],
+  );
   const later = (fn: () => void, ms: number) => timers.current.push(window.setTimeout(fn, ms));
 
   const profile: Profile | null = sex && age ? { sex, age } : null;
@@ -92,7 +102,18 @@ export function JourneyApp() {
     if (useQuiz.getState().sound) (sfx[kind] as (big?: boolean) => void)(...args);
   };
 
-  const openBlockCamp = (group: GroupId) => {
+  const notify = (next: Notice, text: string) => {
+    setNotice({ ...next, key: Date.now() });
+    setSaid(text);
+    play("camp");
+    window.clearTimeout(noticeTimer.current);
+    noticeTimer.current = window.setTimeout(() => {
+      setNotice(null);
+      setPose((p) => (p === "rest" ? "stand" : p));
+    }, NOTICE_MS);
+  };
+
+  const blockDone = (group: GroupId) => {
     const s = useQuiz.getState();
     const block = BLOCKS.find((b) => b.group === group);
     if (!block || !s.sex || !s.age) return;
@@ -101,11 +122,12 @@ export function JourneyApp() {
     const before = hpOf(p, answersBefore(s.answers, STEPS, Math.max(block.from, PATH_FROM)));
     const after = hpOf(p, answersBefore(s.answers, STEPS, block.to + 1));
     const n = BLOCKS.findIndex((b) => b.group === group) + 1;
-    setCamp({ kind: "block", group, delta: after - before, n, of: s.labs === "skip" ? BLOCKS.length - 1 : BLOCKS.length });
-    play("camp");
+    const of = s.labs === "skip" ? BLOCKS.length - 1 : BLOCKS.length;
+    const relic = RELICS[group].name;
+    notify({ kind: "block", group, delta: after - before, n, of }, `Блок «${groupById(group).title}» пройден: ${signed(after - before)}. Реликвия: ${relic}, ${n} из ${of}.`);
   };
 
-  const flow = useQuizFlow({ onGroupDone: openBlockCamp });
+  const flow = useQuizFlow({ onGroupDone: blockDone });
   const { step, id, factor, error, headingRef } = flow;
   const onPath = step >= PATH_FROM;
   const known = useMemo(() => answersBefore(answers, STEPS, step), [answers, step]);
@@ -119,14 +141,15 @@ export function JourneyApp() {
   const earned = finale ? finale.relics : BLOCKS.filter((b) => b.to < step).length;
   const relicsOf = labs === "skip" ? BLOCKS.length - 1 : BLOCKS.length;
 
-  // The camp takes the focus; leaving it gives the focus back to the question.
+  // The summit takes the focus; notices never do, so the answers go on.
   useEffect(() => {
-    if (camp || finale) campHeading.current?.focus();
-  }, [camp, finale]);
+    if (finale) finaleHeading.current?.focus();
+  }, [finale]);
 
+  /** After a block the hero sits by a fire for as long as its notice shows. */
   const walk = () => {
     setPose("walk");
-    later(() => setPose(campRef.current ? "rest" : "stand"), calm() ? 0 : WALK_MS);
+    later(() => setPose(noticeRef.current?.kind === "block" ? "rest" : "stand"), calm() ? 0 : WALK_MS);
   };
 
   const showFinale = () => {
@@ -151,8 +174,8 @@ export function JourneyApp() {
     if (STEPS[from] === "country-next") {
       const s = useQuiz.getState();
       if (s.sex && s.age) {
-        setCamp({ kind: "start", hp: hpOf({ sex: s.sex, age: s.age }, answersBefore(s.answers, STEPS, PATH_FROM)) });
-        play("camp");
+        const start = hpOf({ sex: s.sex, age: s.age }, answersBefore(s.answers, STEPS, PATH_FROM));
+        notify({ kind: "start", hp: start }, `Герой готов. Старт: ${years(start)}.`);
       }
     }
     if (useQuiz.getState().step !== from) walk();
@@ -160,7 +183,7 @@ export function JourneyApp() {
 
   /** Plays the chosen answer: the card turns, the health moves, then the hero walks on. */
   const resolve = () => {
-    if (reveal || camp || finale) return;
+    if (reveal || finale) return;
     const problem = flow.check();
     if (problem) {
       flow.showProblem(problem);
@@ -201,12 +224,6 @@ export function JourneyApp() {
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     resolve();
-  };
-
-  const leaveCamp = () => {
-    setCamp(null);
-    setPose("stand");
-    window.setTimeout(() => headingRef.current?.focus(), 0);
   };
 
   const toggleSound = () => {
@@ -255,13 +272,16 @@ export function JourneyApp() {
         </ol>
       </header>
 
-      <div className={`j-world${shake ? " is-shaken" : ""}`} key={`shake-${shake}`}>
-        <Scene progress={progress} stops={STOPS} sex={sex} pose={pose} />
-        {float && (
-          <span key={float.key} className={`j-float ${float.delta > 0.04 ? "is-heal" : float.delta < -0.04 ? "is-hurt" : "is-even"}`} aria-hidden="true">
-            {signed(float.delta)}
-          </span>
-        )}
+      <div className="j-side">
+        <div className={`j-world${shake ? " is-shaken" : ""}`} key={`shake-${shake}`}>
+          <Scene progress={progress} stops={STOPS} sex={sex} pose={pose} align={wide ? "middle" : "start"} />
+          {float && (
+            <span key={float.key} className={`j-float ${float.delta > 0.04 ? "is-heal" : float.delta < -0.04 ? "is-hurt" : "is-even"}`} aria-hidden="true">
+              {signed(float.delta)}
+            </span>
+          )}
+          {notice && <NoticeCard notice={notice} key={notice.key} />}
+        </div>
         {hp !== null && profile && (
           <section className="j-hud" aria-label="Состояние героя">
             <div className={`j-hp${reveal ? (reveal.delta > 0.04 ? " is-heal" : reveal.delta < -0.04 ? " is-hurt" : "") : ""}`}>
@@ -281,6 +301,23 @@ export function JourneyApp() {
                 Резерв <b>{signed(reserve)}</b>
               </span>
             </p>
+            <ol className="j-shelf" aria-label={`Реликвии: ${earned} из ${relicsOf}`}>
+              {BLOCKS.filter((b) => labs !== "skip" || b.group !== "tests").map((b) => {
+                const Relic = RELICS[b.group].icon;
+                const state = b.to < step || finale ? "is-earned" : groupOf(id) === b.group && onPath ? "is-here" : "";
+                return (
+                  <li key={b.group} className={state}>
+                    <span className="j-shelf__icon" aria-hidden="true">
+                      <Relic size={18} strokeWidth={2} />
+                    </span>
+                    <span>
+                      {RELICS[b.group].name}
+                      {state === "is-earned" && <span className="visually-hidden">, получена</span>}
+                    </span>
+                  </li>
+                );
+              })}
+            </ol>
           </section>
         )}
       </div>
@@ -289,9 +326,8 @@ export function JourneyApp() {
         <p className="visually-hidden" role="status">
           {said}
         </p>
-        {camp && <CampPanel camp={camp} headingRef={campHeading} onGo={leaveCamp} />}
-        {finale && <FinalePanel finale={finale} headingRef={campHeading} onOpen={() => router.push("/result")} />}
-        {!camp && !finale && (
+        {finale && <FinalePanel finale={finale} headingRef={finaleHeading} onOpen={() => router.push("/result")} />}
+        {!finale && (
           <form className="j-form" onSubmit={onSubmit} noValidate key={id}>
             <p className="j-block">{blockTitle}</p>
             {id === "name" && <NameStep headingRef={headingRef} />}
@@ -361,51 +397,48 @@ export function JourneyApp() {
 /** The bar shows the years left: from today's age to a hundred. */
 const fill = (hp: number, age: number) => Math.min(Math.max((hp - age) / Math.max(100 - age, 1), 0.02), 1).toFixed(3);
 
-function CampPanel({ camp, headingRef, onGo }: { camp: Camp; headingRef: RefObject<HTMLHeadingElement | null>; onGo: () => void }) {
-  if (camp.kind === "start") {
+/** A notice over the world: a finished block with its relic, or the start of the trail. Read out by the status line. */
+function NoticeCard({ notice }: { notice: Notice }) {
+  if (notice.kind === "start") {
     return (
-      <section className="j-camp" aria-labelledby="camp-title">
-        <p className="j-camp__kicker">Начало пути</p>
-        <h1 id="camp-title" ref={headingRef} tabIndex={-1}>
-          Герой готов
-        </h1>
-        <p className="j-camp__big">
-          <Heart size={28} strokeWidth={2} aria-hidden="true" />
-          <b>{decimal(camp.hp)}</b> <span>{plural(1.5, YEARS)}</span>
-        </p>
-        <p className="j-camp__text">Это стартовое HP: столько в среднем проживёт ваш ровесник в этой стране. Каждая сыгранная карта сдвинет его.</p>
-        <button type="button" className="btn j-play" onClick={onGo}>
-          В путь
-        </button>
-      </section>
-    );
-  }
-  const relic = RELICS[camp.group];
-  const Relic = relic.icon;
-  return (
-    <section className="j-camp" aria-labelledby="camp-title">
-      <p className="j-camp__kicker">Привал</p>
-      <h1 id="camp-title" ref={headingRef} tabIndex={-1}>
-        Блок «{groupById(camp.group).title}» пройден
-      </h1>
-      <p className={`j-camp__delta${camp.delta > 0.04 ? " is-heal" : camp.delta < -0.04 ? " is-hurt" : ""}`}>{signed(camp.delta)} за блок</p>
-      <div className="j-relic">
-        <span className="j-relic__icon" aria-hidden="true">
-          <Relic size={34} strokeWidth={1.75} />
+      <div className="j-notice is-start" aria-hidden="true">
+        <span className="j-notice__icon">
+          <Heart size={22} strokeWidth={2} />
         </span>
         <p>
-          <span>Реликвия</span>
-          <b>{relic.name}</b>
-          <span>
-            {camp.n} из {camp.of}
-          </span>
+          <b>Герой готов</b>
+          <span>{`Старт: ${years(notice.hp)}. Каждая карта сдвинет HP.`}</span>
         </p>
       </div>
-      <button type="button" className="btn j-play" onClick={onGo}>
-        В путь
-      </button>
-    </section>
+    );
+  }
+  const relic = RELICS[notice.group];
+  const Relic = relic.icon;
+  return (
+    <div className="j-notice" aria-hidden="true">
+      <span className="j-notice__icon">
+        <Relic size={24} strokeWidth={1.75} />
+      </span>
+      <p>
+        <b>Блок «{groupById(notice.group).title}» пройден</b>
+        <span>{`Реликвия: ${relic.name}, ${notice.n} из ${notice.of}`}</span>
+      </p>
+      <em className={notice.delta > 0.04 ? "is-heal" : notice.delta < -0.04 ? "is-hurt" : ""}>{signed(notice.delta)}</em>
+    </div>
   );
+}
+
+/** Two columns from a laptop up: the questions on the left, the world on the right. */
+function useWide() {
+  const [wide, setWide] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 64rem)");
+    const on = () => setWide(media.matches);
+    on();
+    media.addEventListener("change", on);
+    return () => media.removeEventListener("change", on);
+  }, []);
+  return wide;
 }
 
 function FinalePanel({ finale, headingRef, onOpen }: { finale: Finale; headingRef: RefObject<HTMLHeadingElement | null>; onOpen: () => void }) {

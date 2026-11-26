@@ -240,13 +240,14 @@ export const Hero = memo(function Hero({ sex, pose }: { sex?: Sex; pose: Pose })
 });
 
 /**
- * The scene. `progress` runs from 0 at the first question of the trail to 1 at
+ * The scene. In a narrow strip the land is anchored left; in the side panel
+ * of a wide screen it is centred so the hero stays in sight. `progress` runs from 0 at the first question of the trail to 1 at
  * the summit; `stops` are the progress values where blocks end.
  */
-export function Scene({ progress, stops, sex, pose }: { progress: number; stops: number[]; sex?: Sex; pose: Pose }) {
+export function Scene({ progress, stops, sex, pose, align = "start" }: { progress: number; stops: number[]; sex?: Sex; pose: Pose; align?: "start" | "middle" }) {
   const shift = (speed: number) => ({ transform: `translateX(${r1(-progress * TRAVEL * speed)}px)` }) as CSSProperties;
   return (
-    <svg className="j-scene" viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} preserveAspectRatio="xMinYMax slice" aria-hidden="true" focusable="false">
+    <svg className="j-scene" viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} preserveAspectRatio={align === "middle" ? "xMidYMax slice" : "xMinYMax slice"} aria-hidden="true" focusable="false">
       <defs>
         <clipPath id="j-far-clip">
           <path d={LAND.far} />

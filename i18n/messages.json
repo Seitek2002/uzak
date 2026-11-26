@@ -1038,8 +1038,8 @@
   ]
  },
  {
-  "id": "a286134cf8",
-  "ru": "Имя, пол, возраст, страны, рост, вес, ответы на вопросы, даты прохождения, выбранный стиль теста и включён ли в нём звук. Всё это лежит в локальном хранилище браузера (localStorage) на этом устройстве под ключом uzak-v1.",
+  "id": "56f19992de",
+  "ru": "Имя, пол, возраст, страны, рост, вес, ответы на вопросы, даты прохождения, выбранный стиль теста, пройденные стили и включён ли звук. Всё это лежит в локальном хранилище браузера (localStorage) на этом устройстве под ключом uzak-v1.",
   "at": [
    "src/app/(site)/privacy/page.tsx"
   ]
@@ -5825,6 +5825,20 @@
   ]
  },
  {
+  "id": "af95484904",
+  "ru": "Блок «{0}» пройден: {1}. Реликвия: {2}, {3} из {4}.",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "1101af957c",
+  "ru": "Герой готов. Старт: {0}.",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
   "id": "08ae0afe71",
   "ru": "Создание героя",
   "at": [
@@ -5974,13 +5988,6 @@
   ]
  },
  {
-  "id": "de6a810ada",
-  "ru": "Начало пути",
-  "at": [
-   "src/features/journey/ui/JourneyApp.tsx"
-  ]
- },
- {
   "id": "10bc439349",
   "ru": "Герой готов",
   "at": [
@@ -5988,43 +5995,15 @@
   ]
  },
  {
-  "id": "b1d96d065c",
-  "ru": "Это стартовое HP: столько в среднем проживёт ваш ровесник в этой стране. Каждая сыгранная карта сдвинет его.",
+  "id": "1afe60974a",
+  "ru": "Старт: {0}. Каждая карта сдвинет HP.",
   "at": [
    "src/features/journey/ui/JourneyApp.tsx"
   ]
  },
  {
-  "id": "e182368f54",
-  "ru": "В путь",
-  "at": [
-   "src/features/journey/ui/JourneyApp.tsx"
-  ]
- },
- {
-  "id": "43763cd7e1",
-  "ru": "Привал",
-  "at": [
-   "src/features/journey/ui/JourneyApp.tsx"
-  ]
- },
- {
-  "id": "5d816f5f5b",
-  "ru": "{0} за блок",
-  "at": [
-   "src/features/journey/ui/JourneyApp.tsx"
-  ]
- },
- {
-  "id": "4faa8b79a3",
-  "ru": "Реликвия",
-  "at": [
-   "src/features/journey/ui/JourneyApp.tsx"
-  ]
- },
- {
-  "id": "13221d2000",
-  "ru": "{0} из {1}",
+  "id": "e497e18130",
+  "ru": "Реликвия: {0}, {1} из {2}",
   "at": [
    "src/features/journey/ui/JourneyApp.tsx"
   ]
@@ -6060,6 +6039,13 @@
  {
   "id": "4deafccab6",
   "ru": "Реликвии",
+  "at": [
+   "src/features/journey/ui/JourneyApp.tsx"
+  ]
+ },
+ {
+  "id": "13221d2000",
+  "ru": "{0} из {1}",
   "at": [
    "src/features/journey/ui/JourneyApp.tsx"
   ]
@@ -7302,6 +7288,20 @@
  {
   "id": "3c7c56578e",
   "ru": "Вопросы и результат везде одни и те же. Что за стилями, узнаете после выбора.",
+  "at": [
+   "src/features/quiz/ui/StylePicker.tsx"
+  ]
+ },
+ {
+  "id": "026cc1d286",
+  "ru": "Ответы сохранены: продолжим с вопроса {0}.",
+  "at": [
+   "src/features/quiz/ui/StylePicker.tsx"
+  ]
+ },
+ {
+  "id": "c96e9ff8e9",
+  "ru": "<0>, </0>пройден",
   "at": [
    "src/features/quiz/ui/StylePicker.tsx"
   ]

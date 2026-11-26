@@ -73,7 +73,11 @@ try {
     const { ctx, page, errors } = await open("/report/");
     await page.waitForSelector(".quest");
     check("the report offers three quests", (await page.locator(".quest").count()) === 3);
-    check("the bank starts empty", (await page.locator(".bank .figure").first().innerText()).trim() === "0");
+    // The bank sits below the first screen, where layout is deferred: bring it into view before reading it.
+    await page.locator(".bank").scrollIntoViewIfNeeded();
+    await page.waitForFunction(() => document.querySelector(".bank .figure")?.textContent?.trim() !== "");
+    const bank = (await page.locator(".bank .figure").first().textContent()).trim();
+    check("the bank starts empty", bank === "0", bank);
     await page.locator(".quest__go").first().click();
     await page.waitForSelector(".quest__days");
     check("a started quest shows 21 days", (await page.locator(".quest__days li").count()) === 21);

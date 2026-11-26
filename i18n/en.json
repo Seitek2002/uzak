@@ -1208,5 +1208,12 @@
  "03dbfbbf9b": "Count again",
  "70e35c6b8d": "Pick from the options",
  "a286134cf8": "Name, sex, age, countries, height, weight, answers, the dates you took the test, the style you chose for it and whether its sound is on. All of this is kept in the browser’s local storage (localStorage) on this device under the key uzak-v1.",
- "c83c595b4f": "Hero status"
+ "c83c595b4f": "Hero status",
+ "af95484904": "Block “{0}” done: {1}. Relic: {2}, {3} of {4}.",
+ "1101af957c": "The hero is ready. Start: {0}.",
+ "1afe60974a": "Start: {0}. Every card moves the HP.",
+ "e497e18130": "Relic: {0}, {1} of {2}",
+ "56f19992de": "Name, sex, age, countries, height, weight, answers, the dates you took the test, the style you chose, the styles you have finished and whether sound is on. All of this is kept in the browser’s local storage (localStorage) on this device under the key uzak-v1.",
+ "026cc1d286": "Your answers are saved: we'll go on from question {0}.",
+ "c96e9ff8e9": "<0>, </0>finished"
 }

@@ -144,12 +144,17 @@ try {
     await page.waitForSelector(".journey");
     let sawHp = false;
     let sawCard = false;
-    let sawCamp = false;
+    let sawNotice = false;
+    let notStopped = false;
     let guard = 0;
     while (guard < 120) {
       guard += 1;
       if (!sawHp && (await page.locator(".j-hp b").count())) sawHp = true;
-      if (!sawCamp && (await page.locator(".j-relic").count())) sawCamp = true;
+      if (!sawNotice && (await page.locator(".j-notice").count()) && (await page.locator(".j-notice").innerText()).includes("Реликвия")) {
+        sawNotice = true;
+        // The next question is already on screen under the notice.
+        notStopped = (await page.locator(".j-slot label").count()) > 0 && (await page.getByRole("button", { name: "В путь" }).count()) === 0;
+      }
       const hand = await visible(page, ".j-slot label");
       const before = await page.evaluate(() => document.querySelector("main")?.innerText.length + location.search);
       const going = await move(page);
@@ -163,16 +168,94 @@ try {
     }
     check("the hero has health once the trail starts", sawHp);
     check("a played card turns and shows its years", sawCard);
-    check("a camp gives a relic", sawCamp);
+    check("a finished block shows its relic as a notice", sawNotice);
+    check("the notice does not stop the answers", notStopped);
     check("the trail ends on the result", /\/result\/?$/.test(new URL(page.url()).pathname));
     const s = await store(page);
     check("the attempt is saved", s.history?.length === 1 && Object.keys(s.history[0].answers).length >= 34, String(s.history?.length));
     check("no console errors on the trail", errors.length === 0, errors.join(" | "));
     await page.goto(`${BASE}/test/`, { waitUntil: "networkidle" });
     check("a new attempt asks for the style again", (await page.locator(".deck").count()) === 3);
+    const names = await page.locator(".deck__name").allInnerTexts();
+    check("a style taken to the end shows its name", names[0].includes("Путь героя") && names[0].includes("пройден") && names[1].trim() === "Стиль 2", names.join(" | "));
     await page.goto(`${BASE}/test/?q=10&edit=1`, { waitUntil: "networkidle" });
     await page.waitForTimeout(400);
     check("a correction opens in the plain form", (await page.getByRole("button", { name: "Пересчитать отчёт" }).count()) === 1);
+    await ctx.close();
+  }
+
+  // 1b. Coming back to an unfinished test asks for the style again and goes on from the same question.
+  {
+    const { ctx, page, errors } = await open();
+    await page.getByRole("button", { name: "Стиль 1" }).click();
+    await page.waitForSelector(".journey");
+    await page.fill("#name", "Тест");
+    await page.locator("form button[type=submit]").click();
+    await page.waitForSelector(".j-slot label");
+    await page.locator(".j-slot label").first().click();
+    await page.waitForSelector("#age");
+    await page.goto(`${BASE}/test/`, { waitUntil: "networkidle" });
+    check("an unfinished test asks for the style again", (await page.locator(".deck").count()) === 3);
+    check("the choice says where the test goes on", (await page.locator(".pick__resume").innerText()).includes("с вопроса 3"));
+    await page.getByRole("button", { name: "Стиль 2" }).click();
+    await page.waitForSelector(".chat");
+    await page.waitForSelector("#age", { timeout: 8000 });
+    check("the answers are kept in the new style", new URL(page.url()).searchParams.get("q") === "3" && (await store(page)).name === "Тест");
+    await page.reload({ waitUntil: "networkidle" });
+    await page.waitForSelector(".chat", { timeout: 8000 });
+    check("a reload does not ask again", (await page.locator(".deck").count()) === 0);
+    check("no console errors when coming back", errors.length === 0, errors.join(" | "));
+    await ctx.close();
+  }
+
+  // 2b. On a laptop the hand and the button fit one screen, beside the world.
+  for (const viewport of [{ width: 1280, height: 800 }, { width: 1366, height: 768 }, { width: 1024, height: 700 }]) {
+    const ctx = await browser.newContext({ viewport, locale: "ru-RU" });
+    const state = { name: "", style: "journey", sound: false, sex: "male", age: 40, answers: { "country-before": "KGZ", "country-next": "KGZ", relationship: "married" }, step: 6, completed: false, editing: false, history: [] };
+    await ctx.addInitScript((st) => localStorage.setItem("uzak-v1", JSON.stringify({ state: st, version: 2 })), state);
+    const page = await ctx.newPage();
+    await page.goto(`${BASE}/test/?q=7`, { waitUntil: "networkidle" });
+    await page.waitForSelector(".j-slot", { timeout: 8000 });
+    await page.waitForTimeout(900);
+    const fit = await page.evaluate(() => {
+      const last = [...document.querySelectorAll(".j-slot")].at(-1).getBoundingClientRect();
+      const play = document.querySelector(".j-play").getBoundingClientRect();
+      const world = document.querySelector(".j-world").getBoundingClientRect();
+      return { cards: last.bottom <= innerHeight, button: play.bottom <= innerHeight, page: document.documentElement.scrollHeight <= innerHeight, side: world.left > last.right };
+    });
+    check(`${viewport.width}x${viewport.height}: six cards and the button fit, the world beside them`, fit.cards && fit.button && fit.page && fit.side, JSON.stringify(fit));
+    await ctx.close();
+  }
+
+  // 2c. The jar on a laptop: big, beside the tiles, one screen.
+  for (const viewport of [{ width: 1280, height: 800 }, { width: 1024, height: 700 }]) {
+    const ctx = await browser.newContext({ viewport, locale: "ru-RU" });
+    const state = { name: "", style: "touch", sound: false, sex: "male", age: 40, answers: { "country-before": "KGZ", "country-next": "KGZ", relationship: "married" }, step: 6, completed: false, editing: false, history: [] };
+    await ctx.addInitScript((st) => localStorage.setItem("uzak-v1", JSON.stringify({ state: st, version: 2 })), state);
+    const page = await ctx.newPage();
+    await page.goto(`${BASE}/test/?q=7`, { waitUntil: "networkidle" });
+    await page.waitForSelector(".t-tile", { timeout: 8000 });
+    await page.waitForTimeout(700);
+    const fit = await page.evaluate(() => {
+      const last = [...document.querySelectorAll(".t-tiles li")].at(-1).getBoundingClientRect();
+      const go = document.querySelector(".t-go").getBoundingClientRect();
+      const jar = document.querySelector(".t-jar").getBoundingClientRect();
+      return { tiles: last.bottom <= innerHeight, button: go.bottom <= innerHeight, page: document.documentElement.scrollHeight <= innerHeight, side: jar.left > last.right, big: jar.height >= 150 };
+    });
+    check(`${viewport.width}x${viewport.height}: the tiles and the button fit, a big jar beside them`, Object.values(fit).every(Boolean), JSON.stringify(fit));
+    await ctx.close();
+  }
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, locale: "ru-RU" });
+    const state = { name: "", style: "touch", sound: false, sex: "male", age: 40, answers: { "country-before": "KGZ", "country-next": "KGZ", relationship: "married" }, step: 6, completed: false, editing: false, history: [] };
+    await ctx.addInitScript((st) => localStorage.setItem("uzak-v1", JSON.stringify({ state: st, version: 2 })), state);
+    const page = await ctx.newPage();
+    await page.goto(`${BASE}/test/?q=7`, { waitUntil: "networkidle" });
+    await page.waitForSelector(".t-tile", { timeout: 8000 });
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await page.waitForTimeout(300);
+    const top = await page.evaluate(() => document.querySelector(".t-bank").getBoundingClientRect().top);
+    check("on a phone the jar stays in sight while answering", top >= 0 && top < 40, String(top));
     await ctx.close();
   }
 

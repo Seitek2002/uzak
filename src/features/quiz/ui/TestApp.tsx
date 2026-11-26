@@ -36,9 +36,8 @@ const preload = (style: GameStyle) => {
 export function TestApp() {
   const hydrated = useArrival();
   const style = useQuiz((s) => s.style);
-  const step = useQuiz((s) => s.step);
   const editing = useQuiz((s) => s.editing);
-  if (!hydrated || (!editing && !style && step === 0)) return <StylePicker preload={preload} />;
+  if (!hydrated || (!editing && !style)) return <StylePicker preload={preload} />;
   const mode: QuizStyle = editing ? "classic" : (style ?? "classic");
   if (mode === "classic") return <QuizApp />;
   const View = VIEWS[mode];

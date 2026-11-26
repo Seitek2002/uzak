@@ -353,8 +353,9 @@ body:has(.journey) { background-color: var(--j-night); }
 .j-float.is-even { color: var(--j-ivory); }
 @keyframes j-rise { 0% { opacity: 0; transform: translate(-50%, 12px) scale(0.7); } 18% { opacity: 1; transform: translate(-50%, 0) scale(1.08); } 70% { opacity: 1; transform: translate(-50%, -18px) scale(1); } 100% { opacity: 0; transform: translate(-50%, -34px) scale(1); } }
 
-/* The health plate and the reserve, over the land. */
-.j-hud { position: absolute; left: var(--gutter); top: var(--space-md); display: grid; justify-items: start; gap: var(--space-xs); }
+/* The side: the world and, over it on a phone, the health plate and the reserve. */
+.j-side { position: relative; }
+.j-hud { position: absolute; left: var(--gutter); top: var(--space-md); z-index: 1; display: grid; justify-items: start; gap: var(--space-xs); }
 .j-hp {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
@@ -384,7 +385,48 @@ body:has(.journey) { background-color: var(--j-night); }
 .j-reserve span { color: var(--j-ivory-2); }
 .j-reserve b { color: var(--j-crystal); font-variant-numeric: tabular-nums; }
 
-/* ---------- The stage: question, cards and camps ---------- */
+
+/* A notice over the world: the start, or a block done with its relic. The questions go on underneath. */
+.j-notice {
+  position: absolute;
+  left: 50%;
+  bottom: var(--space-sm);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: max-content;
+  max-width: calc(100% - 2 * var(--space-sm));
+  padding: var(--space-xs) var(--space-md) var(--space-xs) var(--space-xs);
+  border: 1px solid var(--j-gold-deep);
+  border-radius: 16px;
+  background: var(--j-plate);
+  box-shadow: 0 12px 32px var(--j-shadow), 0 0 0 4px var(--j-gold-glow);
+  pointer-events: none;
+  transform: translateX(-50%);
+  animation: j-notice 4200ms var(--ease-out) both;
+}
+.j-notice__icon { display: grid; place-items: center; flex: none; width: 2.75rem; height: 2.75rem; border-radius: 50%; background: radial-gradient(circle at 40% 30%, var(--j-gold-hi), var(--j-gold) 55%, var(--j-gold-deep)); color: var(--j-night); }
+.j-notice.is-start .j-notice__icon { background: var(--j-night-3); color: var(--j-hurt); }
+.j-notice.is-start .j-notice__icon svg { fill: var(--j-hurt); }
+.j-notice p { display: grid; gap: 2px; min-width: 0; }
+.j-notice b { font: 700 var(--text-md)/1.2 var(--font-display); color: var(--j-ivory); }
+.j-notice p span { font-size: var(--text-sm); color: var(--j-ivory-2); }
+.j-notice em { flex: none; font: 800 var(--text-lg)/1 var(--font-display); font-style: normal; font-variant-numeric: tabular-nums; color: var(--j-ivory); }
+.j-notice em.is-heal { color: var(--j-heal); }
+.j-notice em.is-hurt { color: var(--j-hurt); }
+@keyframes j-notice {
+  0% { opacity: 0; transform: translate(-50%, 16px) scale(0.92); }
+  8% { opacity: 1; transform: translate(-50%, 0) scale(1.03); }
+  12% { transform: translate(-50%, 0) scale(1); }
+  90% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -8px); }
+}
+
+/* The shelf of relics shows in the side panel of a wide screen; a phone has the map in the top bar. */
+.j-shelf { display: none; }
+
+/* ---------- The stage: question, cards and the summit ---------- */
 
 .journey .j-stage { padding-block: var(--space-xl) var(--space-3xl); }
 .j-form, .j-camp { display: grid; gap: var(--space-lg); max-width: 76rem; margin: 0 auto; padding-inline: var(--gutter); }
@@ -494,20 +536,69 @@ body:has(.journey) { background-color: var(--j-night); }
 .j-camp__big b { font: 800 clamp(3rem, 6vw, 5rem)/1 var(--font-display); font-variant-numeric: tabular-nums; }
 .j-camp__big span { color: var(--j-ivory-2); }
 .j-camp__text { max-width: 52ch; color: var(--j-ivory-2); }
-.j-camp__delta { font: 700 var(--text-xl)/1.1 var(--font-display); font-variant-numeric: tabular-nums; }
-.j-camp__delta.is-heal { color: var(--j-heal); }
-.j-camp__delta.is-hurt { color: var(--j-hurt); }
-.j-relic { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-md) var(--space-lg) var(--space-md) var(--space-md); border: 1px solid var(--j-gold-deep); border-radius: 16px; background: var(--j-night-2); animation: j-relic 820ms var(--ease-spring) 180ms backwards; }
-.j-relic__icon { display: grid; place-items: center; width: 4rem; height: 4rem; border-radius: 50%; background: radial-gradient(circle at 40% 30%, var(--j-gold-hi), var(--j-gold) 55%, var(--j-gold-deep)); color: var(--j-night); box-shadow: 0 0 32px var(--j-gold-glow); }
-.j-relic p { display: grid; gap: 2px; }
-.j-relic p span { font-size: var(--text-sm); color: var(--j-muted); }
-.j-relic b { font: 700 var(--text-lg)/1.2 var(--font-display); }
 .j-finale .j-camp__big b { color: var(--j-gold); }
 .j-stats { display: grid; grid-template-columns: repeat(3, auto); gap: var(--space-sm) var(--space-xl); margin: 0; }
 .j-stats dt { font-size: var(--text-sm); color: var(--j-muted); }
 .j-stats dd { margin: 0; font: 700 var(--text-lg)/1.2 var(--font-display); font-variant-numeric: tabular-nums; }
 @keyframes j-come { from { opacity: 0; transform: translateY(16px); } }
-@keyframes j-relic { from { opacity: 0; transform: scale(0.6) rotate(-8deg); } }
+
+
+/* ---------- Wide screens: the questions on the left, the world on the right, one screen ---------- */
+@media (min-width: 64rem) {
+  .journey {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas: "top top" "stage side";
+    height: 100dvh;
+    min-height: 0;
+  }
+  .j-top { grid-area: top; }
+  .j-top__inner { min-height: 56px; padding-block: var(--space-xs); }
+  .j-map { display: none; }
+  .j-side { grid-area: side; display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: var(--space-md); min-height: 0; padding: var(--space-md) var(--gutter) var(--space-md) 0; }
+  .j-world { height: auto; min-height: 0; border: 1px solid var(--j-line); border-radius: 20px; }
+  .j-float { left: calc(50% - 40 * var(--scale)); }
+  .j-notice { top: var(--space-md); bottom: auto; }
+  .j-hud { position: static; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-sm) var(--space-md); }
+  .j-hp { min-width: 0; }
+  .j-reserve { justify-self: end; }
+  .j-shelf { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-xs); margin: 0; padding: 0; list-style: none; }
+  .j-shelf li { display: flex; align-items: center; gap: var(--space-xs); min-width: 0; padding: 6px var(--space-xs); border: 1px solid var(--j-line); border-radius: 12px; background: var(--j-night-2); font-size: var(--text-xs); line-height: 1.2; color: var(--j-muted); }
+  .j-shelf__icon { display: grid; place-items: center; flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--j-night-3); color: var(--j-muted); }
+  .j-shelf li.is-here { border-color: var(--j-gold-deep); color: var(--j-ivory-2); }
+  .j-shelf li.is-here .j-shelf__icon { color: var(--j-gold); box-shadow: 0 0 0 2px var(--j-gold-glow); }
+  .j-shelf li.is-earned { border-color: var(--j-gold-deep); color: var(--j-ivory); }
+  .j-shelf li.is-earned .j-shelf__icon { background: var(--j-gold); color: var(--j-night); animation: j-earn 700ms var(--ease-spring); }
+  .journey .j-stage { grid-area: stage; overflow-y: auto; min-height: 0; padding: var(--space-lg) var(--space-xl) var(--space-lg) var(--gutter); }
+  .j-form, .j-camp { max-width: 46rem; margin: 0; padding-inline: 0; gap: var(--space-md); }
+  .j-form fieldset { gap: var(--space-md); }
+  .journey .quiz h1 { font-size: clamp(1.5rem, 1vw + 1rem, 2.25rem); }
+  .j-hand { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-sm); }
+  .j-hand[data-count="2"], .j-hand[data-count="4"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .j-slot { min-width: 0; }
+  .j-card__inner { min-height: 10.5rem; }
+  .j-card__face { gap: var(--space-xs); }
+  .j-card__art { width: 3.75rem; height: 3.75rem; }
+  .j-card__art svg { width: 30px; height: 30px; }
+  .j-card__art--meter { padding-bottom: 1rem; }
+  .j-card__art--meter i { height: 1.6rem; }
+  .j-card__title { min-height: 2.5em; }
+  .j-camp__big b { font-size: clamp(3rem, 4.5vw, 4.5rem); }
+}
+/* A short laptop screen: smaller cards, so the hand and the button still fit. */
+@media (min-width: 64rem) and (max-height: 50rem) {
+  .journey .j-stage { padding-top: var(--space-md); }
+  .j-form { gap: var(--space-sm); }
+  .j-form fieldset { gap: var(--space-sm); }
+  .journey .quiz h1 { font-size: clamp(1.375rem, 0.8vw + 1rem, 1.875rem); }
+  .j-card__inner { min-height: 8.75rem; }
+  .j-card__face { padding-block: var(--space-xs) var(--space-sm); }
+  .j-card__art { width: 3.25rem; height: 3.25rem; }
+  .j-card__art svg { width: 26px; height: 26px; }
+  .j-shelf li { padding-block: 4px; }
+  .j-shelf__icon { width: 26px; height: 26px; }
+}
 
 @media (max-width: 40rem) {
   .j-top__inner { flex-wrap: wrap; row-gap: var(--space-2xs); }
@@ -534,7 +625,7 @@ body:has(.journey) { background-color: var(--j-night); }
 @media (prefers-reduced-motion: reduce) {
   .journey { --walk: 0ms; --blend: 0ms; }
   .j-layer, .j-lift, .j-hp__fill, .j-hp__ghost { transition: none; }
-  .j-world.is-shaken, .j-slot, .j-camp, .j-relic, .j-map li.is-earned, .j-float { animation: none; }
+  .j-world.is-shaken, .j-slot, .j-camp, .j-notice, .j-map li.is-earned, .j-shelf li.is-earned .j-shelf__icon, .j-float { animation: none; }
   .j-float { transform: translate(-50%, 0); }
   .j-hero *, .j-hero__glow { animation: none !important; }
   .j-card__inner { transform: none; transition: none; }

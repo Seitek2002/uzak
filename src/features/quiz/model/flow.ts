@@ -37,6 +37,8 @@ export function firstOpenStep(): number {
  */
 export function useArrival(): boolean {
   const hydrated = useHydrated();
+  // Nothing is shown from the saved state until the arrival has decided what it means.
+  const [arrived, setArrived] = useState(false);
   useEffect(() => {
     if (!hydrated) return;
     const state = useQuiz.getState();
@@ -50,10 +52,13 @@ export function useArrival(): boolean {
     else if (state.editing) state.cancelEdit();
     else if (state.completed) state.restart();
     else if (fromUrl !== null) state.goTo(Math.min(fromUrl, firstOpenStep()));
-    const arrived = useQuiz.getState();
-    writeStepToUrl(arrived.step, "replace", arrived.editing);
+    // Every visit from a link asks for the style again; the saved answers stay. A reload keeps it.
+    if (fromUrl === null && !useQuiz.getState().editing) useQuiz.getState().setStyle(undefined);
+    const now = useQuiz.getState();
+    writeStepToUrl(now.step, "replace", now.editing);
+    setArrived(true);
   }, [hydrated]);
-  return hydrated;
+  return hydrated && arrived;
 }
 
 export interface FlowOptions {

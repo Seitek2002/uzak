@@ -275,6 +275,7 @@ try {
     await page.locator(".option label").first().click();
     await page.waitForSelector("#age");
     await page.goto(`${BASE}/en/test/`, { waitUntil: "networkidle" });
+    await plainForm(page);
     await page.waitForSelector("#age", { timeout: 8000 }).catch(() => {});
     check("answers carry over to another language", (await page.locator("#age").count()) === 1);
     await ctx.close();
